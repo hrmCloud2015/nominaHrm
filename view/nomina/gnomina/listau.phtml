@@ -1,0 +1,32 @@
+<?php 
+$this->ttablas='Empleado, Periodo';
+echo $this->render('layout/tabla_c') ?>
+
+    <?php 
+    $total = 1;
+    foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td class="col-sm-3">
+             <?php echo $dato['CedEmp'].'-'.$dato['nombre'].' '.$dato['apellido'];?>
+
+            <?php if (isset($dato['recontra'])){
+               if ($dato['recontra']>0)
+               { 
+                ?> 
+              <i class="ace-icon fa fa-refresh bigger-120 red"></i>
+            <?php }
+            } ?>  
+            </td>    
+            <td>
+            <?php 
+                echo $dato["fechaI"].' - '.$dato["fechaF"]; 
+                $total++;
+            ?>
+            </td>
+        </tr>
+    <?php } ?>
+        <tr>
+            <td><strong>Total empleados</strong></td>    
+            <td><strong><?php echo $total-1;?></strong></td>
+        </tr>            
+<?php echo $this->render('layout/tabla_p') ?>

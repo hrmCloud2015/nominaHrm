@@ -1,0 +1,77 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i/'.$this->id,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>
+<?php    
+    $name = $form->get('id2');
+    echo $this->formInput($name);    
+?>
+<div class="row">
+
+ <div class="col-sm-2">Estado del documento:<br />
+      <?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+      ?>
+  </div>  
+</div>
+<hr />
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datosE as $dato){
+     $idI = $dato['id'];     
+     $valor = $dato["valor"]; ?>
+        <tr>
+            <td><?php echo $dato["CedEmp"] ;
+                  if ( $valor>0 )
+                      echo $this->render('layout/ibanAmarilla');?>
+            </td>            
+            <td>
+              <?php echo $dato["nombre"]?>            
+            </td>
+            <td><?php echo $dato["apellido"] ?></td>
+            <td><?php echo $dato["nomCar"] ?></td>
+
+            <td>
+              <?php   
+
+              if ( $this->estado == 0 ){                
+                  $name = $form->get('diasVacP')->setAttribute("value",$valor)
+                                 ->setAttribute("id",'nsa'.$idI) 
+                                 ->setAttribute("name",'nsa'.$idI);            
+                  echo $this->formInput($name);
+                  echo $this->formElementErrors($name);
+               }else{
+                  echo number_format( $valor ,2 ); 
+               }                                     
+              ?>                 
+            </td>            
+        </tr>
+    <?php } ?>
+
+<?php echo $this->render('layout/tabla_p') ?>
+<?php if ( $this->estado == 0 ){ ?>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')->setAttribute("id","generar")) ?>
+</div>         
+<?php } ?>
+        
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+

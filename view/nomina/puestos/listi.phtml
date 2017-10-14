@@ -1,0 +1,120 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i/'.$this->id,
+    'method' => 'post',
+    'id' => 'formGuardar',
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id'); // id de la matriz 
+    echo $this->formInput($name);    
+?>
+
+<div class="row">    
+  <div class="col-sm-5">Supervisores:<br />
+      <?php
+      $select = $form->get('idEmp')->setAttribute("id","idEmp");
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+  </div> 
+   <div class="col-sm-2"><br />
+     <?php echo $this->formElement($form->get('registrar')) ?>
+   </div> 
+</div>
+
+<hr />
+<?php echo $this->form()->closeTag() ?>
+
+
+<!-- LISTADO DE EMPLEADOS EN CURSO -->
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"]; ?></td> 
+            <td><?php echo $dato["CedEmp"].'-'.$dato["nombre"].' '.$dato["apellido"]; ?>
+            </td>                                    
+
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> 
+                    <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php
+// Variables para envio de datos excel maestro
+$this->spdf      = 1;// Activa la salida por PDf
+$this->modelo    = 'new \Principal\Model\AlbumTable($con)';// Modelo de consulta
+$this->funcion   = '$m->getDnovedades( '."''".')';
+$this->columnas  = "CEDULA, NOMBRES, APELLIDOS, CONCEPTO,SUELDO, HORAS, DEVENGADO, DEDUCIDO, FECHA , FECHA ";// Columnas
+$this->datos     = "CedEmp,nomEmp,apeEmp,nomConc,sueldo,horas,devengado,deducido,fechaI,fechaF";// Datos de impresion
+$this->filtros   = 1;
+echo $this->render('layout/tabla_p') ?>  
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+<script>    
+$(function() {         
+   /// VENTANA NEUVOS DATOS ////  
+   $( "#Vnuevo" ).dialog({
+      autoOpen: false,
+      height: 800,
+      width: 900,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); // FIN VENTANA COMPETENCIAS     
+}); 
+// Agregar nuvo registro
+function nuevo()
+{        
+ $( "#Vnuevo" ).dialog( "open" );     
+}; 
+      
+// VALIDACIONES 
+$( "#formGuardar" ).submit(function( event ) {
+   var tipo  = $("#idPtra").val(); 
+   if (tipo == '')
+   {
+       alert('Seleccione la sede y puesto de trabajo');
+       event.preventDefault();
+       return false;
+   }
+   var tipo  = $("#idEmp").val(); // id empleados
+   if (tipo == '')
+   {
+       alert('Seleccione el empleado');
+       event.preventDefault();
+       return false;
+   }   
+   if ($('#numero2').length){
+      var tipo  = $("#numero2").val(); // 
+      if (tipo == '')
+      {
+         alert('Digite un valor');
+         event.preventDefault();
+         return false;
+      }   
+   }   
+});     
+</script> 
+    
+<?php 
+$this->ncol='null,';
+echo $this->render('layout/tabla_tb') ?>   
+
+

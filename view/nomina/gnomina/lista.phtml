@@ -1,0 +1,223 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a/'.$this->id,
+    'id'     => "formGuardar",
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>  
+
+<div class="row">   
+  <div class="col-sm-4">
+<i class="ace-icon fa fa-calendar bigger-120 pink"></i> 
+  Seleccione el tipo de nómina:<br />              
+<?php
+    $select = $form->get('tipo');
+    $select->setAttribute('id', 'tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+  </div> 
+  <div class="col-sm-2" id="causar" >Causar el:<br />
+       <?php
+         $name = $form->get('fecDoc')->setAttribute("value", date("Y-m-d"));
+         echo $this->formInput($name);
+         echo $this->formElementErrors($name);?>
+   </div>
+  <div class="col-sm-4" id='conceptos'>Conceptos de nomina:<br />              
+  <?php
+    $select = $form->get('idConcM');
+    $select->setAttribute('id', 'idConcM');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>    
+</div> 
+<div class="row">    
+  <div class="col-sm-6" id='grupos' >
+      <div id="divGrupo"></div>
+  </div> 
+     <div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+    </div>
+</div>
+<hr />
+<div class="col-sm-4" id='generar' ><br />  
+  <?php echo $this->formElement($form->get('GenerarN')) ?>
+</div>    
+</div> 
+<hr />
+<div id ="resultadoAv"></div>   
+<?php echo $this->form()->closeTag() ?>
+<hr />  
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+
+
+<script>
+$(function () 
+{
+  $("#grupos").hide();
+  $("#fechaCorte").hide(); 
+  $("#empleados").hide();
+  $("#registrar").hide();// Registro de liquidaciones finales 
+  $("#generar").hide();// Generaion de nomina 
+  $("#tipo2").hide(); 
+  $("#tipoliqu").hide();   
+  $("#conceptos").hide();   
+  $("#causar").hide();   
+
+  $("#tipo").change(function (){  // Validacion segun el tipo de nomina
+    var nombre =  $("#tipo option:selected").text();
+    var lon = nombre.length;
+    var tipo = nombre.substr(lon-2, 1) ;
+    $("#grupos").hide();
+    $("#fechaCorte").hide(); 
+    $("#empleados").hide();
+    $("#registrar").hide();// Registro de liquidaciones finales 
+    $("#generar").hide();// Generaion de nomina 
+    $("#tipo2").hide(); 
+    $("#tipoliqu").hide();       
+//  alert(tipo)
+    if (tipo==0)// Nomina normal  
+    {
+       $("#grupos").show();
+       $("#idEmpM").val('');
+       $("#empleados").hide();
+       $("#fechaIni").hide(); 
+       $("#tipo2").hide(); 
+       $("#generar").show();// Generaion de nomina 
+       $("#causar").hide(); 
+    }
+
+    if (tipo==1)// Nomina intereses de cesantias   
+    {
+       $("#grupos").show();
+       $("#idEmpM").val('');
+       $("#empleados").hide();
+       $("#fechaIni").hide(); 
+       $("#tipo2").hide(); 
+       $("#generar").show();// Generaion de nomina 
+       $("#causar").hide(); 
+    }    
+
+    if (tipo==2)// Nomina vacaciones
+    {
+       $("#grupos").show();
+       $("#idEmpM").val('');
+       $("#empleados").hide();
+       $("#fechaIni").hide(); 
+       $("#generar").show();// Generaion de nomina 
+       $("#tipo2").hide(); 
+       $("#causar").show(); 
+    }
+    if (tipo==3)// Nomina de primas   
+    {
+       $("#grupos").show();
+       $("#idEmpM").val('');
+       $("#empleados").hide();
+       $("#fechaIni").hide(); 
+       $("#tipo2").hide(); 
+       $("#generar").show();// Generaion de nomina 
+       $("#causar").hide(); 
+    }            
+    if (tipo==5)// Nomina manual
+    {
+       $("#grupos").show();
+       $("#idEmpM").val('');
+       $("#empleados").hide();
+       $("#fechaIni").hide(); 
+       $("#generar").show();// Generaion de nomina 
+       $("#tipo2").hide(); 
+       $("#conceptos").show();
+       $("#causar").show();           
+    }    
+    if (tipo==4)// Liquidacion de empleado  
+    {
+       //$("#empleados").show();
+       //$("#idGrupo").val('');
+       //$("#grupos").hide();
+       //$("#fechaIni").show(); 
+       //$("#registrar").show();// Registro de liquidaciones finales 
+       //$("#fechaCorte").show(); 
+       $("#generar").show();// Generaion de nomina 
+       //$("#tipo2").show();// Grupo o individual liquidacion  
+       //$("#tipoliqu").show();          
+       $("#causar").show(); 
+    }
+
+    if (tipo==6)// Consolidado de cesantias
+    {
+       $("#grupos").show();
+       $("#idEmpM").val('');
+       $("#empleados").hide();
+       $("#fechaIni").hide(); 
+       $("#tipo2").hide(); 
+       $("#generar").show();// Generaion de nomina 
+       $("#causar").hide(); 
+    }    
+    $con = 'ag';
+
+    var idTnom  = $("#tipo").val(); 
+    var parametros = {
+       "idTnom"    : idTnom,
+    };  
+    $.ajax({
+       data:  parametros, 
+       url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>'.$con,
+       type: 'post',
+       beforeSend: function () {
+        $("#divGrupo").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+       },
+       success: function (response) {   
+         $("#divGrupo").html(response); 
+       }
+     }); // Fin  agregar nuevo componente al sistema                               
+
+   });// Fin Validacion tipo de nomina
+ })
+
+  $.ajax({
+    url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>av',
+    type: 'post',
+    beforeSend: function () {
+        $("#resultadoAv").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+    },
+    success: function (response) {   
+        $("#resultadoAv").html(response); 
+    }
+  }); // Fin  agregar nuevo componente al sistema                               
+
+// Para desabhilitar y prevenir mas de un summit
+$(document).ready(function() {
+    $("form#formGuardar").submit(function() {
+      if ( $("#tipo").val() == 0 )
+      {
+         alert('Selecciona el tipo de nomina') 
+         event.preventDefault();
+          return false;          
+      }
+      if ( ($("#idGrupo").val() == 0 ) && ( $("#tipo").val()!=6 ) )
+      {
+         alert('Selecciona el grupo de nomina') 
+         event.preventDefault();
+          return false;          
+      }      
+        //$('input').attr('disabled', 'disabled');
+        $('a').attr('disabled', 'disabled');
+        return true;
+    });
+});
+</script>

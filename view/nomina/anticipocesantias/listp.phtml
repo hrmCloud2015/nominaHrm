@@ -1,0 +1,20 @@
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php 
+    $total = 0;
+    foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["nombre"] ?></td>            
+            <td><?php echo $dato["fechaI"].'-'.$dato["fechaF"] ?></td>                        
+            <td><?php echo number_format( $dato["devengado"] ) ?></td>            
+
+        </tr>
+    <?php 
+    $total = $total + $dato["devengado"] ; 
+    } ?>
+     <tr>
+        <td></td>
+        <td><strong>BASE PROMEDIO</strong></td>           
+        <td><strong><?php echo number_format( $total ) ?></strong></td>            
+     </tr>
+<?php echo $this->render('layout/tabla_p') ?>

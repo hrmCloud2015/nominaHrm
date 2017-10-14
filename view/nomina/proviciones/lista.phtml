@@ -1,0 +1,145 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+    
+<div class="row">    
+  <div class="col-sm-4">Provisión:<br />                      
+<?php
+    $name = $form->get('nombre');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+  </div>
+
+  <div class="col-sm-4">Proceso involucrado:<br />                      
+  <?php
+    $select = $form->get('tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>      
+  </div>
+
+</div>    
+</div>    
+
+<hr />
+<div class="row">    
+  <div class="col-sm-4">Cuenta debito:<br />                      
+  <?php
+    $select = $form->get('codCta');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>
+  <div class="col-sm-4">Cuenta credito:<br />                      
+  <?php
+    $select = $form->get('tipo2');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>    
+</div>    
+
+<hr />
+
+<div class="row">    
+<div class="col-sm-2">Porcentaje:<br />
+<?php
+    $name = $form->get('numero');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>
+</div>    
+                
+
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+
+<div id='resultadoP'></div>
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+  <tr>
+    <th>id</th>
+    <th>Prefijo</th>
+    <th>Cuenta</th>        
+    <th>..</th>    
+  </tr>
+ </thead>
+    <?php
+     foreach ($this->datPref as $dato){ ?>    
+        <tr>
+            <td><?php echo $dato["id"] ?></td>                                    
+            <td><?php echo $dato["nombre"] ?></td>
+            <td>
+             <?php
+               $select = $form->get('tipoC')
+                              ->setAttribute('id','codCtaPref'.$dato["id"])
+                              ->setAttribute('value',$dato["codCta"] );
+                 echo $this->formSelect($select);
+                 echo $this->formElementErrors($select);                       
+             ?>
+            </td>
+            <td>
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>
+
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+<?php echo $this->render('layout/iregresar') ?>    
+
+
+
+<script>
+// Moficicacion en prefijos 
+function editarN(idPref){  
+   var id = $("#id").val(); 
+   var valor = $("#codCtaPref"+idPref).val(); 
+   //alert(valor)
+   var parametros = {
+       "id"     : id,       
+       "idPref" : idPref,       
+       "valor"  : valor,
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+           beforeSend: function () {
+              $("#resultadoP").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultadoP").html(response);                    
+             }
+   }); // Fin ajax        
+};
+</script>
+
+
+

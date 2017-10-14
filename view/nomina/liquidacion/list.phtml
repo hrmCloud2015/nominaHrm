@@ -1,0 +1,44 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php echo $this->render('layout/inuevo') ?></a>
+<div id="dialog"></div>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["fecDoc"] ?></td>
+            <td><?php echo $dato["fecApr"]; ?></td>
+            <td><?php echo $dato["CedEmp"].'-'.$dato["nombre"].' '.$dato["apellido"]; ?></td>            
+            <td><?php echo $dato["nomCar"]; ?></td>            
+            <td><?php echo $dato["nomCcos"]; ?></td>            
+            <td><?php echo $dato["nomLiqu"]; ?></td>            
+            <td><?php echo $dato["fechaf"]; ?></td>            
+            <td>
+                <?php if ($dato["estado"]==0){ ?>
+                   <?php echo $this->render('layout/ipendiente') ?>
+                <?php } ?>
+                <?php if ($dato["estado"]==1){ ?>
+                   <?php echo $this->render('layout/iaprobado') ?>                
+                <?php } ?>
+            </td>    
+            <td>
+                <?php // Parametros para impresion de documento 
+                $this->idR = 4; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros ?>
+            </td>                           
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieditar') ?> </a>
+            </td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?> 

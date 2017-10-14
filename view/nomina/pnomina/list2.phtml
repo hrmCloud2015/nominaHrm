@@ -1,0 +1,83 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td></td>          
+            <td><?php 
+             if ( $dato["tipNom"]!='' )
+                  echo $dato["tipNom"]; 
+               else 
+                  echo $dato["nomtnom"]; 
+            ?></td>
+            <td><?php echo $dato["nomgrup"] ?></td>                        
+            <td><?php echo $dato["fechaI"].' - '.$dato["fechaF"]; ?></td>
+            <td>
+             <?php // PDF NOMINA
+                $this->idR = 6; // Id del reporte pre nomina
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>
+            </td>                     
+            <td>
+             <?php //if ($dato["tipo"]==0) // // PDF RESUMIDA
+                //{     
+                  $this->idR = 94; // Id del reporte de retencion en la fuente
+               // }
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>                              
+            </td>       
+            <td>
+             <?php // PDF NOMINA POR EMPLEADOS 
+                $this->idR = 98; // Id del reporte pre nomina
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>
+            </td>                                 
+            <td>
+             <?php //if ($dato["tipo"]==0) // // PDF RETECNCIONES
+                //{     
+                  $this->idR = 76; // Id del reporte de retencion en la fuente
+               // }
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>                              
+            </td>                          
+            <td>
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>popular/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> Popular</a>
+              <hr />
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>bancolombia/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> Bancolombia</a>              
+
+            </td>
+            <td>
+             <?php // PDF BANCOS
+                $this->idR = 86; // Id del reporte pre nomina
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>
+            </td>             
+            <td>
+             <?php // PDF CHEUQUES
+                $this->idR = 87; // Id del reporte pre nomina
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>
+            </td>                         
+            <td>
+              <?php if (  $dato["estado"]==1) {?>
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>p/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/icerrar') ?> </a>
+              <?php } ?>
+            </td>
+            <td>
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>e/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/imail') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   

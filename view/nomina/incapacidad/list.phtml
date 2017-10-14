@@ -1,0 +1,66 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php echo $this->render('layout/inuevo') ?></a>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td></td> 
+            <td><?php echo $dato["id"] ?>
+            </td>            
+            <td><?php echo $dato["fecDoc"]; ?></td>
+            <td><?php echo $dato["CedEmp"].'-'.$dato["nombre"].' '.$dato["apellido"]; ?></td>            
+            <td><?php echo $dato["nomcar"]; ?></td>            
+            <td><?php echo $dato["nomTinc"]; ?>
+
+               <?php  
+                 if ( $dato["cobra"] != '' )
+                 {
+                    echo '<br /><strong>'. $dato["cobra"].'</strong>'; 
+                    echo $this->render('layout/iok');
+                 }   
+               ?>
+            </td>            
+            <td><?php echo $dato["fechai"]; ?></td>            
+            <td><?php echo $dato["fechaf"]; ?></td>            
+            <td><?php 
+            if ( $dato["diasIncaPro"] > 0  ){?>
+                 <span class="badge badge-danger"><?php echo $dato["diasInca"]+$dato["diasIncaPro"];  ?></span>                 
+            <?php }else{  ?>
+                <span class="badge badge-warning"><?php echo $dato["diasInca"];  ?></span>
+             <?php } ?>   
+            </td>                        
+            <td><!-- Desarrollo del desarrollo de la incpacdad-->
+                <?php if ($dato["estado"]==0){ ?>
+                   <?php echo $this->render('layout/ipendiente') ?>
+                <?php } ?>
+                <?php if ($dato["estado"]==1){ ?>
+                   <?php echo $this->render('layout/iaprobado') ?>                
+                <?php } ?>
+            </td>   
+
+            <td>
+              <?php echo "<p><em class ='text-info'>".''.'<strong>Ingresado por:</p>'.$dato["usuario"].' Fecha : '.$dato["fecDoc"]."</em>" ?>
+            </td> 
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieditar') ?> </a>
+            </td>            
+            <td>
+
+        <?php if ($dato["cobra"]==''){ ?>   
+             
+              <?php if ($dato["num"] == 0){ ?>   
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+           
+            <?php } ?>
+         <?php } ?>       
+          </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?> 

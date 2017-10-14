@@ -1,0 +1,33 @@
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["CedEmp"] ?></td>                        
+            <td><?php echo $dato["nomEmp"].' '.$dato["apeEmp"] ?></td>            
+            <td><?php echo $dato["nomConc"] ?></td>
+            <td><?php echo number_format($dato["devengado"],0) ?></td>                        
+            <td><?php echo number_format($dato["deducido"],0) ?></td>                        
+            <td><?php echo $dato["horas"] ?></td>                                    
+            <td><?php echo $dato["fechaI"].' - '.$dato["fechaF"] ?>
+            </td>                                    
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> 
+                    <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php
+// Variables para envio de datos excel maestro
+$this->spdf      = 1;// Activa la salida por PDf
+$this->modelo    = 'new \Principal\Model\AlbumTable($con)';// Modelo de consulta
+$this->funcion   = '$m->getDnovedades()';
+$this->columnas  = "CEDULA, NOMBRES, APELLIDOS, CONCEPTO, HORAS, DEVENGADO, DEDUCIDO, FECHA INICIAL, FECHA FINAL ";// Columnas
+$this->datos     = "CedEmp,nomEmp,apeEmp,nomConc,horas,devengado,deducido,fechaI,fechaF";// Datos de impresion
+$this->filtros   = 1;
+echo $this->render('layout/tabla_p') ?> 
+   
+<?php 
+$this->ncol='null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   

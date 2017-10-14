@@ -1,0 +1,192 @@
+<?php echo $this->render('layout/titulo'); ?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?> 
+<h3 class="header smaller lighter green"><i class="icon-bullhorn"></i> Importante</h3>
+
+<div class="alert alert-warning">
+  <button type="button" class="close" data-dismiss="alert"><i class="icon-remove"></i></button>
+ Antes de generar este proceso tenga en cuenta que debe tener configurado los automáticos de nomina, 
+ así como los conceptos. Una vez generado este proceso podrá revisar el reporte de nominas activas y agregar novedades.<br>
+</div>
+
+<a href="#modal-form_turnos" id ="promedios" role="button" class="blue" data-toggle="modal">
+   <strong>Relacion de empleados</strong>   
+   <i class="fa fa-flag orange bigger-130"></i>
+   </a>
+
+
+<!-- VENTANA MODAL DE EMPLEADOS-->
+<div id="modal-form_turnos" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="blue bigger">Relacion de empleados</h4>
+      </div>
+      <div class="modal-body">
+
+<?php 
+$this->ttab = 'id, Nombre, Apellido, Eliminar';
+echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["CedEmp"] ?></td>            
+            <td><?php echo $dato["nombre"] ?></td>
+            <td><?php echo $dato["apellido"] ?></td>            
+            <td>
+              <div id="eliminar<?php echo $dato["id"]; ?>" >
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/ieliminar') ?>
+                 </a>
+              </div>   
+              <div id = "resultadoEmp<?php echo $dato["id"]; ?>"></div>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php 
+//$this->ncol='null,null,null,';
+//echo $this->render('layout/tabla_tb') ?>   
+        
+<?php echo $this->render('layout/tabla_p') ?>          
+
+      </div>
+    </div><!-- fin contenido modal-->
+    <div class="modal-footer">
+      <button class="btn btn-sm" data-dismiss="modal">
+        <i class="ace-icon fa fa-times"></i>
+         Salir
+      </button>
+    </div>
+  </div>
+</div><!-- FIN VENTANA DE EMPLEADOS -->    
+
+<hr />
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('GenerarN')) ?>
+</div>
+
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+?>
+<?php    
+//echo 'Tipo'.$this->tipo;
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+    // Tipo de nomina  generar
+    switch ($this->tipo) 
+    {
+        case 0:
+            $tipo = 'p'; // Nomina general
+            break;
+        case 1:
+            $tipo = 'c'; // Cesantias e intereses 
+            break;
+        case 2:
+            $tipo = 'p'; // Vacaciones
+            break;            
+        case 3:
+            $tipo = 'pm'; // Primas
+            break;        
+        case 4:
+            $tipo = 'lq'; // Liquidacion de contrato
+            break;                    
+        case 5:
+            $tipo = 'm'; // Nomina manual 
+            break;                                
+        case 6:
+            $tipo = 'c'; // Nomina de cesantias
+            break;
+        case 7:
+            $tipo = 'me'; // Nomina documentos especiales            
+            break;                                            
+        default:
+            break;
+    }
+    
+?>  
+
+
+<?php 
+echo $this->render('layout/iregresar') ?> 
+<div id="resultado"></div> 
+
+
+<script>
+$(function () {
+  $("#generarnom").click(function () {  
+        var b = $("#id").val();
+        var parametros = {
+            "id"  : b,                
+        };            
+        // Validar que no genere 2 veces la misma nomina         
+        $(this).addClass("disabled");
+        $.ajax({
+            data:  parametros,
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin ?>vp',
+            type:  'post',
+            beforeSend: function () {
+                $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Validando nomina, por favor espere...');
+            },
+            success:  function (response) {
+                $("#resultado").html(response);
+                var val = ($("#valido").val())                
+                if (val==1)
+                {
+                   alert("Esta nomina ya fue generada , no puede volver a generarla")                                                        
+                }else{ // Inicio generacion de nomina 
+                   $.ajax({
+                        data:  parametros,
+                        url:   '<?php echo $this->basePath() ?><?php echo $this->lin.$tipo ?>',
+                        type:  'post',
+                        beforeSend: function () {
+                            $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Generando nomina, por favor espere...');
+                        },
+                        success:  function (response) {
+                            alert('Nomina generada de forma correcta');
+							$("#resultado").html(response);
+                            //location.href='<?php echo $this->basePath() ?><?php echo $this->lin?>';                    
+                        }
+                    });                                                   
+                    
+                }// Fin generación de nomina
+            }
+        }); // Ajax envio de datos       
+
+      });// Generacion de nomina
+  })
+
+
+// Moficicacion en registro de novedades 
+function editarN(id)
+{  
+   if ( !confirm( "Desea quitar a este empleado de esta nomina ?" ) )
+   {
+      return false;
+   }      
+   var parametros = {
+       "id"     : id,       
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+           beforeSend: function () {
+              $("#resultadoEmp"+id).html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Eliminando por favor espere...');
+             },
+           success:  function (response) 
+           {
+               $("#resultadoEmp"+id).html(response);                    
+               $("#eliminar"+id).hide();              
+           }
+   }); // Fin ajax        
+};
+</script>           
+
+

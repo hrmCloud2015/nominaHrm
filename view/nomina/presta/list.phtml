@@ -1,0 +1,132 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php echo $this->render('layout/treview') ?>
+<div class="row">    
+  <div class="col-sm-3">
+    <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php echo $this->render('layout/inuevo') ?></a>
+  </div>
+  <div class="col-sm-3">
+    <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>tp">Ingresos rapidos
+      <?php echo $this->render('layout/irapido') ?></a>    
+  </div>  
+</div>    
+<hr />
+
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+
+<?php 
+/////// TIPOS DE PRESTAMOS /////////
+$arbol   = '';
+$idSed   = 0;
+foreach ($this->datArb as $dato)
+{ 
+   $id =  $dato['id']; 
+   if ($arbol=='')
+       $arbol = '{ id:'.$id.', pId:0, name:"'.$dato['nombre'].'", icon:"'.$this->basePath().'/img/submenu.png" }';    
+   else 
+       $arbol = $arbol.',{ id:'.$id.', pId:0, name:"'.$dato['nombre'].'", icon:"'.$this->basePath().'/img/submenu.png" }';                           
+}
+?>
+
+<script type="text/javascript">
+var setting = {
+    data: {
+      simpleData: {
+      enable: true
+      }
+    },
+    callback: {
+    beforeClick: beforeClick,
+        }                        
+    };
+var zNodes =[
+   <?php echo $arbol ?>
+];
+
+
+    $(document).ready(function(){
+        var t = $("#treeDemo");
+        t = $.fn.zTree.init(t, setting, zNodes);
+        demoIframe = $("#testIframe");
+    
+    });
+
+    function loadReady() {
+        var bodyH = demoIframe.contents().find("body").get(0).scrollHeight,
+        htmlH = demoIframe.contents().find("html").get(0).scrollHeight,
+        maxH = Math.max(bodyH, htmlH), minH = Math.min(bodyH, htmlH),
+        h = demoIframe.height() >= maxH ? minH:maxH ;
+        if (h < 530) h = 530;
+        demoIframe.height(h);
+    }
+
+var log, className = "dark";
+function beforeClick(treeId, treeNode, clickFlag) {     
+    ///// Cargando componentes y elementos del sistema seleccionado ///////   
+    // Nodo hijo
+    var id = treeNode.id;
+    demoIframe.attr("src","<?php echo $this->basePath() ?><?php echo $this->lin?>e/"+id);
+    //return true;
+        
+    return (treeNode.click != false);
+}   
+$(function ()
+{     
+  $( "#buscar" ).submit(function( event ) {
+    var id = $( "#idEmp" ).val();
+    demoIframe.attr("src","<?php echo $this->basePath() ?><?php echo $this->lin?>e/0"+id);    
+    event.preventDefault();
+  });
+})
+</script>
+
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'e',
+    'method' => 'post',
+    'id' => 'buscar',
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<div class="row">
+  <div class="col-sm-4">Filtrar por empleado:<br />              
+  <?php
+    $select = $form->get('idEmp')->setAttribute("id", "idEmp");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+  <div class="col-sm-2"><br />              
+    <?php echo $this->formElement($form->get('buscar')) ?>
+  </div>
+</div> 
+
+
+<?php echo $this->form()->closeTag() ?>    
+
+<hr />
+<!-- Inicio listado por centros de costos-->
+
+<div class="row">
+
+<TABLE border=0 height=600px align=left>
+ <TR>
+  <TD width=360px align=left valign=top style="BORDER-RIGHT: #999999 1px dashed">
+   <!-- Render lineas, grupos y sistemas -->
+   <div style="float:left;" class="zTreeDemoBackground left">
+     <ul id="treeDemo" class="ztree"></ul>
+   </div>                        
+   
+
+  </TD>
+  <TD width=1000px align=left valign=top><IFRAME ID="testIframe" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=1000px  height=600px ></IFRAME></TD> 
+ </TR>
+</TABLE>
+</div>
+

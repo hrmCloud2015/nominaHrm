@@ -1,0 +1,117 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$formp = $this->formp;
+$formp->prepare();
+
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'p',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="form_element">
+<?php
+    $select = $form->get('cuotas');
+    $select->setAttribute("value",$datos["cuotas"]);    
+    echo $formLabel->openTag().'Numero de cuotas';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div> 
+<hr/>
+<div class="form_element">
+<?php
+    $select = $form->get('idTnom');
+    echo $formLabel->openTag().'Tipo de nomina';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+<?php echo $this->formElement($form->get('generarM')) ?>
+</div> 
+
+<?php 
+$this->th3='PLAN DE PAGOS '.$datos["nombre"].' '.$datos["apellido"];
+echo $this->render('layout/h3rojo'); 
+$cuotas = $datos["cuotas"]; 
+$valor  = $datos["valor"]; 
+$Vcuotas = $valor/$cuotas;
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+
+<!-- PLAN DE PAGOS -->
+<?php // CABECERA TABS
+ $this->tittab='Valor del prestamo '.number_format($valor).' programado a '.$cuotas.' cuotas';
+ echo $this->render('layout/tabs_c1') ?>
+ <?php 
+   foreach ($this->datosd as $dato){ ?>
+     <?php
+       $this->titpest=$dato["nomTnom"];
+       $this->pest.$dato["id"] = $dato["id"];
+       $this->codpest=$this->pest.$dato["id"];
+       echo $this->render('layout/tabs_c_i'); 
+     ?>			  
+   <?php } ?>
+<?php // PIE TABS
+ echo $this->render('layout/tabs_c2') 
+ // CONTENIDO 
+?>
+<?php // Recorrido tipos de nominas involucradas
+foreach ($this->datosd as $dato){ ?>
+<?php 
+   $this->codpest=$this->pest.$dato["id"];
+   echo $this->render('layout/tabs_i_c'); // PESTAÑA DATOS BASICOS
+   echo '<h3 class="header smaller lighter blue">Calendario '. $dato["nomCal"].'</h3>'; 
+   // recorrer cuotas pactadas
+   $dias   = $dato["dias"]; // Dias del calendario seleccionado
+   $fechaf = $dato["fechaF"];
+?>
+<?php 
+$this->ttablas='N,Fecha inicial,Fecha final, Cuota';
+echo $this->render('layout/tabla_c') ?>
+<?php
+   $numero=1;
+   for ($i=1;$i<=$cuotas;$i++)
+   {
+     $fechai=$fechaf;  
+     $nuevafecha = strtotime ( '+'.$dias.' day' , strtotime ( $fechai ) ) ;
+     $fechaf = date ( 'Y-m-j' , $nuevafecha );      
+     echo '<tr>';   
+     echo '<td>'.$numero.'</td><td>'.$fechai.'</td><td>'.$fechaf.'</td><td>';     
+     // Cuota
+     echo ($this->formRow($formp->get('cuota'.$numero)->setAttribute("value", $Vcuotas )));     
+     $numero++;
+     echo '</td></tr>';
+   }
+?> 
+<?php echo $this->render('layout/tabla_p') ?>    
+    
+<?php 
+   echo $this->render('layout/tabs_i_p'); // FIN ASPECTOS CONTRACTUALES
+?>
+<?php } // Fin recorrido tipos de nominas involucradas ?>
+
+
+<?php echo $this->render('layout/tabs_p') ?> 
+
+<!-- FIN PLAN DE PAGOS -->
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    

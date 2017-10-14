@@ -1,0 +1,54 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'p',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+  <div class="col-sm-4">Ingresos nuevos descuentos:<br />
+  <?php
+    $select = $form->get('tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+  <div class="col-sm-2"><br />              
+    <?php echo $this->formElement($form->get('buscar')) ?>
+  </div>
+</div>
+<?php echo $this->form()->closeTag() ?>
+
+<hr />
+<?php echo $this->render('layout/tabla_c') ?>
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo ltrim($dato["CedEmp"]); ?></td>            
+            <td><?php echo $dato["nomEmp"].' '.$dato["apellido"]; ?>
+            <?php //if ($dato["conAut"]>=1 ){
+             //echo $this->render('layout/iok');                  
+            //}?>
+            </td>
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>i/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/iitems') ?> </a>
+                <?php if ($dato["num"]>0 ){
+                    echo '('.$dato["num"].')';
+                }
+                    ?>
+            </td>
+        </tr>
+    <?php } ?>   
+
+<?php         
+$this->ncol='null,';
+echo $this->render('layout/tabla_tb') ?>        
+        
+<?php
+echo $this->render('layout/tabla_p') ?>

@@ -1,0 +1,190 @@
+<div id ="form-valoracion"> 
+    <?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'ev/'.$this->id,
+    'id'     => 'formEditarValSoc',
+    'method' => 'post'
+));
+
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+ <div class="row">
+  <hr />
+   <div class="col-sm-1"></div>
+     <div class="col-sm-2">Fecha de registro:<br />                  
+        <?php
+          $name = $form->get('fecReg')->setAttribute("id","fecReg");
+          echo $this->formInput($name);
+          echo $this->formElementErrors($name);
+        ?>    
+  </div>  
+    <div class="col-sm-2">Tipologia familiar:<br />              
+      <?php
+       $select = $form->get('famTip')->setAttribute("class","idFam");
+       echo $formLabel->openTag().'';
+       echo $formLabel->closeTag();
+       echo $this->formSelect($select);
+        echo $this->formElementErrors($select);
+        ?>   
+  </div>
+<div class="col-sm-2">Tipo de vivienda:<br />              
+  <?php
+     $select = $form->get('vivienda')->setAttribute("class","idFam");
+    echo $formLabel->openTag().'';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+
+  ?>   
+  </div>
+    <div class="col-sm-3">Numero de personas que viven:<br />              
+    <?php
+      $select = $form->get('numPer')->setAttribute("class","idPer");
+      echo $formLabel->openTag().'';
+      echo $formLabel->closeTag();
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+    ?>   
+  </div>
+<div class="col-sm-2">Estrato:<br />              
+   <?php
+      $select = $form->get('estFam')->setAttribute("class","idFam");
+      echo $formLabel->openTag().'';
+      echo $formLabel->closeTag();
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>   
+    </div>
+ </div>
+  <hr/>
+    <hr/>
+    <div class="row">
+     <div class="col-sm-1"></div>
+
+    <div class="col-sm-1">Visitas ?<br />
+    <?php
+        $select = $form->get('visita');
+               echo $this->formCheckbox($select);
+         ?><span class="lbl"></span> 
+    </div>
+    <div class="col-sm-2">Fecha<br />
+           <!--Esta es la fecha de vsita-->
+        <?php
+         $name = $form->get('fecIng')->setAttribute("id","fecReg");
+         echo $this->formInput($name);
+         echo $this->formElementErrors($name);
+        ?>    
+     </div>
+      <div class="col-sm-3">Tipo de relacion Familiar:<br />              
+      <?php
+      $select = $form->get('tipRel')->setAttribute("class","idRel");
+      echo $formLabel->openTag().'';
+      echo $formLabel->closeTag();
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>   
+  </div>
+    <div class="col-sm-4">Comentario<br />              
+      <?php echo ($this->formRow($form->get('comenN4'))); ?> 
+  </div>
+</div>
+<hr/>
+   <hr/>
+  <div class="row">
+    <div class="col-sm-1"></div>  
+     <div class="col-sm-3">Proyectos imediatos:<br />   
+
+  <?php
+     $select = $form->get('idPro')->setAttribute("class","idPrp");
+    echo $formLabel->openTag().'';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>   
+  </div>
+    <div class="col-sm-4">Conceptos del entrevistador<br />              
+      <?php echo ($this->formRow($form->get('comenN10'))); ?> 
+   </div>
+   
+  </div>
+ <hr/>
+  
+  <br/>
+   <br/>
+   <div class="row"> 
+    <div class="col-sm-1"></div> 
+     <div class="col-sm-3">Concepto persosonal<br />              
+      <?php
+       $select = $form->get('conPerl')->setAttribute("class","conPerl");
+       echo $formLabel->openTag().'';
+       echo $formLabel->closeTag();
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+       ?>  
+     </div>  
+
+      <div class="col-sm-3">Conceptos social<br />              
+        <?php
+         $select = $form->get('conSoc')->setAttribute("class","conSoc");
+         echo $formLabel->openTag().'';
+         echo $formLabel->closeTag();
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);
+         ?>  
+      </div> 
+         <div class="col-sm-5">Concepto de vivienda:<br />              
+           <?php echo ($this->formRow($form->get('conVivi'))); ?> 
+        </div>
+    </div>
+  <div>
+   <hr/>
+   
+<div class="row"> 
+  <div class="col-sm-1"></div> 
+    <div class="col-sm-3">Concepto economico<br />              
+       <?php
+         $select = $form->get('conEcon')->setAttribute("class","conEcon");
+         echo $formLabel->openTag().'';
+         echo $formLabel->closeTag();
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);
+       ?>  
+   </div> 
+   <div class="col-sm-3">Ingresos adicionales:<br />              
+     <?php echo ($this->formRow($form->get('ingAdi'))); ?> 
+  </div>  
+      
+  </div>
+  <div class="row">
+    <hr/> 
+      <hr/> 
+    <div class="col-sm-1"></div>
+     <div class="col-sm-4">Descripcion de concepto operativo:<br />              
+        <?php echo ($this->formRow($form->get('conOper'))); ?> 
+    </div>
+      <div class="col-sm-4">Descripcion de concepto ambiental:<br />              
+          <?php echo ($this->formRow($form->get('conAmb'))); ?> 
+
+      </div>
+  </div>
+   
+   <hr/>  
+  
+  
+    <?php echo $this->form()->closeTag() ?> 
+  </div>
+</div><!--/*fin de Valoracion Socio Familiar*/-->
+
+<script>
+  /*Campos estrictamente obligatotios. restriccion de valores nulos */
+  $( "#btnEdicVal" ).click(function() {
+
+   $("#formEditarValSoc").submit(); /*Guardar registro del modal VSF.*/
+
+  });
+</script>
+
+<!--fin del DOM-->

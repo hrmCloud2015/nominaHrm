@@ -1,0 +1,125 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php echo $this->render('layout/treview') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+
+<?php 
+$arbol   = '';
+$idM0   = 0;
+$idM1   = 0;
+$idM2   = 0;
+foreach ($this->datArb as $dato)
+{ 
+  //echo $idM0.'<br />';
+    if ($idM0!=$dato['id'])
+    {
+      $idM0 = $dato['id'];  
+      $id0 = '0.'.$idM0;  
+      $id0 = $idM0;  
+      if ($arbol=='')
+          $arbol = '{ id:'.$id0.', pId:0, name:"'.$dato['nombre'].'", icon:"'.$this->basePath().'/img/casa.png" }';    
+      else 
+          $arbol = $arbol.',{ id:'.$id0.', pId:0, name:"'.$dato['nombre'].'", icon:"'.$this->basePath().'/img/casa.png" }';                           
+    }
+    if ($idM1!=$dato['idM1'])
+    {
+       $idM1 = $dato['idM1'];
+       $id1 = '1.'.$idM1.'9';  
+       $arbol = $arbol.',{ id:'.$id1.', pId:'.$id0.', name:"'.$dato['nomMod1'].'", icon:"'.$this->basePath().'/img/submenu.png" }';                           
+    }    
+   // if ($idM2!=$dato['idM2'])
+   // {
+       $idM2 = $dato['idM2'];
+       $id2 = $idM1.'2.'.$idM2.'9';  // Toca agregarle un 9, porque el 0 tiene problemas 
+//echo '----'.$id2.'<br />';                                              
+       $arbol = $arbol.',{ id:'.$id2.', pId:'.$id1.', name:"'.$dato['nomMod2'].'", icon:"'.$this->basePath().'/img/items.png" }';                           
+  //  }    
+
+    //$arbol = $arbol.',{ id:'.$idM2.', pId:'.$idM1.', name:"'.$dato['nomMod2'].'", icon:"'.$this->basePath().'/img/casa.png" }';                           
+}
+//echo $arbol;
+?>
+
+<script type="text/javascript">
+var setting = {
+    data: {
+      simpleData: {
+      enable: true
+      }
+    },
+    callback: {
+	beforeClick: beforeClick,
+        }                        
+    };
+var zNodes =[
+   <?php echo $arbol ?>
+];
+
+
+	$(document).ready(function(){
+		var t = $("#treeDemo");
+		t = $.fn.zTree.init(t, setting, zNodes);
+		demoIframe = $("#testIframe");
+	
+	});
+
+	function loadReady() {
+		var bodyH = demoIframe.contents().find("body").get(0).scrollHeight,
+		htmlH = demoIframe.contents().find("html").get(0).scrollHeight,
+		maxH = Math.max(bodyH, htmlH), minH = Math.min(bodyH, htmlH),
+		h = demoIframe.height() >= maxH ? minH:maxH ;
+		if (h < 530) h = 530;
+		demoIframe.height(h);
+	}
+
+<?php 
+$this->idModal = "agregarCom";
+$this->botModal = "Administración de componentes"; ?>
+var log, className = "dark";
+function beforeClick(treeId, treeNode, clickFlag) {		
+    ///// Cargando componentes y elementos del sistema seleccionado ///////   
+
+    // Nodo hijo
+    var id = treeNode.id;
+//    alert(id);
+    var mensaje = ""+treeNode.id+"";
+    var pos =  mensaje.indexOf(".");              
+//alert(pos)    
+    var idZon = mensaje.substr( 0,pos-1);    
+//alert(idZon)
+
+    var id = mensaje.substr( mensaje.indexOf(".")+1,10);              
+    var lon = id.length; 
+    var idF = id.substr(0,lon-1); // Para quitar el 9 puesto por los problemas con el alert(idF)    
+    //alert(idF)
+//   if ( nivel == 2 ) 
+//   {
+    demoIframe.attr("src","<?php echo $this->basePath() ?><?php echo $this->lin?>o/"+idZon+"."+idF+".<?php echo $this->id ?>");
+//   }  
+    //Se pasa el id del id de supervisores 
+        
+    return (treeNode.click != false);
+}                
+</script>
+<!-- Inicio listado por centros de costos-->
+<div class="row">
+
+<TABLE border=0 height=600px align=left>
+ <TR>
+  <TD width=360px align=left valign=top style="BORDER-RIGHT: #999999 1px dashed">
+   <!-- Render lineas, grupos y sistemas -->
+   <div style="float:left;" class="zTreeDemoBackground left">
+     <ul id="treeDemo" class="ztree"></ul>
+   </div>                        
+
+  </TD>
+  <TD width=900px align=left valign=top><IFRAME ID="testIframe" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100%  height=600px ></IFRAME></TD> 
+ </TR>
+</TABLE>
+</div>
+
+<?php echo $this->render('layout/iregresar') ?>    
+

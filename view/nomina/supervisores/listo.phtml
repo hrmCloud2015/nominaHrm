@@ -1,0 +1,82 @@
+<?php
+
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'o/'.$this->id.'.'.$this->idRol,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+
+    $name = $form->get('id2'); // Id 
+    echo $this->formInput($name);    
+
+    $name = $form->get('id3'); // Id 
+    echo $this->formInput($name);        
+?>
+<h3 class="header smaller lighter blue">Opciones de menu</h3>
+
+<?php 
+// Validaciones especiales 
+$swGrupo = 0;
+
+$this->ttablas = 'Opcion, Acciones ';
+if ($swGrupo==1) // Grupo pra nomina
+    $this->ttablas = $this->ttablas.',Grupo';
+
+// Datos del rol 
+?>
+<?php
+$arreglo = array("1"=>"Edición de planillas",
+                 "2"=>"Consulta de planillas",
+                 "3"=>"Aprobación de planillas");
+?>
+<table class="table table-striped table-bordered table-hover">
+    <?php
+
+     foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["nombre"] ?></td>
+            <td class="col-sm-8">
+              <?php
+              // Acciones guardadas para el modulo
+              $valores = '';              
+              foreach ($this->datAcc as $datAccion ) 
+              {
+                 if ($datAccion['idPues'] == $dato["id"] )
+                     $valores[] = $datAccion['valor'];
+              } 
+              //print_r($valores);
+              $select = $form->get('tipoM')
+                ->setAttribute("name","accion".$dato['id'])
+                ->setAttribute("id","accion".$dato['id'])  
+                ->setAttribute("value", $valores)                                     
+                ->setValueOptions($arreglo);
+
+             echo $this->formSelect($select);
+             echo $this->formElementErrors($select);  
+          ?>
+            </td>                                                
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+        
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php 
+$this->ncol='null,';
+if ($swGrupo==1) 
+   $this->ncol = $this->ncol.'null,';
+
+echo $this->render('layout/tabla_tb') ?>        

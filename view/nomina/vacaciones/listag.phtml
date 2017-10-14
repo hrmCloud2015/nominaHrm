@@ -1,0 +1,483 @@
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+
+
+<?php echo $this->render('layout/tabla_c') ?>
+<?php 
+$diasP = 0; // Dias pendientes
+$dias  = 0; // Dias disfrute 
+$diasD  = 0; // Total dias en dinero
+$fecha = '';
+$d     = 1; // Id para id3 ccontrol de periodos pagados
+$diasVacLey = 15;// Segun ley son 15 dias de vacaciones
+$chSabado  = 0;
+$chDomingo = 0;
+$fechaIp = '';
+foreach ($this->datos as $dato)
+{ 
+    if ($dato["fechaIp"]!='')
+       $fechaIp = $dato["fechaIp"];
+    ?>
+<tr>
+  <td><?php echo $dato["id"] ?></td>
+  <td class="col-sm-12">
+  <i class="fa fa-calendar green bigger-90"></i>
+    <?php echo $dato["fechaI"].' - '.$dato["fechaF"] ?></td>
+  <td><?php echo $dato["idCon"] ?></td>  
+  <td><?php echo $dato['diasP'] ;?></td>
+  <td class="col-sm-4"><?php 
+    $name = $form->get('diasVacP')->setAttribute("value",$diasVacLey-$dato['diasP'])
+                                  ->setAttribute("id",'pe'.$dato['id']) 
+                                  ->setAttribute("readonly",true);            
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name); 
+    // Id con numero oculto para control del periodo que esten pagando o disfrutando
+    $name = $form->get('id3')->setAttribute("id","num_".$dato['id'])
+                             ->setAttribute("value", $d );
+    echo $this->formInput($name);                             
+    $name = $form->get('id4')->setAttribute("id","idNum_".$d)
+                             ->setAttribute("value", $dato['id'] );                             
+    echo $this->formInput($name);    
+    ?>
+  </td>
+  <td> 
+    <div id='valor<?php echo $dato["id"] ?>'>
+    <?php  // Vacaciones disfrutadas          
+      $name = $form->get('diasVac')->setAttribute("value",$dato['diasVac'])
+                                   ->setAttribute("class","clDisfrute")
+                                   ->setAttribute("type","number")
+                                   ->setAttribute("step","any")
+                                   ->setAttribute("id","dDis_".$dato['id']);
+      $fecha = $dato['fechaI'];
+      $dias  = $dias + $dato['diasVac'] ;
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);            
+    ?>                
+    </div>         
+  </td>
+  <td> 
+    <div id='valorD<?php echo $dato["id"] ?>'>
+    <?php  // Vacaciones en dinero          
+      $name = $form->get('diasVac')->setAttribute("value",$dato['diasDin'])
+                                   ->setAttribute("id","dPag_".$dato['id'])
+                                   ->setAttribute("type","number")
+                                   ->setAttribute("step","any")
+                                   ->setAttribute("class", "clPagado");
+      $fecha = $dato['fechaI'];
+      $diasD = $diasD + $dato['diasDin'] ;
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);?>                
+    </div>         
+  </td>
+  <td>
+    <div id='chulo<?php echo $dato["id"] ?>'>
+    <?php
+    // Reportar vacaciones tomadas
+      $select = $form->get('check1')->setAttribute("name", "ch".$dato["id"])
+                                    ->setAttribute("id", "ch".$dato["id"]) 
+                                    ->setAttribute("class", "reportar") ;
+    echo $this->formCheckbox($select); ?>
+    </div>             
+    <div id='oculto<?php echo $dato["id"] ?>' style="display:none;">
+    <?php echo $this->formElement( $form->get('confirmar')->setAttribute("name", "c".$dato["id"])
+                                                          ->setAttribute("id", "c".$dato["id"]) 
+                                                          ->setAttribute("class", "btn-purple") );?>
+    </div>
+  </td>            
+</tr>
+<?php 
+  $diasP = $diasP + $diasVacLey;
+  $d++; 
+  $chSabado  = $dato["sabado"];
+  $chDomingo = $dato["domingo"];
+}// FINAL RECORRIDO ?>
+<tr>
+ <td><strong>TOTAL:</strong></td>
+ <td></td>
+ <td></td>
+ <td></td> 
+ <td>
+  <?php            
+    $name = $form->get('diasVacP')->setAttribute("value",$diasP)
+                                  ->setAttribute("id","totalP")
+                                  ->setAttribute("class","total")
+                                  ->setAttribute("readonly",true);
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name); ?>                       
+  </td>    
+  <td>
+    <?php            
+       $name = $form->get('diasVac')->setAttribute("value",$dias)
+                                    ->setAttribute("id","totalDisfrute")
+                                    ->setAttribute("class","total")
+                                    ->setAttribute("readonly",true);
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);            
+    ?>           
+  </td>
+  <td>
+    <?php            
+       $name = $form->get('diasVac')->setAttribute("value",$diasD)
+                                    ->setAttribute("id","totalDinero")
+                                    ->setAttribute("class","total")
+                                    ->setAttribute("readonly",true);
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);            
+    ?>           
+  </td>   
+ <td></td>   
+</tr>                  
+<?php echo $this->render('layout/tabla_p') ?>   
+<hr />
+<!-- FECHA DE SALIDA A VACACIONES -->
+<div class="row">    
+  <div class="col-sm-2">Fecha de salida:<br />
+   <?php
+     $name = $form->get('fecDoc')->setAttribute("id","fecDoc");
+     echo $this->formInput($name);
+     echo $this->formElementErrors($name);
+   ?>
+   </div>
+
+    <div class="col-sm-2">Sabado día habil:<br />
+    <?php
+    //echo 'dat '.$this->datVac['sabado']; 
+    //  qqqqqqqhprint_r(datVac)
+    // Sabado como dia habil o no
+      $select = $form->get('check1')->setAttribute("name", "chSabado")
+                                    ->setAttribute("id", "chSabado")
+                                    ->setAttribute("value", $chSabado );
+    echo $this->formCheckbox($select); ?>
+    </div>                
+    <div class="col-sm-2">Domingo día habil:<br />
+    <?php
+    // Domingo como dia habil o no
+      $select = $form->get('check1')->setAttribute("name", "chDomingo")
+                                    ->setAttribute("id", "chDomingo")
+                                    ->setAttribute("value", $chDomingo );
+    echo $this->formCheckbox($select); ?>
+    </div>    
+  <div class="col-sm-3">Fecha de inicio promedios:<br />
+   <?php
+     $name = $form->get('fechaIni')->setAttribute("id","fechaIni")
+                                   ->setAttribute("value", $fechaIp );
+     echo $this->formInput($name);
+     echo $this->formElementErrors($name);
+   ?>
+   </div>                    
+   <div class="col-sm-2"><br />
+     <?php echo $this->formElement($form->get('calcular')->setAttribute("id","promedio")) ?>
+  </div>
+</div>   
+<!-- FIN FECHA DE SALIDA A VACACIONES -->
+<hr />
+
+<div id='resultadoc'> </div>
+
+ <script>  
+ $(function (){         
+    var id   = $("#id").val();  
+    if (id>0)
+    {        
+       var idEmp   = $("#idEmp").val();  
+       var tipo   = $("#tipo").val();  
+       var fecsal  = $("#fecDoc").val();  
+       var totalDisfrute = $("#totalDisfrute").val();  // Total dias para disfrute
+       var totalDinero  = $("#totalDinero").val();  // Total dias para pago de vacaciones
+       var chSabado = 0;
+       if( $("#chSabado").is(':checked'))
+       {
+          chSabado = 1;
+       }
+       var chDomingo = 0;
+       if( $("#chDomingo").is(':checked'))
+       {
+          chDomingo = 1;
+       }
+
+       var parametros = {
+            "idEmp"   : idEmp,
+            "fecsal"  : fecsal,
+            "diasDisfrute" : totalDisfrute,
+            "diasDinero" : totalDinero,
+            "chSabado" : chSabado,
+            "chDomingo" : chDomingo,
+       };   
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>ac',
+             beforeSend: function () {
+                 $("#resultadoc").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoc").html(response);  
+                 //   alert("Cuotas registradas de forma correcta")
+              }
+         }); // Fin ajax                                                                                                          
+            
+    }   
+   
+   // VALIDACION DIAS PARA DISFRUTE
+   $('.clDisfrute').focusout(function()
+   {  
+      var ref   = $(this).attr('id');        
+      var id    = ref.substring(5, 10);                   
+      var diasDisfrute = parseFloat( $("#dDis_"+id).val() ); // dias disfrute
+      var diasDinero   = parseFloat( $("#dPag_"+id).val() ); // dias dinero
+      var periodo = parseFloat( $("#num_"+id).val() ); // periodo
+      // Validar que se pague el periodo anterior 
+      if (periodo>1)
+      {
+        if  ( (diasDisfrute>0) || (diasDinero>0) ) 
+        {
+           periodo = periodo - 1 
+           var idAnt = parseFloat( $("#idNum_"+periodo).val() ); // periodo anterior 
+           var diasPendientes = parseFloat( $("#pe"+idAnt).val() ); // dias pendientes 
+           
+           var diasDisfruteAnt = parseFloat( $("#dDis_"+idAnt).val() ); // dias disfrute anterior
+           var diasDineroAnt  = parseFloat( $("#dPag_"+idAnt).val() ); // dias dinero anterior       
+           // Si el periodo anterior esta pagado totalmente
+           if ( (diasDisfruteAnt+diasDineroAnt) < diasPendientes  ) 
+           {
+              alert('Tiene pendiente un periodo anterior por pago, por lo tanto no puede liquidar este periodo');
+              $("#dDis_"+id).val(0);
+              $("#dPag_"+id).val(0);
+              return false;
+           }
+        }
+      }// Fin validacion pague periodo anterior
+      // Verificar que no borre un periodo anterior a otro ya con dias liquidados
+      var periodoAct = parseFloat( $("#num_"+id).val() ); // periodo
+      $('.clDisfrute').each(function(indice, elemento) 
+      {  
+        var ref  = $(this).attr('id');        
+        var id    = ref.substring(5, 10);                   
+        var periodo  = parseFloat( $("#num_"+id).val() ); // periodo siguiente
+        if ( periodo > periodoAct )
+        {
+           var idNumS  = parseFloat( $("#idNum_"+periodo).val() ); // periodo siguiente
+           $("#dDis_"+idNumS).val(0);
+           $("#dPag_"+idNumS).val(0);                  
+        }              
+      });      
+      // Si es menor a los dias de vacaiones no se puede pagar
+      if ( (diasDisfrute+diasDinero) > <?php echo $diasVacLey; ?>  ) 
+      {
+        alert('Esta sobrepasando los días de vacaciones por pagar');
+        $("#dDis_"+id).val(0);
+        $("#dPag_"+id).val(0);
+        return false;
+      }           
+      // Totales    
+      var totDiasDisfrute = 0; 
+      var totDiasDinero   = 0; 
+      $('.clDisfrute').each(function(indice, elemento) 
+      {
+          var ref   = $(this).attr('id');        
+          var id    = ref.substring(5, 10);                           
+          var DiasDisfrute = parseFloat( $("#dDis_"+id).val() );  
+          var DiasDinero   = parseFloat( $("#dPag_"+id).val() );  
+          totDiasDisfrute += DiasDisfrute ;
+          totDiasDinero += DiasDinero ;
+      });           
+      $("#totalDisfrute").val(totDiasDisfrute); // Total dias disfrutados
+      $("#totalDinero").val(totDiasDinero); // Total dias pagados        
+   });
+
+   // VALIDACION DIAS PARA PAGADOS
+   $('.clPagado').focusout(function()
+   {  
+      var ref   = $(this).attr('id');        
+      var id    = ref.substring(5, 10);                   
+      var diasPendientes = parseFloat( $("#pe"+idAnt).val() ); // dias pendientes       
+      var diasDisfrute = parseFloat( $("#dDis_"+id).val() ); // dias disfrute
+      var diasDinero   = parseFloat( $("#dPag_"+id).val() ); // dias dinero
+      var periodo = parseFloat( $("#num_"+id).val() ); // periodo
+      // Validar que se pague el periodo anterior 
+      if (periodo>1)
+      {
+        if  ( (diasDisfrute>0) || (diasDinero>0) ) 
+        {
+           periodo = periodo - 1 
+           var idAnt = parseFloat( $("#idNum_"+periodo).val() ); // periodo anterior 
+           var diasDisfruteAnt = parseFloat( $("#dDis_"+idAnt).val() ); // dias disfrute anterior
+           var diasDineroAnt  = parseFloat( $("#dPag_"+idAnt).val() ); // dias dinero anterior       
+           //alert(diasDisfruteAnt);
+           //alert(diasDineroAnt);
+           // Si el periodo anterior esta pagado totalmente
+           if ( (diasDisfruteAnt+diasDineroAnt) < diasPendientes  ) 
+           {
+              alert('Tiene pendiente un periodo anterior por pago, por lo tanto no puede liquidar este periodo');
+              $("#dDis_"+id).val(0);
+              $("#dPag_"+id).val(0);
+              return false;
+           }
+        }
+      }// Fin validacion pague periodo anterior
+      // Verificar que no borre un periodo anterior a otro ya con dias liquidados
+      var periodoAct = parseFloat( $("#num_"+id).val() ); // periodo
+      $('.clPagado').each(function(indice, elemento) 
+      {  
+        var ref  = $(this).attr('id');        
+        var id    = ref.substring(5, 10);                   
+        var periodo  = parseFloat( $("#num_"+id).val() ); // periodo siguiente
+        if ( periodo > periodoAct )
+        {
+           var idNumS  = parseFloat( $("#idNum_"+periodo).val() ); // periodo siguiente
+           $("#dDis_"+idNumS).val(0);
+           $("#dPag_"+idNumS).val(0);                  
+        }              
+      });      
+      // Si es menor a los dias de vacaiones no se puede pagar
+      if ( (diasDisfrute+diasDinero) > <?php echo $diasVacLey; ?>  ) 
+      {
+        alert('Esta sobrepasando los días de vacaciones por pagar');
+        $("#dDis_"+id).val(0);
+        $("#dPag_"+id).val(0);
+        return false;
+      }           
+      // Totales    
+      var totDiasDisfrute = 0; 
+      var totDiasDinero   = 0; 
+      $('.clPagado').each(function(indice, elemento) 
+      {
+          var ref   = $(this).attr('id');        
+          var id    = ref.substring(5, 10);                           
+          var DiasDisfrute = parseFloat( $("#dDis_"+id).val() );  
+          var DiasDinero   = parseFloat( $("#dPag_"+id).val() );  
+          totDiasDisfrute += DiasDisfrute ;
+          totDiasDinero += DiasDinero ;
+      });           
+      $("#totalDisfrute").val(totDiasDisfrute); // Total dias disfrutados
+      $("#totalDinero").val(totDiasDinero); // Total dias pagados        
+   }); // FIN VALIDACION DIAS DINERO
+
+    $('#promedio').click(function(){         
+       if ( ( $("#totalDisfrute").val()<=0 ) && ( $("#totalDinero").val()<=0 ) )
+       {
+         alert('Debe digitar el numero de dias para disfrute de vacaciones o compensación en dinero')
+         return false;
+       }
+       if ( ($("#fecDoc").val()=='' ) && ( $("#totalDisfrute").val()>0 ) ) 
+       {
+         alert('Debe digitar la fecha de salida del empleado')
+         return false;
+       }       
+       var idEmp   = $("#idEmp").val();  
+       var fecsal  = $("#fecDoc").val();  
+       var totalDisfrute = $("#totalDisfrute").val();  // Total dias para disfrute
+       var totalDinero  = $("#totalDinero").val();  // Total dias para pago de vacaciones
+       var fechaIni  = $("#fechaIni").val();  // Fecha de consultas promedios
+       var chSabado = 0;
+       if( $("#chSabado").is(':checked'))
+       {
+          chSabado = 1;
+       }
+       var chDomingo = 0;
+       if( $("#chDomingo").is(':checked'))
+       {
+          chDomingo = 1;
+       }
+       var chDia31 = 0;
+       if( $("#dia31").is(':checked'))
+       {
+          chDia31 = 1;
+       }           
+       var parametros = {
+            "idEmp"   : idEmp,
+            "fecsal"  : fecsal,
+            "diasDisfrute" : totalDisfrute,
+            "diasDinero" : totalDinero,
+            "chSabado" : chSabado,            
+            "chDomingo" : chDomingo,                        
+            "fechaIni" : fechaIni,                                    
+            "chDia31" : chDia31,                                    
+       };  
+      
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>ac',
+             beforeSend: function () {
+                 $("#resultadoc").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoc").html(response);  
+                 //   alert("Cuotas registradas de forma correcta")
+              }
+         }); // Fin ajax                                                                                       
+       
+   });
+   // MARCAR PERIODO PARA REPORTAR VACACIONES YA PAGADAS
+   $('.reportar').click(function(){   
+        var ref = $(this).attr('id');   
+        //var n  = id.split("h"); // Extraer numeros del id 
+        var idReal    = ref.substring(2, 10);                           
+        //var idReal = n[1] ;
+        if ( $(this).attr('checked')   )
+        {         
+          $("#oculto"+idReal).show();
+        }else{
+          $("#oculto"+idReal).hide();          
+        }
+    });         
+   // COMFIRMAR PERIODO PARA REPORTAR VACACIONES YA PAGADAS
+   $('.btn-purple').click(function(){   
+        var id     = $(this).attr('id') ;   
+        var n = id.split("c"); // Extraer numeros del id 
+        var idReal = n[1] ;
+
+        var parametros = {
+            "id"   : idReal,
+            "dias" : <?php echo $diasVacLey; ?>,
+        }; 
+   
+        $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>per',
+           success:  function (response) {
+              //$("#resultado").html(response);                    
+              alert("Registro actualizado de forma correcta ! "); 
+              $("#oculto"+idReal).hide();
+              $("#chulo"+idReal).hide();
+              $("#valor"+idReal).hide();
+              $('#buscarPeriodos').click(); 
+           }
+        }); // Fin ajax        
+
+    });            
+ });
+   // FECHA DE CONSULTA PARA VACACIONES PROMEDIO Y PAGADAS 
+   $('#fecDoc').focusout(function(){   
+      var fechaIni = $('#fecDoc').val();
+      var ano = fechaIni.substring(0,4) ;
+      var mes = fechaIni.substring(5,7) ;
+      var dia = fechaIni.substring(8,10) ;            
+      ano = ano-1;
+      if (mes==12)
+          ano = ano-1
+      
+      if (dia>15)
+         dia = '15'
+      else
+         dia = '01';    
+      fechaIni = ano + '-' + mes + '-' + dia;
+      $('#fechaIni').val( fechaIni );   
+   });  
+</script> 
+     
+
+
+

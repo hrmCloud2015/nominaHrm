@@ -1,0 +1,26 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php echo $this->render('layout/inuevo') ?></a>
+<div id="dialog"></div>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["fecDoc"] ?></td>
+            <td><?php echo $dato["ano"]; ?></td>            
+            <td><?php echo $dato["formula"]; ?></td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieditar') ?> </a>
+            </td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,null,null,';
+echo $this->render('layout/tabla_tb') ?> 

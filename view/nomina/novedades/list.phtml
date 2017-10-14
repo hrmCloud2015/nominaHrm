@@ -1,0 +1,51 @@
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+ <?php // Validacion proyecto
+ if ($this->datProy!='') 
+ {?>
+    <?php foreach ($this->datProy as $dato){ ?>    
+    <tr>
+        <td><?php echo $this->render('layout/iproyecto') ?><?php echo '<strong>PROYECTO : '.$dato['nombre'].'</strong>'; ?></td>
+        <td>PROYECTO
+          <br /><i class="ace-icon fa fa-flag bigger-120 orange"></i>      
+        </td>
+        <td>          
+          <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>p/<?php echo $dato["id"]?>"> 
+              <?php echo $this->render('layout/iitems') ?> </a>
+        </td>            
+    </tr>     
+    <?php } ?> 
+ <?php } // Fin validacion registro de proeyctos ?>
+
+    <?php foreach ($this->datos as $dato){ ?>    
+        <tr>
+            <td class="col-sm-4"><?php echo $dato["nomTnom"] ?>
+                <br /><i class="ace-icon fa fa-cogs bigger-120 green"></i>      
+                <?php echo '<strong>'.$dato["nomGrupo"].'</strong>' ?>
+            </td>            
+            <td class="col-sm-4"><?php echo $dato["nomTmtz"] ?>                                           
+            
+              <?php if ( $dato["tipo"] == 0){ //Matriz?>  
+                <br /><i class="ace-icon fa fa-flag bigger-120 green"></i>      
+              <?php } ?>                  
+              <?php if ( $dato["tipo"] == 1){ // Devengados ?>                  
+                <br /><i class="ace-icon fa fa-flag bigger-120 blue"></i>
+              <?php } ?>                                                      
+              <?php if ( $dato["tipo"] == 2){ // Deducidos ?>                  
+                <br /><i class="ace-icon fa fa-flag bigger-120 red"></i>
+              <?php } ?>                                                                    
+            </td>
+            <td class="col-sm-1">
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>"> 
+                    <?php echo $this->render('layout/iitems') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol='null,';
+echo $this->render('layout/tabla_tb') ?>   

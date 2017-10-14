@@ -1,0 +1,32 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php echo $this->render('layout/inuevo') ?></a>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>            
+            <td><?php echo $dato["nombre"] ?></td>
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieditar') ?> </a>
+            </td>
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php 
+$this->ncol='null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+        
+<?php
+// Variables para envio de datos excel maestro
+$this->spdf      = 1;// Activa la salida por PDf
+$this->modelo    = 'new \Nomina\Model\Entity\Tipinca($con)';// Modelo de consulta
+$this->funcion   = '$m->getRegistro()';
+$this->columnas  = "ID, NOMBRE";// Columnas
+$this->datos     = "id,nombre";// Datos de impresion
+$this->filtros   = 1;
+echo $this->render('layout/tabla_p') ?>

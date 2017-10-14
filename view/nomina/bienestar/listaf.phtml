@@ -1,0 +1,298 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+$id = $this->id;
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'ef/'.$id.$oriTab,
+    'method' => 'post',
+    'id'     => 'formActualizarF'
+
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+?>
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+   <div class="col-sm-4">  * Nombres:<br />              
+    <?php
+      $name = $form->get('nombre3')
+                                 ->setAttribute("id",'nom');
+
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+    ?>
+  </div>
+    <div class="col-sm-4"> * Apellidos:<br />              
+    <?php
+      $name = $form->get('apellido3')->setAttribute("id",'apelli');
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+     ?>
+ </div>
+<div class="col-sm-2">Sexo:<br />              
+     <?php
+       $select = $form->get('sexo2')->setAttribute("class","sexo");
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+     ?>
+</div>
+
+</div> 
+<div class="row">
+<br />
+ <div class="col-sm-1"></div>  
+   <div class="col-sm-3">* Fecha de nacimiento:<br />                 
+      <?php
+        $name = $form->get('fechaIni')->setAttribute("id","fechaI");
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);
+       ?>        
+    </div>
+</div>
+<hr/>   
+ <hr />
+<div class="row"> 
+  <div class="col-sm-1"></div>                  
+    <div class="col-sm-2">Parentesco:<br />              
+    <?php
+      $select = $form->get('parentesco')->setAttribute("class",'pare');
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+    ?>          
+ </div>
+<div class="conMadre"><!--En-->
+   <div   class="col-sm-4 ">¿Es madre cabeza de hogar?:<br />              
+    <?php
+      $select = $form->get('condicion')->setAttribute("id",'condicion');
+      echo $formLabel->openTag().'';
+      echo $formLabel->closeTag();
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+    ?>  
+   </div>        
+</div>
+  <div   class="col-sm-4 ">¿Estudios actuales?:<br />              
+    <?php
+      $select = $form->get('conAcdem')->setAttribute("class",'idConAcdem');
+      echo $formLabel->openTag().'';
+      echo $formLabel->closeTag();
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+    ?>  
+   </div>   
+</div> 
+<div class="filaAcademica">
+<hr />    
+<hr />
+  <div  class="row">   
+<div class="col-sm-1"></div> 
+ <div class="col-sm-3">Nivel académico<br />              
+  <?php
+     $select = $form->get('idNest2')->setAttribute("class","est");
+     echo $formLabel->openTag().'';
+     echo $formLabel->closeTag();
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+  ?>  
+  </div>
+  <div class="col-sm-3">Clasificación<br />              
+  <?php
+     $select = $form->get('clasAcdem')->setAttribute("class","idClasAcdem");
+     echo $formLabel->openTag().'';
+     echo $formLabel->closeTag();
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+  ?>  
+  </div>
+</div> 
+<br />
+
+<div id="filaClasAcdem" class="row">
+    <div class="col-sm-1"></div>
+     <div class="col-sm-6  ">Institución<br />              
+      <?php echo ($this->formRow($form->get('comenN'))); ?> 
+    </div>
+     <div class="conGrado col-sm-1">Grado<br /> 
+      <?php
+       $select = $form->get('grado')->setAttribute("class","graFam");
+       echo $formLabel->openTag().'';
+       echo $formLabel->closeTag();
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+      ?>  
+</div>
+<div class="col-sm-2">Tipo de grado:<br />              
+    <?php
+      $select = $form->get('tipGrado')->setAttribute("class","tipGra");;
+      echo $formLabel->openTag().'';
+      echo $formLabel->closeTag();
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+    ?>  
+</div>
+      <div class="col-sm-2">Tipo calendario<br /> 
+        <?php
+         $select = $form->get('tipCal')->setAttribute("class","calFam");
+         echo $formLabel->openTag().'';
+         echo $formLabel->closeTag();
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);
+        ?>  
+      </div>
+  
+ </div>
+</div>
+<hr />
+ <hr />
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+    <div class="col-sm-6">Hobbis<br />              
+      <?php echo ($this->formRow($form->get('comenN2'))); ?> 
+    </div> 
+  <div class="col-sm-3">Vocacion<br />              
+   <?php
+     $select = $form->get('idVocF')->setAttribute("class","vocFam");
+     echo $formLabel->openTag().'';
+     echo $formLabel->closeTag();
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+   ?>  
+ </div> 
+</div>   
+<hr />
+ <hr />
+<div class="row">  
+   <div class="col-sm-1"></div>                  
+     <div class="col-sm-2">Usa lentes ?:<br />              
+       <?php
+       $select = $form->get('lentes2');
+       echo $this->formCheckbox($select);
+       ?><span class="lbl"></span>
+     </div>  
+  <div  class="col-sm-2">Cuenta con alguna limitación fisica ?:<br />              
+       <?php
+        $select = $form->get('condFis')->setAttribute("class","idCndiFis");
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);
+         ?> 
+      </div>
+  <div class="limFsic">
+    <div  class="col-sm-2"> Limitacion fisica:<br />              
+     <?php
+         $select = $form->get('tipLimf')->setAttribute("class","tipLimf");
+         echo $formLabel->openTag().'';
+         echo $formLabel->closeTag();
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);
+       ?> 
+      </div>
+   </div>
+   <div class="col-sm-1"></div>
+       <div class="col-sm-4">Comentario ?:<br />       
+        <?php 
+        echo ($this->formRow($form->get('comenN3')->setAttribute("id",'comenN3') ));
+         ?>   
+       </div> 
+       <?php echo $this->form()->closeTag() ?>    
+    </div>
+  </div>
+</div>
+  </div>
+
+ <script>
+
+/*Campos estrictamente obligatotios. restriccion de valores nulos  */
+$("#btnEdicFam").click(function()
+  {
+    $("#formActualizarF").submit(); /*Envio de actualizacion de Familiares*/
+
+ });
+
+/*Si la condicon de la madre es negativa 
+se esconde la pregunta: si es cabeza de hogar */
+ $('.pare').on('change', function()
+    {
+ 
+      if ($('.pare').val() == 1) 
+      {
+        $(".conMadre").show(); 
+      } 
+       else
+      {
+        $(".conMadre").hide(); 
+      }
+  
+ });
+//Carga principal de condicion
+ if ($('.pare').val() != 1) 
+    {
+       $(".conMadre").hide()
+    } 
+//fin
+
+  
+
+  $('.idCndiFis').on('change', function()
+   {
+     if ($('.idCndiFis').val() ==1 ) 
+     {
+       $(".limFsic").show();
+     } 
+     else
+     {
+       $(".limFsic").hide();     
+     }
+  
+ });
+  //Carga principal de condicion fisica.
+     if ($('.idCndiFis').val() ==0 ) 
+     {
+       $(".limFsic").hide();
+     }
+
+   
+
+  $('.idConAcdem').on('change', function()
+   {
+      if ($('.idConAcdem').val() ==1 ) 
+      {
+        $(".filaAcademica").show();
+      } 
+      else
+      {
+        $(".filaAcademica").hide();      
+      }
+  
+ });
+  //Carga principal de condicion academica.
+  if ($('.idConAcdem').val() ==0 ) 
+  {
+    $(".filaAcademica").hide();
+  }  
+
+
+ $('.idClasAcdem').on('change', function()
+   {
+     if ($('.idClasAcdem').val() !=3) 
+     {
+      $(".conGrado").show();
+     } 
+     else
+     {
+      $(".conGrado").hide();      
+     }
+  
+ });
+//Carga principal de condicion grado.
+  if ($('.idClasAcdem').val() ==3) 
+     {
+      $(".conGrado").hide();
+     } 
+  
+     
+</script>

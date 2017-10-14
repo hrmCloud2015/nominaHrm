@@ -1,0 +1,98 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+<div class="col-sm-4">Nombre:<br />
+<?php
+    $name = $form->get('nombre');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>
+</div>    
+<hr />
+<div class="row">    
+<div class="col-sm-4">El fondo de seguridad social pagará a partir del día:<br />
+<?php
+    $name = $form->get('numero');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>        
+</div>
+<div class="col-sm-4">Numero de dias fijos para este tipo de incapacidad ( Maternidad, Paternidad ) :<br />
+<?php
+    $name = $form->get('valor');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>        
+</div>
+</div>    
+<hr />
+<div class="row">    
+<div class="col-sm-4">Conceptos de nomina asumidos empresa:<br />
+    <?php
+      $select = $form->get('idConcM');
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+   ?>   
+</div>
+</div>
+<hr />
+<div class="row">    
+<div class="col-sm-4">Conceptos de nomina asumidos por el fondo de seguridad social:<br />
+    <?php
+      $select = $form->get('idConcM2');
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+   ?>   
+</div>
+</div>
+<hr />
+<?php
+$this->th3 = 'De las prorrogas... ';
+ echo $this->render('layout/h3rojo') ;?> 
+
+<div class="row">    
+<div class="col-sm-4">En caso de proroga el fondo de seguridad social pagará a partir del día:<br />
+<?php
+    $name = $form->get('numero1');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>        
+</div>
+</div>    
+<hr />
+<div class="row">    
+<div class="col-sm-4">Conceptos asumidos por la empresa para descontar pagados de mas.:<br />
+    <?php
+      $select = $form->get('tipoM');
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+   ?>   
+</div>
+</div>
+<hr />
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    

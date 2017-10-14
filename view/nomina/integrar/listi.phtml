@@ -1,0 +1,44 @@
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php 
+$this->nuevo='Integrar una nueva nomina';
+echo $this->render('layout/inuevo') ?></a>
+
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["nomtnom"] ?></td>
+            <td><?php echo $dato["fechaI"].' - '.$dato["fechaF"]; ?></td>
+            <td><?php echo $dato["nomtcale"] ?></td>                        
+            <td><?php echo $dato["nomgrup"] ?></td>            
+            <td><?php echo $dato["numEmp"] ?></td>            
+            <td>
+
+                <?php // Parametros para impresion de documento 
+                $this->idR = 46; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros ?>                
+                
+            </td>
+            <td>
+
+                <?php // Parametros para impresion de documento 
+                $this->idR = 57; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros ?>                
+                
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol='null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+        
+        
+        

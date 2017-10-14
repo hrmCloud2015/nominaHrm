@@ -1,0 +1,122 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php echo $this->render('layout/treview') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+
+<?php 
+/////// SEDES /////////
+$arbol   = '';
+$idSed   = 0;
+foreach ($this->datArb as $dato){ 
+    $id = $dato['idSed'];
+    if ($idSed!=$id)
+    {
+      $idSed = $id;  
+      if ($arbol=='')
+          $arbol = '{ id:'.$id.', pId:0, name:"'.$dato['nomSed'].'", icon:"'.$this->basePath().'/img/casa.png" }';    
+      else 
+          $arbol = $arbol.',{ id:'.$id.', pId:0, name:"'.$dato['nomSed'].'", icon:"'.$this->basePath().'/img/casa.png" }';                           
+    }
+    $idC = str_pad($dato['idCcos'], 4, "0", STR_PAD_LEFT); 
+    $arbol = $arbol.',{ id:'.$dato['idCcos'].', pId:'.$id.', name:"'.$idC.' - '.$dato['nomCcos'].'" , icon:"'.$this->basePath().'/img/depar.png"}';                           
+}
+?>
+
+<script type="text/javascript">
+var setting = {
+    data: {
+      simpleData: {
+      enable: true
+      }
+    },
+    callback: {
+	beforeClick: beforeClick,
+        }                        
+    };
+var zNodes =[
+   <?php echo $arbol ?>
+];
+
+
+	$(document).ready(function(){
+		var t = $("#treeDemo");
+		t = $.fn.zTree.init(t, setting, zNodes);
+		demoIframe = $("#testIframe");
+	
+	});
+
+	function loadReady() {
+		var bodyH = demoIframe.contents().find("body").get(0).scrollHeight,
+		htmlH = demoIframe.contents().find("html").get(0).scrollHeight,
+		maxH = Math.max(bodyH, htmlH), minH = Math.min(bodyH, htmlH),
+		h = demoIframe.height() >= maxH ? minH:maxH ;
+		if (h < 530) h = 530;
+		demoIframe.height(h);
+	}
+
+<?php 
+$this->idModal = "agregarCom";
+$this->botModal = "Administración de componentes"; ?>
+var log, className = "dark";
+function beforeClick(treeId, treeNode, clickFlag) {		
+    ///// Cargando componentes y elementos del sistema seleccionado ///////   
+    // Nodo hijo
+    var id = treeNode.id;
+    var idN = $("#id").val();
+    var idG = idN + "." + id;
+//alert(idG)
+    demoIframe.attr("src","<?php echo $this->basePath() ?><?php echo $this->lin?>i/"+idG);
+    //return true;
+        
+    return (treeNode.click != false);
+}                
+</script>
+
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'in',
+    'method' => 'post',
+
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>  
+
+<div class="row">
+  <div class="col-sm-4">Buscar empleado:<br />              
+  <?php
+    $select = $form->get('idEmp')->setAttribute("name","cedula");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>   
+  </div>
+  <div class="col-sm-2"><br />              
+    <?php echo $this->formElement($form->get('buscar')) ?>
+  </div>
+</div>   
+
+<?php echo $this->form()->closeTag() ?>    
+<div class="row">
+<TABLE border=0 height=600px align=left>
+ <TR>
+  <TD width=360px align=left valign=top style="BORDER-RIGHT: #999999 1px dashed">
+   <!-- Render lineas, grupos y sistemas -->
+   <div style="float:left;" class="zTreeDemoBackground left">
+     <ul id="treeDemo" class="ztree"></ul>
+   </div>                        
+  </TD>
+  <TD width=770px align=left valign=top><IFRAME ID="testIframe" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100%  height=600px ></IFRAME></TD> 
+ </TR>
+</TABLE>
+</div>
+<?php echo $this->render('layout/iregresar') ?> 

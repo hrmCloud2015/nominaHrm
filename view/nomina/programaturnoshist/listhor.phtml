@@ -1,0 +1,19 @@
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+
+          <?php
+
+            $select = $form->get('tipoC')->setAttribute("id","dia");
+            echo $this->formSelect($select);
+            echo $this->formElementErrors($select);
+          ?>

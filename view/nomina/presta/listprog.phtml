@@ -1,0 +1,22 @@
+<?php 
+   $this->ttablas = 'PERIODO, FECHA INICIAL, FECHA FINAL ,CUOTA , DESCONTADO,  ELIMINAR  ';      
+   echo $this->render('layout/tabla_c');  ?>
+   <?php 
+   $deducido = 0;
+   $i = 1;
+   foreach ($this->datos as $dato){ // Abonos por nomina
+    ?>
+    <tr>
+      <td><?php echo $i; $i++;  ?></div></td>       
+      <td><?php echo $dato['fechaI'] ?></td>             
+      <td><?php echo $dato['fechaF'] ?></td>                   
+      <td><div align="right"><?php echo number_format($dato['valor']) ?></div></td>       
+      <td><div align="right"><?php ?></div></td> 
+      <td>
+        <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>prod/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+      </td>       
+    </tr>
+   <?php 
+      $deducido = $deducido + $dato['valor'];      
+    } ?>
+<?php echo $this->render('layout/tabla_p') ?>    

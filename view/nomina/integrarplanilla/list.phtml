@@ -1,0 +1,83 @@
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>            
+            <td><?php echo $dato["ano"].' - '.$dato["mes"]; ?></td>
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>i/<?php echo $dato["id"]?>">
+             <?php echo $this->render('layout/iitems') ?> </a>
+                <?php if ($dato["integrada"]>0){ ?>
+                   <?php echo $this->render('layout/iaprobado') ?>
+                <?php }else{ ?>
+                   <?php echo $this->render('layout/ipendiente') ?>                
+                <?php } ?>                    
+            </td>   
+<?php if ( $dato["integrada"]==0 ) // Archivo integrado (1) 
+{ ?>            
+             <td></td>
+             <td></td>
+             <td></td>                          
+<?php }else{ ?>            
+
+            <td>
+              <?php if ($dato["error"]==0) { ?>              
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>archivo/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> Plano a ERP</a>
+                            <?php }else { 
+                     echo 'PRE INTEGRACION INCOSISTENTE';
+                            }?>
+              <hr />
+            </td>
+            <td>
+                <?php // Integracion por concepto
+                $this->idR = 95; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros ?>                           
+            </td>            
+            <td>
+            <!-- ENVIO A EXCEL 1 -->
+            <?php    
+              $form = $this->form;
+              $form->prepare();
+
+              $form->setAttributes(array(
+                    'action' => $this->url.$this->lin.'excel',
+                    'method' => 'post',
+                    'target' => '_blank',
+                    'id'     => 'excel',
+                    'name'   => 'excel',
+                ));
+             // Get the form label plugin
+             $formLabel = $this->plugin('formLabel');
+            // Abriendo etiqueta del formulario
+            echo $this->form()->openTag($form);
+
+$name = $form->get('id')->setAttribute("value",$dato["id"]);
+echo $this->formInput($name);    
+?>    
+ <div class="col-sm-2"><br />
+     
+   <button class="btn btn-white btn-info btn-bold">
+     <i class="ace-icon fa fa-calendar bigger-120 blue"></i>
+       Generar Excel
+   </button>
+     
+ </div>
+</div>    
+<?php echo $this->form()->closeTag() ?>     
+            </td>
+<?php } // Fin validacion archivo integrado  (1 ) ?>                        
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+        
+        
+        

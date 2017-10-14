@@ -1,0 +1,97 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?> 
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div> 
+
+<?php 
+$this->th3 = 'Distribución de calendario de '.$datos['nombre'];
+echo $this->render('layout/h3rojo') ?>
+
+<div id="resultado"></div>
+ 
+<?php echo $this->render('layout/tabla_c') ?>
+ 
+<?php 
+foreach ($this->datosC as $dato)
+{ 
+  $pI = $dato['mesI'];
+  $pF = $dato['mesF'];
+  $dI = $dato['diaI'];
+  $dF = $dato['diaF'];
+  $or = $dato['orden'];
+  $id = $dato['id'];
+  $name = $form->get('id2')->setAttribute("id", "o_".$id)->setAttribute("value",$or);
+  echo $this->formInput($name);    
+?>  
+   <tr>
+     <td><?php echo $this->formRow($form->get('meses')->setAttribute("id", "mI_".$id)->setAttribute("value", $pI));?></td>
+     <td><?php echo $this->formRow($form->get('dias') ->setAttribute("id", "dI_".$id)->setAttribute("value", $dI));?></td>
+     <td><?php echo $this->formRow($form->get('meses')->setAttribute("id", "mF_".$id)->setAttribute("value", $pF));?></td>
+     <td><?php echo $this->formRow($form->get('dias') ->setAttribute("id", "dF_".$id)->setAttribute("value", $dF));?></td>
+  </tr>
+<?php
+//echo $this->periodoI[$i].' - '.$this->periodoF[$i].'<br/>';
+}// Fin periodo
+?>
+<?php echo $this->render('layout/tabla_p') ?> 
+   
+<script>  
+ $(function (){
+     var idCal = $("#id").val();
+     $('#submitbutton').click(function(){ 
+          
+         $('.span2').each(function(indice, elemento) {           
+           var idp   = $(this).attr('id');
+           var filtro   = idp.substring(0,2)// Sacar el id real sin caracteres
+           var idp   = idp.substring(3,10)// Sacar el id real sin caracteres
+           if (filtro=='dI')
+           { // Esto se hace para que no ingrese dos evces en el ciclo 
+              var mi    = $("#mI_"+idp).val() ;
+              var mf    = $("#mF_"+idp).val() ;
+              var di    = $("#dI_"+idp).val() ;
+              var df    = $("#dF_"+idp).val() ; 
+              var o     = $("#o_"+idp).val() ; 
+              var id    = idp ; 
+
+              var parametros = {
+                  "id"    : id,
+                  "idcal" : idCal,
+                  "mi"    : mi,
+                  "mf"    : mf,
+                  "di"    : di,
+                  "df"    : df,                  
+                  "o"     : o,                  
+               };   
+               $.ajax({
+                 data:  parametros,     
+                 type:  'post',
+                 url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>cg',
+                 beforeSend: function () {
+                   $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>');
+                 },
+                  success:  function (response) {
+                   $("#resultado").html(response);  
+                   //   alert("Cuotas registradas de forma correcta")
+                 }
+              }); // Fin ajax                                                                
+           } // Fin validacion de filtro
+         });          // Recorrer los elementos del periodo
+     });
+
+ })
+ </script>
+
+ <?php 
+//$this->ncol='null,null,null,null,';
+//echo $this->render('layout/tabla_tb') ?> 
+ 
+<?php echo $this->render('layout/iregresar') ?>   

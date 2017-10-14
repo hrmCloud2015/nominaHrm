@@ -1,0 +1,195 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td></td>    
+            <td><?php echo $dato['id']; ?></td>    
+            <td class="col-sm-3"><?php 
+            $pre = '';
+            if ( $dato["estado"] == 1 )
+                 $pre = 'PRE-';
+            if ( $dato["estado"] == 2 )
+                 $pre = 'NOMINA-';
+
+            if ($dato["idTnomL"]>0) // LIQUIDACION DEFINITIVA
+            {
+                echo '<i class="ace-icon fa fa-briefcase bigger-120 pink"></i>'; 
+                echo $pre.'-'.$dato["nomTnomL"];// Liquidcion final 
+            }
+            else   // NOMINA NORMAL  
+                echo $pre.'-'.$dato["nomtnom"];
+            ?>
+            <?php 
+            if ($dato["idTnomL"]==0) // SINO ES LIQUIDACION DEFINITIVA GRUPO
+            {
+              echo '<br /><i class="ace-icon fa fa-cogs bigger-120 green"></i>';
+                echo '<strong> '.$dato["nomgrup"].'</strong>'; 
+            }
+            ?>
+
+            <?php 
+            // EMPLEADOS EN LIQUIDACION 
+            //if ($dato["idTnomL"]>0) // LIQUIDACION POR GRUPO 
+            //{ 
+             //  foreach ($this->datEmp as $datE) 
+            //   {
+             //    echo '<hr />'.$datE['CedEmp'].' - '.$datE['nombre'].' '.$datE['apellido'];
+               //}
+            //} 
+            ?>
+
+         </td>
+
+            <td class="col-sm-2">
+            <i class="ace-icon fa fa-calendar bigger-120 pink"></i>    
+              <?php echo $dato["fechaI"].' - '.$dato["fechaF"]; ?></td>
+
+            <td class="col-sm-2">
+             <?php // PDF PRE NOMINA
+              if( $dato["idTnom"]==6 )
+              {
+                 $this->idR = 20; // Id del reporte pre nomina
+                 $this->idP = $dato["id"];
+                 echo $this->render('layout/ipdfNom'); // Fin parametros    
+              }   
+              else    
+              { 
+                 $this->idR = 1; // NOMINA 
+                 $this->idP = $dato["id"];                 
+                 echo $this->render('layout/ipdfNom'); // Fin parametros 
+              }
+             ?>
+            <hr />  
+                                    <?php 
+             // PDF DETALLADO CESANTIAS  ?> 
+             <hr />               
+             <?php 
+             if ( ($dato["idTnom"]==3) or ($dato["idTnom"]==7) ) // SOLO LIQUIDACIONES DE CESANTIAS
+             {
+                $this->idR = 19; // Id del reporte de consolidados cesantias
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros                 
+             ?> Consolidado cesantias 
+             <hr />  
+             <?php 
+                $this->idR = 21; // Id del reporte de consolidados cesantias por fondos
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Consingación a fondos                                                      
+           <?php 
+             }// Fin validacion impresion cesantias
+            if( $dato["idTnomL"]>0 ){  // PDF CONSOLIDADOS ?> 
+             <hr />               
+             <?php 
+                $this->idR = 93; // Id del reporte de retroactivos
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?> Consolidado cesantias   
+            <?php }  ?>                                                                 
+            <?php 
+            if( $dato["idRet"]>0 ){  // PDF RETRO ACTIVOS ?> 
+             <hr />               
+             <?php 
+                $this->idR = 5; // Id del reporte de retroactivos
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Retro activo      
+            <?php }  ?>                                                    
+            <?php 
+            if( $dato["tipo"]==3 ){  // PDF DETALLADO PRIMAS  ?> 
+             <hr />               
+             <?php 
+                $this->idR = 4; // Id del reporte de consolidados primas 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Consolidado primas
+             <hr />
+             <?php 
+                $this->idR = 45; // Id del reporte de consolidados primas 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Resumen de primas                                                                
+            <?php }  ?>                                                                
+            </td>              
+
+            <td class="col-sm-2">
+             <?php // // PDF RESUMIDOS
+                $this->idR = 2; // Id del reporte de retencion en la fuente
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>            
+            <hr />Devengados
+             <?php 
+                 $this->idR = 17; // LISTADO SOLO NOVEDADES 
+                 $this->idP = $dato["id"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin parametros              
+             ?>    
+            </td> 
+
+            <td class="col-sm-2">
+             <?php // PDF RETE FUENTE
+                $this->idR = 3; // Id del reporte de retencion en la fuente
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>                              
+            </td>
+                                      <td class="col-sm-1">
+             <?php      
+                // RELACION DE BANCOS 
+                $this->idR = 7; 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>                              
+            </td>
+            <td class="col-sm-1">
+             <?php      
+                // RELACION DE BANCOS 
+                $this->idR = 8; 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> 
+             <hr />
+             Efectivo 
+             <?php      
+                // RELACION DE EFECTIVO 
+                $this->idR = 9; 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>                                          
+            </td>                          
+            <td>
+              <?php if (  $dato["estado"]==1) {?>
+              <a id="cerrar<?php echo $dato["id"]?>" href="<?php echo $this->basePath() ?><?php echo $this->lin?>p/<?php echo $dato["id"]?>"> <?php 
+                  $this->idC = $dato["id"];
+                  echo $this->render('layout/icerrar') ?> </a>
+              <?php } ?>
+
+              <?php if (  ($dato["idTnom"]==3) and ($dato["pagoCes"]==0) ) // Solo nomina de cesantias para integrar pagos a fondos 
+               {?>
+              <a id="cerrar<?php echo $dato["id"]?>" href="<?php echo $this->basePath() ?><?php echo $this->lin?>pg/<?php echo $dato["id"]?>"> <?php 
+                   $this->idC = $dato["id"];
+                   echo $this->render('layout/icerrar') ?>
+              Integracion pagos a fondos </a>
+              <?php } ?>
+
+            </td>
+            <td>
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>e/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/imail') ?> </a>
+              <hr />Comprobantes pdf 
+             <?php      
+                $this->idR = 6; // Id del reporte de retencion en la fuente
+                $this->idC = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>                                            
+            
+            </td>     
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   

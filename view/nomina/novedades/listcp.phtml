@@ -1,0 +1,19 @@
+<?php //  
+$opciones = '';
+$sw=0;
+if ($this->datos!='')
+{
+  $opciones='<option value="1">No aplica a ningun proyecto</option>';
+  foreach($this->datos as $dat)
+  {   
+  	  $sw=1;
+      $opciones = $opciones.'<option value="'.$dat['id'].'">'.$dat['nombre'].'</option>';
+  }
+if ($sw==1)  
+{
+?>  
+Selecciona si esta novedad afecta algun proyecto 
+<select name="idCcos" id="idCcos" ><?php echo $opciones ?></select>
+<?php
+}
+ }?>

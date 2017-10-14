@@ -1,0 +1,122 @@
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+<i class="ace-icon fa fa-credit-card bigger-110 red"></i>
+<strong>Sueldo: <?php echo number_format( $datos['sueldo'] ); ?></strong>
+<hr />
+<?php
+$this->rss = "CESANTIAS EN CURSO "; 
+ echo $this->render('layout/rss'); ?>
+ 
+ Dias: <?php echo number_format( $this->dias )?><br />
+
+ <a href="#modal-form_turnos" id ="promedios" role="button" class="blue" data-toggle="modal"><i class="fa fa-flag orange bigger-130"></i></a>
+     Base: <?php echo number_format( $this->base )?><br />
+
+ Dias asusentismos : <?php echo number_format( $this->diasAus )?><br />     
+
+<?php 
+$cesAnt = 0;
+$intAnt = 0;
+//print_r($this->datosCa);
+if ($this->datosCa!='')
+{
+   $cesAnt = $this->datosCa['cesantiasAnt'];
+   $intAnt = $this->datosCa['interesAnt'];
+   echo '<hr /><strong>Cesantias anticipadas ( $'.number_format($cesAnt).')</strong><br />';
+   echo '<strong>Intereses anticipadas ($ '.number_format($intAnt).')</strong/><hr />';
+}
+$intCesantias  = ( ( $this->valor * ( 12/100 ) )/360 ) * $this->diasInt ; // Intereses de cesantias
+//$intCesantias  = ( ( $this->valor * ( 12/100 ) )/360 ) * 120 ; // Intereses de cesantias regimen anterior
+?>
+
+<i class="fa fa-flag green bigger-130"></i>
+ <strong>Valor cesantias al corte: $ <?php echo number_format( $this->valor );?></strong>
+<br />
+<i class="fa fa-flag green bigger-130"></i>
+<strong>Intereses de cesantias al corte $ <?php echo  number_format($intCesantias) ?></strong>
+
+<?php
+if ($this->datosCa!='')
+{?>
+  <hr />
+  <i class="fa fa-flag orange bigger-130"></i>
+    <strong>Cesantia neta: $ <?php echo number_format( $this->valor - $cesAnt );?></strong>
+    <br />
+   <i class="fa fa-flag orange bigger-130"></i>
+    <strong>Intereses de cesantias neta $ <?php echo number_format($intCesantias - $intAnt) ?></strong>  
+<?php }
+?>
+
+
+<input name="tope" id="tope" type="hidden" value="<?php echo $this->valor ?>">
+<input name="interes" id="interes" type="hidden" value="<?php echo $intCesantias ?>">
+
+<input name="idIcal" id="idIcal" type="hidden" value="<?php echo $this->idIcal ?>">
+
+<input name="dias" id="dias" type="hidden" value="<?php echo $this->dias ?>">
+<input name="base" id="base" type="hidden" value="<?php echo $this->base ?>">
+
+<input name="cesantiasNeta" id="cesantiasNeta" type="hidden" value="<?php echo ( $this->valor - $cesAnt ) ?>">
+
+<input name="interesNeta" id="interesNeta" type="hidden" value="<?php echo ( $intCesantias - $intAnt ) ?>">
+
+<input name="fechaCorte" id="fechaCorte" type="hidden" value="<?php echo $this->fechaCorte ?>">
+
+
+
+
+<!-- VENTANA MODAL DE PROMEDIO DISFRUTE -->
+<div id="modal-form_turnos" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="blue bigger">Promedio de cesantias</h4>
+      </div>
+      <div class="modal-body">
+
+          <div id="resultadoP"></div>
+
+      </div>
+    </div><!-- fin contenido modal-->
+    <div class="modal-footer">
+      <button class="btn btn-sm" data-dismiss="modal">
+        <i class="ace-icon fa fa-times"></i>
+         Salir
+      </button>
+    </div>
+  </div>
+</div><!-- FIN VENTANA DE TURNOS -->    
+
+<script>  
+ 
+// BUSCAR PROMEDIOS DISFRUTES
+$('#promedios').click(function(){ 
+       var id      = $("#id").val();  
+       var idEmp   = $("#idEmp").val();  
+       var fecsal  = $("#fechaCorte").val();  
+      var parametros = {                      
+            "id"     : id,
+            "idEmp"   : idEmp,
+            "fecsal"  : fecsal,
+       }; 
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 $("#resultadoP").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoP").html(response); 
+               }
+       }); // Fin ajax                                                                    
+
+});
+
+</script>

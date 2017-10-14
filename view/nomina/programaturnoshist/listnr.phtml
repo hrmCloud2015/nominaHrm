@@ -1,0 +1,11 @@
+<?php if ($this->errores != ''){ ?>
+
+<span class="label label-warning">
+  <i class="ace-icon fa fa-exclamation-triangle bigger-120"></i>
+  Codigo de turnos no validos:  <?php echo $this->errores; ?>  
+</span>
+
+
+<?php }else{ ?>
+	<span class="label label-success arrowed">Registros actualizados de forma correcta !</span>
+<?php } ?>	

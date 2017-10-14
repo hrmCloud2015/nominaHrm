@@ -1,0 +1,116 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<input type="hidden" name="campo" id="campo" value='1' />    
+<?php echo $this->form()->closeTag() ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+    $name = $form->get('id2'); // Tipo de procedimiento 
+    echo $this->formInput($name);        
+?>   
+<?php if ( $this->tipo == 2 ) {?> 
+<div class="row">
+  <div class="col-sm-2">Promedio de salud<br />     
+    <?php
+      $name = $form->get('numero1') ;
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+    ?>
+    </div> 
+    <div class="col-sm-3">Porcentaje fijo<br />     
+    <?php
+      $name = $form->get('numero2') ;
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+    ?>
+    </div>     
+</div>
+<?php } ?> 
+<?php
+$this->th3 = 'Conceptos de retención - procedimiento '.$this->tipo;
+ echo $this->render('layout/h3rojo') ;?> 
+    <?php foreach ($this->datos as $dato){ 
+        $id=$dato["id"];
+        ?>
+        <?php if ($dato['tipo']==1){ // check ?>
+         <div class="row">        	
+           <div class="col-sm-2"><?php echo $dato['nombre'] ?><br />
+           </div> 	
+           <div class="col-sm-2">	    	
+            <?php
+              $select = $form->get('check1')->setAttribute("name", "ch".$id)->setAttribute("value", $dato['valor']);
+              echo $this->formCheckbox($select);
+              ?><span class="lbl"></span>
+           </div> 
+           </div>
+           <hr />
+        <?php } ?>
+
+        <?php if ($dato['tipo']==2){ // numero ?>
+         <div class="row">
+          <div class="col-sm-3"><?php echo $dato['nombre'] ?><br />
+            </div> 	
+             <div class="col-sm-3">	    
+              <?php
+                $name = $form->get('numero')->setAttribute("name", "nu".$id)->setAttribute("value", $dato['valor']);
+                echo $this->formInput($name);
+                echo $this->formElementErrors($name);
+              ?>
+            </div> 
+            <div class="col-sm-2"><?php if ($dato['tope']>0) 
+               echo 'Tope '.$dato['tope'].' UVT' ?><br />
+            </div> 	
+          </div>
+          <hr />
+        <?php } ?>
+        
+            
+    <?php }// Fin recorrido ?>
+        
+<br />
+<div>
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>  
+<hr />
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<input type="hidden" name="campo" id="campo" value='2' />
+<?php echo $this->form()->closeTag() ?>
+        
+<?php
+//$this->lin= $id ;
+echo $this->render('layout/iregresar') ?> 

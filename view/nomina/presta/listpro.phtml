@@ -1,0 +1,150 @@
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+  <?php
+    $name = $form->get('id')->setAttribute("id","idPres");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+ ?>
+  <?php
+    $name = $form->get('id2')->setAttribute("id","idTnom");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+ ?>
+ <?php
+ // Crear fechas internas para obtener id Fecha Inicial
+ $i=1;
+ //print_r($this->fechaI);
+ if ($this->fechaI!='')
+ {
+
+ foreach ($this->fechaI as $val) 
+ {
+    $name = $form->get('id')->setAttribute("id","idFechaI".$i)
+                            ->setAttribute("value",$val);
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+    $i++;
+ } 
+}
+ ?>
+ <?php
+ // Crear fechas internas para obtener id Fecha Final
+ $i=1;
+ if ($this->fechaF!='')
+ {
+ foreach ($this->fechaF as $val) 
+ {
+    $name = $form->get('id')->setAttribute("id","idFechaF".$i)
+                            ->setAttribute("value",$val);
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+    $i++;
+ }
+
+ } 
+ ?> 
+<hr />
+<div class="row">      
+  <div class="col-sm-1"></div>
+  <div class="col-sm-8">Calendario:
+   <?php
+     $select = $form->get('idCal')->setAttribute("id","idCal")
+                                 ->setAttribute("class","val");
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+   ?>    
+      valor: <?php
+     $name = $form->get('numero')->setAttribute("id","valor");
+     echo $this->formInput($name);
+     echo $this->formElementErrors($name);
+   ?>
+  </div>
+  <div class="col-sm-1">
+    <button type="button" id="agregar" class="btn btn-white btn-purple btn-sm">Agregar cuota</button>
+  </div>    
+</div> 
+<hr />
+
+<?php // Datos del empleado
+//$this->th3  = "CUOTAS PROGRAMADAS PARA LAS ".$datos['nombre'];
+//echo $this->render('layout/h3rojo') ?>
+
+
+<div id='resultadoPagosPro'></div>
+
+
+<script>        
+ var parametros = {
+     "idPres" : $("#idPres").val(),    
+     "idTnom" : $("#idTnom").val(),    
+     "idCal"  : $("#idCal").val(),         
+     "tipo" : 0,    
+ };  
+      $.ajax({
+         data:  parametros, 
+         url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>prog',
+         type: 'post',
+         beforeSend: function () {
+            $("#resultadoPagosPro").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+         },
+         success: function (response) {   
+            $("#resultadoPagosPro").html(response); 
+         }
+     }); // Fin  agregar nuevo       
+
+// Agregar cuot
+  $( "#agregar" ).click(function() {
+      var valor = $("#valor").val();
+      if ( valor == 0 )
+      {
+         alert("Por favor digite el valor de la cuota");
+         return 0;
+      }
+      if ( valor < 0 )
+      {
+         alert("No estan permitido el ingreso de valores negativos");
+         return 0;
+      }   
+      var idCal = $("#idCal").val(); 
+      var fechaI = $("#idFechaI"+idCal).val();                        
+      var fechaF = $("#idFechaF"+idCal).val();                              
+
+      var parametros = {
+          "idPres" : $("#idPres").val(),    
+          "idTnom" : $("#idTnom").val(),    
+          "idCal"  : idCal,         
+          "anoI"   : fechaI.substring(0, 4),
+          "mesI"   : fechaI.substring(5, 7),
+          "diaI"   : fechaI.substring(8, 10),                    
+          "anoF"   : fechaF.substring(0, 4),
+          "mesF"   : fechaF.substring(5, 7),
+          "diaF"   : fechaF.substring(8, 10),                    
+          "valor"  : valor,    
+          "tipo"   : 1,    
+      };  
+      $.ajax({
+         data:  parametros, 
+         url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>prog',
+         type: 'post',
+         beforeSend: function () {
+            $("#resultadoPagosPro").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+         },
+         success: function (response) {   
+            $("#resultadoPagosPro").html(response); 
+            alert('Cuota agregada de forma correcta')
+         }
+     }); // Fin  agregar nuevo       
+    
+  });
+</script>          

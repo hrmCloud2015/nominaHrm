@@ -1,0 +1,23 @@
+<?php //echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$formLabel = $this->plugin('formLabel');
+?>
+    <?php
+     foreach ( $this->datos as $dat) 
+     {
+        $idEmp = $dat['idEmpM'];        
+     ?> 
+     <div class="col-sm-1"></div>
+     <i class="ace-icon fa fa-bolt bigger-110 purple"></i>   
+     <?php echo $dat['nombre'].' '.$dat['apellido'].'('.$dat['horario'].')'; ?>
+     
+      <?php
+       $select = $form->get('check1')
+                      ->setAttribute("class","chkEmp")
+                      ->setAttribute("id","emp".$idEmp);
+       echo $this->formCheckbox($select); echo '<br />';
+       ?>
+    <?php } // Fin recorrido empelados ?>
+ 

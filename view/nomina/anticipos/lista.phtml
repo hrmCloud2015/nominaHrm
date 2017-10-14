@@ -1,0 +1,46 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a/'.$this->id,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>
+<div class="row">
+ <div class="col-sm-4">Grupo de empleados:<br />
+<?php
+    $select = $form->get('idGrupo')->setAttribute("id","idGrupo")->setAttribute("name","idGrupo");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+    ?>  
+  </div>    
+
+ <div class="col-sm-2">Estado del documento:<br />
+      <?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+      ?>
+  </div>  
+
+</div>
+<hr />
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')->setAttribute("id","generar")) ?>
+</div>         
+        
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+

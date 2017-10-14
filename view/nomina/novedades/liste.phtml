@@ -1,0 +1,13 @@
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+<i class="ace-icon fa fa-bullhorn bigger-110 red"></i>
+<strong>Cargo: <?php echo $datos['nomCar'] ; ?></strong>
+<br />
+<i class="ace-icon fa fa-credit-card bigger-110 red"></i>
+<strong>Sueldo: <?php echo number_format( $datos['sueldo'] ); ?></strong>
+

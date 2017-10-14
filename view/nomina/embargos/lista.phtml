@@ -1,0 +1,138 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+  <div class="col-sm-4">Empleado:<br />
+    <?php
+    $select = $form->get('idEmp');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+ </div> 
+ <div class="col-sm-2">Tipo:<br />
+<?php
+    $select = $form->get('tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+<div class="col-sm-2">Estado del documento:<br />    
+<?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+?>        
+</div>
+</div>
+<br />
+<div class="row">    
+  <div class="col-sm-6">Valor tope del embargo (si no hay tope dejar en blanco):<br />
+<?php
+    $name = $form->get('numero')->setAttribute("id",'valor');;
+
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+  </div>
+</div>    
+<hr />
+
+<div class="row">    
+  <div class="col-sm-4">Solo para los devengados <br />
+    <?php
+      $select = $form->get('idConcM');
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+   ?>    
+  </div>
+  <div class="col-sm-4">Solo para los deducidos <br />
+    <?php
+      $select = $form->get('idConcM2');
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+   ?>    
+  </div>
+</div>
+<hr />
+<strong>$sueldo (sueldo empleado) , </strong>
+<strong>$devengado (total devengado) , </strong>
+<strong>$deducido (total deducido) </strong>
+<strong>$smlv (Salario minimo) </strong>
+
+<hr />
+<div class="row">    
+  <div class="col-sm-10">
+    <?php echo ($this->formRow($form->get('formula')));?>
+  </div>
+</div>
+<hr />
+<div class="row">    
+  <div class="col-sm-4">Tercero a quien se le realizara el pago<br />
+<?php
+    $select = $form->get('idTer');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+  </div>
+</div>
+<br />
+<div class="row">    
+ <div class="col-sm-4">      
+      <?php
+        $select = $form->get('formaPago');
+         echo $formLabel->openTag().$select->getLabel('label');
+         echo $formLabel->closeTag();
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);  ?>                    
+  </div>    
+</div>        
+<br />
+<div class="row">        
+  <div class="col-sm-4">Banco<br />      
+      <?php
+         $select = $form->get('idBanco');
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);  ?>
+     </div>
+</div>
+<br />
+<div class="row">        
+     <div class="col-sm-6">Numero de cuenta<br />      
+     <?php
+        $name = $form->get('numCuenta');
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);
+     ?>         
+  </div>    
+</div>    
+        
+<hr />
+<div class="control-group">
+    <?php echo ($this->formRow($form->get('comen'))); ?>
+</div>  
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+

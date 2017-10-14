@@ -1,0 +1,131 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post',
+    'id'     => "formGuaradar"
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">
+<div class="col-sm-4">Reemplazar al empleado:<br />
+  <?php
+    $select = $form->get('idEmp')->setAttribute("id", "idEmp");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+</div> 
+<div class="col-sm-4">Por el empleado:<br />    
+  <?php
+    $select = $form->get('idEmp2')->setAttribute("id", "idEmp2");;
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+</div>    
+<div class="col-sm-2">Estado del documento:<br />        
+<?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+?>        
+</div>
+</div>
+<hr />
+<!-- DATOS EL SUELDO Y CARGO DEL EMPLEADO-->
+<div class="row">
+  <div class="col-sm-4">
+     <div id='resultado'></div>
+  </div> 
+  <div class="col-sm-4">
+     <div id='resultado2'></div>
+  </div>   
+</div>
+<hr />
+<div class="row">
+<div class="col-sm-2">Desde el:<br />
+<?php
+    $name = $form->get('fechaIni');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);?>
+</div> 
+<div class="col-sm-2">Hasta el:<br />
+<?php    
+    $name = $form->get('fechaFin');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);    
+?>
+</div>
+<div class="col-sm-4">Sueldo aplicable:<br />        
+<?php
+       $select = $form->get('idSalario');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+?>        
+</div> 
+</div>
+<hr />
+<div class="control-group">
+    <?php echo ($this->formRow($form->get('comen'))); ?>
+</div>  
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+    
+<script>      
+$(function (){    
+    $('#idEmp').change(function(){    
+        var id = $("#idEmp").val();
+        var parametros = {
+               "idEmp" : id,
+            };  
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>e',
+            type:  'post',
+            beforeSend: function () {
+                $('#resultado').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#resultado').html(response);
+            }
+        });                        
+    });        
+    // Empleado que reemplaza 
+    $('#idEmp2').change(function(){    
+        var id = $("#idEmp2").val();
+        var parametros = {
+               "idEmp" : id,
+            };  
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>e',
+            type:  'post',
+            beforeSend: function () {
+                $('#resultado2').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#resultado2').html(response);
+            }
+        });                        
+    });        
+
+})
+</script>
+

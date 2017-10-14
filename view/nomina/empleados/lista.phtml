@@ -1,0 +1,1188 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a/'.$this->id,
+    'id'     => 'formGuaradar',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+
+<?php // Datos del empleado
+$this->th3  = $this->datos;
+echo $this->render('layout/h3verde') ?>
+
+<div class="tabbable">
+  <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+	<li class="active">
+	    <a data-toggle="tab" href="#datos">Datos basicos</a>
+	</li>
+	<li>
+	    <a data-toggle="tab" href="#fondos">Fondos prestacionales y seguridad social</a>
+	</li>
+
+	<li>
+	   <a data-toggle="tab" href="#clas">Clasificaciones</a>
+	</li>
+	<li>
+	   <!-- <a data-toggle="tab" href="#contra">Aspectos contractuales</a>-->
+	</li>        
+  </ul>
+
+  <div class="tab-content"> 
+      
+      <div id="datos" class="tab-pane in active"><!-- DATOS BASICOS -->             
+
+
+                  <div id="user-profile-1" class="user-profile row">
+                    <div class="col-xs-12 col-sm-3 center">
+                      <div>
+                        <!-- #section:pages/profile.picture -->
+                        <span class="profile-picture">
+                          <img id="avatar" class="editable img-responsive" src="data:image;base64,<?php echo $this->imagen ?>"/>  
+                        </span>
+
+                      </div>
+
+                      <div class="space-6"></div>
+
+                      <!-- #section:pages/profile.contact -->
+                      <div class="profile-contact-info">
+                        <div class="profile-contact-links align-left">
+                            
+           <?php if ( $this->foto == 0 ) { ?>
+
+
+<div class="widget-main">
+                            <div class="form-group">
+                              <div class="col-xs-12">
+                                <!-- #section:custom/file-input -->
+
+                                <label class="ace-file-input"><input type="file" id="id-input-file-2" name="image-file"><span class="ace-file-container" data-title="Choose"><span class="ace-file-name" data-title="No File ..."><i class=" ace-icon fa fa-upload"></i></span></span><a class="remove" href="#"><i class=" ace-icon fa fa-times"></i></a></label>
+                              </div>
+                            </div>
+                            <!-- /section:custom/file-input.filter -->
+                          </div>
+
+           <?php }else{ // Para eliminar la fotografia?>    
+                          <a href="#" class="btn btn-link">
+                            <i class="ace-icon glyphicon glyphicon-picture"></i>                       
+               <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>idad/<?php echo $this->id?>"> Borrar fotografia <?php echo $this->render('layout/ieliminar') ?></a>
+           <?php } ?>                               
+
+
+                          </a>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="col-xs-12 col-sm-9"><!-- Sesion datos basicos -->
+  
+<div class="row">    
+  <div class="col-sm-3">Cedula:<br />              
+   <?php
+    $name = $form->get('cedula');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+   ?>
+  </div>
+  <div class="col-sm-4">Nombres:<br />              
+   <?php
+    $name = $form->get('nombre');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+   ?>
+  </div>    
+  <div class="col-sm-4">Apellidos:<br />              
+   <?php
+    $name = $form->get('apellido1');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+   ?>
+  </div>
+</div>
+<div class="hr hr12 dotted"></div>
+<div class="row">    
+  <div class="col-sm-2">Fecha de nacimiento:<br />                  
+  <?php
+    $name = $form->get('fecDoc');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>    
+  </div>        
+
+  <div class="col-sm-3">Sexo:<br />              
+  <?php
+    $select = $form->get('sexo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+
+  <div class="col-sm-4">Telefono:<br />                  
+  <?php
+    $name = $form->get('numero');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>
+  </div>    
+</div>
+<div class="hr hr12 dotted"></div>
+<div class="row">     
+  <div class="col-sm-6">Dirección:<br />              
+   <?php
+    $name = $form->get('dir');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>
+  </div>
+</div>
+<div class="hr hr12 dotted"></div>
+<div class="row">     
+  <div class="col-sm-8">e-mail:<br />                  
+  <?php
+    $name = $form->get('email');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>
+  </div>               
+  </div>
+<div class="hr hr12 dotted"></div>
+<div class="row">     
+  <div class="col-sm-6">Cargo:<br />                      
+  <?php
+    $select = $form->get('idCar');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>
+  <div class="col-sm-6">Centro de costo:<br />                      
+    <?php
+    $select = $form->get('idCencos');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>    
+
+</div>
+<div class="hr hr12 dotted"></div>
+<div class="row">     
+  <div class="col-sm-3">Sueldo:<br />              
+   <?php
+    $name = $form->get('sueldo')->setAttribute("readOnly", false);
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+   ?>          
+  </div>    
+  
+  <div class="col-sm-3">Estado del empleado:<br />                        
+   <?php
+    $select = $form->get('estado');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>      
+</div>                        
+
+                      <div class="hr hr2 hr-double"></div>
+
+                      <div class="space-6"></div>
+
+      
+                    </div><!-- Fin Sesion datos basicos -->
+                  </div>
+
+
+       </div><!-- FIN DATOS BASICOS -->    
+
+
+<div id="fondos" class="tab-pane in active"><!-- FONDOS -->              
+
+<div class="row">    
+  <div class="col-sm-4">
+<?php
+    $select = $form->get('idSal')->setAttribute("id","idSal");
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+  </div>  
+  <div class="col-sm-4">
+  <?php
+    $select = $form->get('idPen')->setAttribute("id","idPen");
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>Pensionado:
+            <?php
+               $select = $form->get('check1');
+               echo $this->formCheckbox($select);
+         ?>
+  </div>
+  <div class="col-sm-4">             
+  <?php
+    $select = $form->get('idArp')->setAttribute("id","idArp");;
+    echo $formLabel->openTag().'ARL';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+</div>    
+<hr />   
+<div class="row">    
+  <div class="col-sm-4">
+  <?php
+    $select = $form->get('idCes')->setAttribute("id","idCes");;
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>    
+  <div class="col-sm-4">  
+  <?php
+    $select = $form->get('idCaja')->setAttribute("id","idCaja");;
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+  <div class="col-sm-4">  
+  <?php
+    $select = $form->get('idFav');
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+</div>    
+<hr />      
+<div class="row">    
+  <div class="col-sm-4">
+<?php
+    $select = $form->get('idFafc');
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>                         
+  </div>
+  <div class="col-sm-2">Tarifa ARL:<br />              
+   <?php
+    $select = $form->get('idTar')->setAttribute("id","idTar");;
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+
+  <div class="col-sm-4">Ciudad de labores:<br />                      
+  <?php
+    $select = $form->get('idCiu')->setAttribute("id","idCiu");;
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>
+
+</div>    
+</div><!-- FIN FONDOS -->    
+
+<div id="clas" class="tab-pane in active"><!-- Clasificaciones -->      
+    
+<div class="row">    
+  <div class="col-sm-4">
+    <?php
+    $select = $form->get('idTemp');
+    echo $formLabel->openTag().'Tipo de empleado';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>     
+  <div class="col-sm-4">Salario variable:            <?php
+               $select = $form->get('check2');
+               echo $this->formCheckbox($select);
+         ?>
+         <hr />
+         Regimen anterior:
+            <?php
+               $select = $form->get('check3');
+               echo $this->formCheckbox($select);
+         ?>
+  </div>   
+  <div class="col-sm-4">Salario integral:<?php
+               $select = $form->get('check4');
+               echo $this->formCheckbox($select);
+         ?>
+
+  </div>      
+  <div class="col-sm-2">
+  <?php
+    $select = $form->get('idPrej')
+                   ->setAttribute("id","idPrej");
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>    
+</div>    
+<hr />
+<div class="row">    
+  <div class="col-sm-4">
+  <?php
+    $select = $form->get('idGrupo')->setAttribute("id","idGrupo");
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+   <div class="col-sm-2">    
+   <?php
+
+    $select = $form->get('idSalario')->setAttribute("id","idSalario");
+    echo $formLabel->openTag()."Sueldo por escala";
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>  
+</div>
+<hr />
+<div class="row">    
+  <!-- DATOS DEL BANCO -->
+  <div class="col-sm-4">      
+      <?php
+        $select = $form->get('formaPago')->setAttribute("id","formaPago");
+         echo $formLabel->openTag().$select->getLabel('label');
+         echo $formLabel->closeTag();
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);  ?>     
+  </div>       
+  <div class="col-sm-3" id ="nbanco">           
+      <?php
+         $select = $form->get('idBanco');
+         echo $formLabel->openTag().$select->getLabel('label');
+         echo $formLabel->closeTag();
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);  ?>
+  </div>   
+  <div class="col-sm-2" id ="ncuenta">                  
+      <i class="ace-icon fa fa-credit-card"></i>
+     <?php
+        $name = $form->get('numCuenta');
+        echo $formLabel->openTag().'Numero de cuenta';
+        echo $formLabel->closeTag();
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);
+     ?>
+  </div>    
+     <div class="col-sm-2" id ="ntipcuenta">                
+        Tipo de cuenta:          
+     <?php
+         $select = $form->get('tipo1');
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);  ?>
+      <?php echo '<hr />Banco de archivo plano <br />';
+         $select = $form->get('idBancoP');
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);  ?>                  
+     </div> 
+  </div>
+  <!-- DATOS DEL BANCO -->
+        
+<hr />
+<div class="row">    
+  <div class="col-sm-3">
+  <?php
+    $select = $form->get('idTau');
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+  <div class="col-sm-3">  
+   <?php
+    $select = $form->get('idTau2');
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>    
+  <div class="col-sm-3">
+  <?php
+    $select = $form->get('idTau3');
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>    
+  <div class="col-sm-3">
+   <?php
+    $select = $form->get('idTau4');
+    echo $formLabel->openTag().$select->getLabel('label');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+</div>
+
+</div><!-- FIN CLASIFICACIONES -->    
+
+
+<div id="contra" class="tab-pane"><!-- Contrataciones -->  
+
+<hr />
+<table  class="table table-striped table-bordered table-hover" >
+<tr> 
+  <th>Tipo de contrato</th>     
+  <th>Fecha inicial</th>
+  <th>Fecha final</th>
+  <th>Cargo</th>  
+  <th>Sueldo</th>  
+  <th>Otro si</th>
+  <th>Comentarios</th>
+  <th>Estado</th>
+  <th></th>  
+</tr>
+<?php 
+$fechaFinContratoActivo = '';
+foreach ($this->datCon as $dato){
+ ?>
+  <tr> 
+    <td><?php echo $dato['nomTcon']?></td>
+    <td><?php echo $dato['fechaI']?></td>
+    <td><?php 
+    if ($dato['tipCon']==0) // Termindo indefinido
+      echo 'INDEFINIDA'; 
+    else
+      echo $dato['fechaF'];
+       ?></td>    
+    <td><?php echo $dato['nomCar']?></td>
+    <td><?php echo number_format( $dato['sueldo'] )?></td>    
+    <td><?php echo $dato['otroSi']?></td>
+    <td><?php echo $dato['comen']?></td>
+    <td>
+    <?php if ($dato['estado']==0){ 
+         $fechaFinContratoActivo = $dato['fechaF'];
+    // Activo ?> 
+      <?php echo $this->render('layout/cActivo') ?>
+    <?php } ?> 
+    <?php if ($dato['estado']==1){ // Terminado ?> 
+      <?php echo $this->render('layout/cTerminado') ?>
+    <?php } ?>     
+    </td>      
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>dc/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+<?php
+}// Fin recorrido contratos ?>
+  </tr>
+</table>
+<?php 
+    $this->idModal = "agregarContrato"; ?> 
+    <!-- RENOVAR CONTRATO--> 
+    <ul class="btn btn-white btn-info btn-bold">
+       <li id="<?php echo $this->idModal ?>"class="ace-icon fa fa-floppy-o bigger-120 blue"><a href="#"> Renovar contrato</a>
+       </li>
+    </ul>
+</div><!-- FIN ASPECTOS CONTRACTUALES --> 
+    
+ </div><!-- FIN PESTAÑAS SUPERIORES -->
+    
+ </div>
+    
+<hr /> 
+    
+<div class="tabbable">
+  <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+	<li class="active">
+	    <a data-toggle="tab" href="#cuadro">Cuadro familiar</a>
+	</li>
+<?php if ($this->id > 0){?>
+	<li>
+	    <a data-toggle="tab" href="#estudios">Estudios realizados</a>
+	</li>
+
+	<li>
+	   <a data-toggle="tab" href="#fisico">Aspectos fisico</a>
+	</li>
+	<li>
+	   <a data-toggle="tab" href="#aficiones">Aficiones y gustos</a>
+	</li>        
+<?php }?>        
+  </ul>
+
+  <div class="tab-content">     
+    
+      <div id="cuadro" class="tab-pane in active"><!-- Cuadro familiar -->   
+      <?php 
+         $this->idModal = "agregarFam";
+         $this->botModal = "Agregar familiar"; ?> 
+         <?php echo $this->render('layout/botonModal') ?>      
+
+      <?php foreach ($this->datFam as $dato){ ?>
+          
+	<div class="itemdiv dialogdiv">
+	    <?php             
+            $edad = $dato['edad'];
+            if (($edad>0) and ($edad<3)) // Bebe
+            {
+                if ($dato['sexo']==1)
+                   $imagen = 'bebe';
+                else 
+                   $imagen = 'beba'; 
+            }
+            if (($edad>=3) and ($edad<12)) // Niño
+            {
+                if ($dato['sexo']==1)
+                   $imagen = 'nino';
+                else 
+                   $imagen = 'nina'; 
+            }                        
+            if (($edad>=12) and ($edad<20)) // Adolecente
+            {
+                if ($dato['sexo']==1)
+                   $imagen = 'adolecente';
+                else 
+                   $imagen = 'adolecenteA'; 
+            }                                    
+            if (($edad>=20) and ($edad<50)) // Adulto
+            {
+                if ($dato['sexo']==1)
+                   $imagen = 'hombre';
+                else 
+                   $imagen = 'mujer'; 
+            }           
+            if (($edad>=50) ) // maduro
+            {
+                if ($dato['sexo']==1)
+                   $imagen = 'abuelo';
+                else 
+                   $imagen = 'abuela'; 
+            }                         
+            
+            if ($dato['parentesco']==1)
+               $par = "Mama";
+            if ($dato['parentesco']==2)
+               $par = "Papa";
+            if ($dato['parentesco']==3)
+               $par = "Esposo";
+            if ($dato['parentesco']==4)
+               $par = "Hijo";
+            if ($dato['parentesco']==5)
+               $par = "Abuelo";            
+            ?>
+	    <div class="user">
+		<img alt="" src="<?php echo $this->basePath() ?>/img/<?php echo $imagen ?>.png" />
+	    </div>            
+	    <div class="body">
+		<div class="time">
+   <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>fd/<?php echo $dato["id"]?>"><?php echo $this->render('layout/ieliminarCaja') ?></a>                    
+                    </div>
+	        <div class="name"><a href="#"><?php echo $dato['nombres'].' '.$dato['apellidos'].' ('.$par.')' ?></a></div>
+                <?php echo $edad.' años' ?>
+		<div class="text">
+                 <?php if ($dato['instituto']!=''){?>   
+                    <i class="icon-double-angle-right"></i>
+                    <?php echo 'Estudios actuales en : '.$dato['instituto'] ; ?>
+                 <?php } ?> 
+                 <?php if ($dato['limFisica']!=''){?>  
+                    <br />
+                    <i class="icon-double-angle-right"></i>
+                    <?php echo 'Cuenta con la siguiente limitación fisica: '.$dato['limFisica'] ; ?>
+                 <?php } ?>                     
+                </div>						
+   	    </div>
+	</div>
+      <?php } ?>				          
+          
+          
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+      </div><!-- Fin Cuadro familiar -->           
+        
+
+<div id="estudios" class="tab-pane"><!-- ESTUDIOS REALIZADOS -->      
+  
+<?php 
+$this->idModal2 = "agregarEst";
+$this->botModal2 = "Agregar un estudio realizado"; ?>    
+    <?php echo $this->render('layout/botonModal2') ?> 
+<script>
+  $(function() {
+    $( "#<?php echo 'v'.$this->idModal2 ?>" ).dialog({
+      autoOpen: false,
+      height: 400,
+      width: 500,      
+      show: {
+        effect: "blind",
+        duration: 1000
+      },
+      hide: {
+        effect: "explode",
+        duration: 1000
+      },
+      buttons: {
+          "Agregar estudio realizado": function() {          
+           var id      = $("#id").val();
+           var idNest  = $("#idNest2").val();
+           var inst    = $("#comenN").val();
+           var titulo  = $("#comenN2").val();
+                      
+           if($("#comenN").val().length < 1) {  
+              alert("Debe escribir el nombre de la institución");  
+              return false;  
+            }  
+
+           if($("#comenN2").val().length < 1) {  
+              alert("Debe escribir el titulo obtenido");  
+              return false;  
+            }  
+            $( "#formGuaradarE" ).submit();          
+ 
+          },
+          Cancel: function() {
+          $( this ).dialog( "close" );          
+        }
+      }
+    });  
+    $( "#<?php echo $this->idModal2 ?>" ).click(function() {
+      $( "#<?php echo 'v'.$this->idModal2 ?>" ).dialog( "open" );
+    });
+  });
+</script>
+
+<!-- Listado de estudios --> 
+<?php foreach ($this->datEst as $dato){ ?>
+<div class="well well-large">
+    
+   <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>ed/<?php echo $dato["id"]?>"><?php echo $this->render('layout/ieliminarCaja') ?></a>
+           
+ <h4 class="blue"> 
+     <?php echo $dato['titulo']; ?>
+ </h4>
+ <h5>
+     <?php echo $dato['nomNest']; ?>
+ </h5>         
+ <h6>   
+     <?php echo $dato['instituto']; ?>
+ </h6>    
+ <h6>   
+     <?php echo $dato['fecha']; ?>
+ </h6>        
+</div>
+<?php } ?>
+<!-- Fin listado de estudios --> 
+
+
+</div><!-- FIN ESTUDIOS REALIZADOS -->          
+      
+      <div id="fisico" class="tab-pane"><!-- Estado fisico -->   
+          <table>
+              <tr>
+                  <td>
+       <?php
+             $name = $form->get('estatura')->setAttribute("pattern",'[0-9]+')
+                                           ->setAttribute("step",'any')
+                                           ->setAttribute("min",'0');
+             echo $formLabel->openTag().' Estatura';
+             echo $formLabel->closeTag();
+             echo $this->formInput($name);
+             echo $this->formElementErrors($name);
+             ?></td><td>                            
+             <?php
+               $select = $form->get('sangre');
+               echo $formLabel->openTag().'Tipo de sangre';
+               echo $formLabel->closeTag();
+               echo $this->formSelect($select);
+               echo $this->formElementErrors($select);
+             ?>
+             </td>    
+            </tr>
+          </table>
+          <hr />            
+          <?php
+               $select = $form->get('lentes');
+               echo $this->formCheckbox($select);
+         ?><span class="lbl"></span>Usa lentes ?                      
+          <?php
+               $select = $form->get('bebe');
+               echo $this->formCheckbox($select);
+         ?><span class="lbl"></span>Bebe licor ?                               
+          <?php
+               $select = $form->get('fuma');
+               echo $this->formCheckbox($select);
+         ?><span class="lbl"></span>Fuma cigarrillos ?                               
+            <hr />
+              Es alergico a los siguientes elementos:
+              <?php 
+                  echo ($this->formRow($form->get('alergias') ));
+             ?>                           
+            <hr />
+              Operaciones o cirugias ?:
+              <?php 
+                  echo ($this->formRow($form->get('operaciones')));
+             ?>                                         
+            <hr />
+              Enfermedades ?:
+              <?php 
+                  echo ($this->formRow($form->get('enfermedades') ));
+             ?>                                         
+            <hr />
+              Cuenta con alguna limitación fisica ?:
+              <?php 
+                  echo ($this->formRow($form->get('limitacion') ));
+             ?>                                                       
+      </div><!-- Fin Estado fisico -->   
+
+      <div id="aficiones" class="tab-pane"><!-- Aficiones -->   
+              Perteneces a algun club social ?:
+              <?php 
+                  echo ($this->formRow($form->get('clubSocial') ));
+             ?>                           
+            <hr />          
+              Que deportes practica ?:
+              <?php 
+                  echo ($this->formRow($form->get('deportes') ));
+             ?>                                       
+            <hr />          
+              Que libros le han gustado?:
+              <?php 
+                  echo ($this->formRow($form->get('libros') ));
+             ?>                                           
+            <hr />          
+              Gustos musicales ?:
+              <?php 
+                  echo ($this->formRow($form->get('musica') ));
+             ?>                                       
+            <hr />          
+              Otras activiades en tiempo libre :
+              <?php 
+                  echo ($this->formRow($form->get('otrasAct') ));
+             ?>                                                         
+      </div><!-- Fin Aficiones -->   
+        
+   </div>
+ </div>
+    
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+    
+    
+<script>
+  $(function() {
+    var d =  $( "#formaPago" ).val()  
+    if (d!=1)  
+    {
+       $("#banco").hide();
+       $("#ncuenta").hide(); 
+       $("#ntipcuenta").hide(); 
+       $("#nbanco").hide(); 
+    }
+    $( "#formaPago" ).change(function() {
+        var d =  $( "#formaPago" ).val() 
+        if (d!=1)
+        {
+           $("#banco").hide();
+           $("#ncuenta").hide(); 
+           $("#ntipcuenta").hide(); 
+           $("#nbanco").hide(); 
+        }else{
+           $("#banco").show();
+           $("#idBanco").val(0);
+           $("#ncuenta").show();       
+           $("#numcuenta").val(0);
+           $("#nbanco").show();
+           $("#nbanco").val(0);
+           $("#ntipcuenta").show();
+           $("#ntipcuenta").val(0);
+       } 
+    });            
+      
+      
+    $( "#<?php echo 'v'.$this->idModal ?>" ).dialog({
+      autoOpen: false,
+      height: 800,
+      width: 800,      
+      show: {
+        effect: "blind",
+        duration: 1000
+      },
+      hide: {
+        effect: "explode",
+        duration: 1000
+      },
+      buttons: {
+          "Agregar familiar": function() {          
+
+              $( "#formGuaradarF" ).submit();          
+          },
+          Cancel: function() {
+          $( this ).dialog( "close" );          
+        }
+      }
+    });  
+    $( "#<?php echo $this->idModal ?>" ).click(function() {
+      $( "#<?php echo 'v'.$this->idModal ?>" ).dialog( "open" );
+    });
+  });
+</script>
+
+<div id="<?php echo 'v'.$this->idModal ?>" title="<?php echo $this->botModal ?>">    
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'gf',
+    'method' => 'post',
+    'id'     => 'formGuaradarF'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>            
+<br />    
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+  <div class="col-sm-3">Nombres:<br />              
+<?php
+    $name = $form->get('nombre2');
+
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>
+  <div class="col-sm-3">Apellidos:<br />                  
+<?php
+    $name = $form->get('apellido2');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+  </div>
+  <div class="col-sm-2">Parentesco:<br />              
+<?php
+    $select = $form->get('parentesco');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>          
+</div>
+</div>
+    <hr />    
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+  <div class="col-sm-3">Sexo:<br />              
+<?php
+    $select = $form->get('sexo2')->setAttribute("class","sexo");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+  <div class="col-sm-3">Fecha de nacimiento:<br />              
+<?php
+    $name = $form->get('fechaIni');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>        
+  </div>
+  <div class="col-sm-3">Nivel de estudio:<br />                
+  <?php
+    $select = $form->get('idNest')->setAttribute("class","sexo");;
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>       
+  </div>    
+</div>
+<hr />
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+  <div class="col-sm-3">Usa lentes ?:<br />              
+<?php
+    $select = $form->get('lentes2');
+    echo $this->formCheckbox($select);
+?><span class="lbl"></span>
+  </div>
+</div>  
+<hr />
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+  <div class="col-sm-4">Institución donde esta estudiando:<br />              
+<?php 
+    echo ($this->formRow($form->get('instituto') ));
+?>                                           
+  </div>
+</div>   
+<hr />
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+  <div class="col-sm-4">Cuenta con alguna limitación fisica ?:<br />              
+<?php 
+    echo ($this->formRow($form->get('limitacion2') ));
+?>                                                       
+<?php echo $this->form()->closeTag() ?>    
+</div>
+</div>
+
+<div id="<?php echo 'v'.$this->idModal2 ?>" title="<?php echo $this->botModal2 ?>">
+    
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'ge',
+    'method' => 'post',
+    'id'     => 'formGuaradarE'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+  
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>      
+<br />
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+  <div class="col-sm-5">Institución<br />              
+      <?php echo ($this->formRow($form->get('comenN'))); ?> 
+  </div>
+</div> 
+<div class="row">    
+    <div class="col-sm-1"></div>                  
+  <div class="col-sm-5">Nivel académico<br />              
+  <?php
+     $select = $form->get('idNest2')->setAttribute("class","est");
+    echo $formLabel->openTag().'';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>   
+  </div>
+</div>
+<hr />
+<div class="row">    
+  <div class="col-sm-1"></div>                  
+     <div class="col-sm-3">Titulo obtenido<br />              
+       <?php $comen = $this->formRow($form->get('comenN2')); 
+        echo $comen;
+       ?>
+     </div>    
+  </div>   
+  <hr />
+  <div class="row">    
+      <div class="col-sm-1"></div>                  
+      <div class="col-sm-3">Fecha de graduación<br />              
+      <?php
+        $name = $form->get('fecDoc');
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);?>                        
+     </div>    
+   </div>
+   <?php echo $this->form()->closeTag() ?>       
+</div>
+ 
+ <!-- VENTANA MODAL RENOVACION CONTRATO-->
+<div id="<?php
+      $this->idModal = "agregarContrato";
+      $this->botModal = "Renovación de contrato";  
+ echo 'v'.$this->idModal ?>" title="<?php echo $this->botModal ?>">    
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'rc',
+    'method' => 'post',
+    'id'     => 'formGuaradarRc'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>            
+<br />    
+<div class="row">    
+  <div class="col-sm-4">
+  <?php
+    $select = $form->get('tipoC')->setAttribute('id','tipoCon');
+    echo $formLabel->openTag().'Tipo de contratación';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>       
+  </div>      
+  <div class="col-sm-4">
+  <?php
+    $select = $form->get('tipo2')->setAttribute('id','tipo2')
+                                 ->setAttribute('class','tipo2');;
+    echo $formLabel->openTag().'Cargo';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>       
+  </div>        
+</div> 
+<hr />
+<div class="row">    
+  <div class="col-sm-4">Fecha de ingreso:<br />              
+  <?php
+      $name = $form->get('fechaIni')->setAttribute('id','fechaIniCon')
+                                    ->setAttribute('name','fechaIniCon');
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+  ?>        
+  </div>
+  <div class="col-sm-4">Fecha final de contrato:<br />              
+  <?php
+      $name = $form->get('fechaFin')->setAttribute('id','fechaFinCon')
+                                    ->setAttribute('name','fechaFinCon');
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+  ?>        
+  </div> 
+  <div class="col-sm-4">Sueldo:<br />              
+  <?php
+      $name = $form->get('numero1')->setAttribute('id','numero1');
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+  ?>        
+  </div>    
+</div>
+<div class="row">    
+  <div class="col-sm-8">Comentario:<br />              
+      <?php echo ($this->formRow($form->get('comenN')->setAttribute("id", "comen" ) ));
+  ?>
+  </div>
+  <div class="col-sm-8">Otro si (En caso d ser):<br />              
+   <?php echo ($this->formRow($form->get('comenN2')->setAttribute("id", "otrosi" ) ));
+  ?>
+  </div>  
+</div>
+<hr />
+<br />
+
+
+<?php echo $this->form()->closeTag() ?>    
+
+</div><!-- FIN VENTANA MODAL RENOVACION CONTRATO-->
+
+<script>
+  $(function() {
+    $( "#<?php echo 'v'.$this->idModal ?>" ).dialog({
+      autoOpen: false,
+      height: 600,
+      width: 800,      
+      show: {
+        effect: "blind",
+        duration: 1000
+      },
+      hide: {
+        effect: "explode",
+        duration: 1000
+      },
+      buttons: {
+          "Renovar contrato": function() {          
+          var id      = $("#id").val();
+                      
+           if($("#tipoCon").val().length < 1) 
+           {  
+             alert('Debe seleccionar tipo de contrato');
+             return false;
+           }
+           if($("#fechaIniCon").val().length < 1) {  
+              alert("Debe seleccionar la fecha de ingreso del empleado");  
+              return false;  
+            }  
+
+           if($("#fechaFinCon").val().length < 1) {  
+              alert("Debe seleccionar la fecha de finalización de contrato del empleado");  
+              return false;  
+            }              
+
+            // Validar si contrato digitado es menor al final del anterior            
+            if( $("#fechaIniCon").val() < '<?php echo $fechaFinContratoActivo; ?>' ) {  
+              //alert("La fecha de inicio de contrato no puede ser menor al final del contrato anterior");  
+              //return false;  
+            }  
+
+            $( "#formGuaradarRc" ).submit();          
+           },
+          Cancel: function() {
+          $( this ).dialog( "close" );          
+        }
+      }
+    });  
+    $( "#<?php echo $this->idModal ?>" ).click(function() {
+      $( "#<?php echo 'v'.$this->idModal ?>" ).dialog( "open" );
+    });
+    // Validar guardad de empleados
+    $( "#formGuaradar" ).submit(function( event ) 
+    {
+       if ( $("#idCiu").val()==0)
+       {
+         alert('Por favor defina la ciudad de labores') 
+         event.preventDefault();
+       }     
+
+       if ( $("#idPrej").val()==0)
+       {
+         alert('Por favor defina el prefijo contable del empleado') 
+         event.preventDefault();
+       }     
+       if ( $("#formaPago").val()==0)
+       {
+         alert('Por favor defina la forma de pago del empleado') 
+         event.preventDefault();
+       }     
+       if ( $("#idSalario").val()==0)
+       {
+         alert('Por favor defina la escala salarial del empleado') 
+         event.preventDefault();
+       }     
+       if ( $("#idGrupo").val()==0)
+       {
+         alert('Por favor defina el grupo de nomina del empleado') 
+         event.preventDefault();
+       }     
+    });  
+
+  });
+</script>                 

@@ -1,0 +1,118 @@
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php echo $this->form()->closeTag() ?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<br /><i class="ace-icon fa fa-cogs bigger-120 green"></i>
+Correo asignado para envio de comprobantes : <strong>info@maken.com</strong>
+<hr />
+<div class="row">
+  <div class="col-sm-3"><br />Digite nuevo correo electronico
+<?php
+    $name = $form->get('email')->setAttribute("id","email");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>
+<div class="col-sm-3"><br />Digite la clave del correo 
+<?php
+    $name = $form->get('clave1')->setAttribute("id","clave");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>
+</div>
+
+<div class="row">
+  <div class="col-sm-2"><br />              
+      <?php echo $this->formElement($form->get('buscar')->setAttribute('value','enviar')) ?>
+  </div>
+</div>
+
+<div class="row">
+    
+<div id='resultado' style="margin-top: 100px" ></div>
+</div>
+
+<?php //echo $this->basePath() ?><?php //echo $this->lin?>
+<script>  
+ $(function (){     
+     $('#submitbutton').click(function(){ 
+       var id = $("#id").val();  
+       var parametros = {
+            "id"   : id,
+            "clave" : $("#clave").val(),  
+            "email" : $("#email").val(),              
+       };        
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>em',
+             beforeSend: function () {
+                $('#submitbutton').attr('disabled',true)
+                 $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultado").html(response);  
+                 //   alert("Cuotas registradas de forma correcta")
+              },error: function (jqXHR, textStatus, errorThrown) {
+                        alert('Error de conexión: No se pudo concluir la operacion')
+              },
+              complete:function(){
+                $('#submitbutton').attr('disabled',false)
+              }
+         }); // Fin ajax                                                                                       
+
+       
+       
+         
+     });
+    $('#resultado').submit('#reintentarenvio',function (e){
+         e.preventDefault();
+         //alert($('#reintentarenvio').serialize())
+         $.ajax({
+              data:  $('#reintentarenvio').serialize(),     
+              type:  'post',
+              url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>em',
+              beforeSend: function () {
+                 $('#submitbutton').attr('disabled',true)
+                  $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+              },
+               success:  function (response) {
+                  $("#resultado").html(response);  
+                  //   alert("Cuotas registradas de forma correcta")
+               },error: function (jqXHR, textStatus, errorThrown) {
+                         alert('Error de conexión: No se pudo concluir la operacion')
+               },
+               complete:function(){
+                 $('#submitbutton').attr('disabled',false)
+               }
+          }); 
+    });
+});
+
+</script>   
+
+                  <?php // Parametros para impresion de documento 
+                  //if ($por>0)
+                  //{
+                  //  $this->idR = 1; // Id del reporte
+                  //  $this->idP = $this->id.'.'.$dat["idEmp"];
+                  //  echo $this->render('layout/ifpdf'); // Fin parametros 
+                  //}?>

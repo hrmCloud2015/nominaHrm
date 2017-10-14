@@ -1,0 +1,65 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php if ($this->id==1){ ?>
+<!-- MENSAJE DE GUARDADO -->
+<div id="dialog"></div>
+<div class="alert alert-block alert-success" id="mensajeGuarddado">
+ <p>
+  <strong><i class="icon-ok" ></i> Registro 
+  Guardado de forma correcta !</strong>
+ </p>
+</div>
+<script type="text/javascript">
+        $(document).ready(function(){
+            setTimeout(function(){ $("#mensajeGuarddado").fadeOut(500).fadeIn(500).fadeOut(500).fadeIn(500).fadeOut(300);}, 3000);  
+        });
+</script>  
+<!-- FIN MENSAJE DE GUARDADO -->
+<?php } ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php echo $this->render('layout/inuevo') ?></a>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ;?></td>            
+            <td><?php echo $dato["fecDoc"] ?></td>
+            <td><?php echo $dato["CedEmp"] ?></td>
+            <td><?php echo $dato["nombre"].' '.$dato["apellido"] ?></td>
+            <td><?php echo $dato["nomCar"] ?></td>                        
+            <td><?php echo $dato["fechaI"] ?></td>                        
+            <td><?php echo $dato["fechaF"] ?></td>                                    
+            <td><?php echo $dato["nomTnom"]; ?></td>            
+            <td>
+                <?php if ($dato["estado"]==0){ ?>
+                   <?php echo $this->render('layout/ipendiente') ?>
+                <?php } ?>
+                <?php if ($dato["estado"]==1){ ?>
+                   <?php echo $this->render('layout/iaprobado') ?>                
+                <?php } ?>             
+                
+            </td>    
+            <td>
+                <?php // Parametros para impresion de documento 
+                    $this->idR = 36; // CONSOLDADO PRIMAS LIQUIDACION  
+                    $this->idP = $dato["id"]; 
+                    echo $this->render('layout/ipdfNom'); // Fin
+                ?>
+            </td>                
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieditar') ?> </a>
+            </td>
+            <td>
+               <?php //if ($dato["estado"]==0){ ?> 
+                 <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+               <?php //} ?>  
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        

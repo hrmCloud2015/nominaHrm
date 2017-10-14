@@ -1,0 +1,115 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'p/'.$this->id,
+    'method' => 'post',
+    'id' => 'formGuardar',
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id'); // id de la matriz 
+    echo $this->formInput($name);    
+?>
+
+<div class="row">    
+  <div class="col-sm-4">Nombre:<br />
+     <?php
+        $name = $form->get('nombre')->setAttribute("id","nombre") ;
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);?>
+  </div>    
+  <div class="col-sm-4">Ciudad del puesto:<br />                      
+  <?php
+    $select = $form->get('idCiu');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>       
+  <div class="col-sm-4">Direccion:<br />
+     <?php
+        $name = $form->get('dir');
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);?>
+  </div>           
+</div>
+<hr />
+<div class="row">    
+  <div class="col-sm-4">Sede:<br />                      
+  <?php
+    $select = $form->get('idSed')->setAttribute("id", "idSed");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>       
+  <div class="col-sm-3">Zonas:<br />
+      <select name="idZon" id="idZon" ></select>
+  </div>     
+   <div class="col-sm-2"><br /> 
+     <?php echo $this->formElement($form->get('registrar')) ?>
+   </div> 
+</div>
+
+<?php echo $this->form()->closeTag() ?>
+<hr />
+<!-- LISTADO DE EMPLEADOS EN CURSO -->
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["nombre"] ?></td>                        
+            <td><?php echo $dato["nomZon"] ?></td>                        
+            <td><?php echo $dato["direccion"] ?></td>                                    
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>zid/<?php echo $dato["id"]?>"> 
+                    <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+
+<script>      
+$(function (){    
+    $('#idSed').change(function(){    
+        $('#idZon').children().remove();
+        var id = $("#idSed").val();
+        var parametros = {
+               "id" : id,
+            };  
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>z',
+            type:  'post',
+            beforeSend: function () {
+                $('#res').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#idZon').html(response);
+            }
+        });                        
+    });        
+})
+
+// VALIDACIONES 
+$( "#formGuardar" ).submit(function( event ) {
+   var tipo  = $("#nombre").val(); // conceptos de cotizaciones     
+   if (tipo == '')
+   {
+       alert('Digite el nombre del puesto de trabajo');
+       event.preventDefault();
+   }
+});     
+</script> 
+
+<?php echo $this->render('layout/iregresar') ?>    

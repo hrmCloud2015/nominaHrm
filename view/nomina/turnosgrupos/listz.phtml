@@ -1,0 +1,9 @@
+<?php 
+if ($this->datos!='')
+{
+   foreach($this->datos as $dat) 
+   {   
+      echo '<option value="'.$dat['id'].'">'.$dat['nombre'].'</option>';
+   } 
+}   
+?>    

@@ -1,0 +1,823 @@
+<style type="text/css">
+table a:link {
+  color: #666;
+  font-weight: bold;
+  text-decoration:none;
+}
+table a:visited {
+  color: #999999;
+  font-weight:bold;
+  text-decoration:none;
+}
+table a:active,
+table a:hover {
+  color: #bd5a35;
+  text-decoration:underline;
+}
+table td {
+
+  border-bottom:1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
+
+  background: #fafafa;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
+  background: -moz-linear-gradient(top,  #fbfbfb,  #fafafa);
+}
+.dias {
+  
+  border-top:1px solid #fafafa;
+  border-bottom:1px solid #e0e0e0;
+
+  background: #ededed;
+  background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+  background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+}
+
+table tr:hover td {
+  background: #f2f2f2;
+  background: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#f0f0f0));
+  background: -moz-linear-gradient(top,  #f2f2f2,  #f0f0f0);  
+}
+</style>
+
+<?php
+
+$name = $form->get('id2')->setAttribute('id','id2');
+echo $this->formInput($name); // id del empleado
+
+$name = $form->get('id3')->setAttribute('id','id3');
+echo $this->formInput($name); // dia 
+
+$name = $form->get('id4')->setAttribute('id','id4');
+echo $this->formInput($name); // id del horario
+
+$filas = 1;
+$columnas = 1;
+?>
+<!-- VENTANA DE TURNOS-->
+<h4 class="pink">
+  <i class="ace-icon fa fa-hand-o-right green"></i>
+  <a href="#modal-form_turnos" role="button" class="blue" data-toggle="modal"> Programar turnos </a>
+</h4>
+<!-- VENTANA MODAL DE TURNOS -->
+<div id="modal-form_turnos" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="blue bigger">Programacion de turnos</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-4">Turnos <br />
+          <?php
+            $select = $form->get('tipo')
+                     ->setAttribute("id","idTur")
+                     ->setAttribute("class","turno");
+            echo $this->formSelect($select);
+            echo $this->formElementErrors($select);
+          ?>
+          </div> 
+          <div class="col-sm-4">Iniciar <br />
+            <div id="resultadoH"></div>
+          </div>          
+          <div class="col-sm-4">Dia de inicio <br />
+          <?php
+            $arreglo = array("1" => "1",
+                             "2" => "2",
+                             "3" => "3",
+                             "4" => "4",
+                             "5" => "5",
+                             "6" => "6",
+                             "7" => "7",
+                             "8" => "8",
+                             "9" => "9", 
+                             "10" => "10",
+                             "11" => "11",
+                             "12" => "12",
+                             "13" => "13",
+                             "14" => "14",
+                             "15" => "15",
+                             "16" => "16",
+                             "17" => "17",
+                             "18" => "18",
+                             "19" => "19", 
+                             "20" => "20",                             
+                             "21" => "21",
+                             "22" => "22",
+                             "23" => "23",
+                             "24" => "24",
+                             "25" => "25",
+                             "26" => "26",
+                             "27" => "27",
+                             "28" => "28",
+                             "29" => "29",
+                             "30" => "30",
+                              );
+            $select = $form->get('tipoC')->setAttribute("id","diaInicio")
+                                         ->setValueOptions($arreglo)
+                                         ->setValue(1);
+            echo $this->formSelect($select);
+            echo $this->formElementErrors($select);
+          ?>
+          </div>                    
+        </div>
+        <hr /> 
+        <div class="row">
+          <div class="col-sm-1"></div><strong>Aplicar este turno a estos empleados</strong>
+          <hr />Aplicar a todos
+            <?php
+              $select = $form->get('check1')
+                             ->setAttribute("class","chkTodos")
+                             ->setAttribute("id","todos");
+              echo $this->formCheckbox($select); echo '<br />';
+            ?>          
+          <hr />
+          <?php
+           foreach ( $this->datos as $dat) 
+           {
+              $idEmp = $dat['idEmpM'];        
+           ?> 
+          <div class="col-sm-1"></div>
+            <i class="ace-icon fa fa-bolt bigger-110 purple"></i>   
+            <?php echo $dat['nombre'].' '.$dat['apellido']; ?>
+            <?php
+              $select = $form->get('check1')
+                             ->setAttribute("class","chkEmp")
+                             ->setAttribute("id","emp".$idEmp);
+              echo $this->formCheckbox($select); echo '<br />';
+            ?>
+            <?php } // Fin recorrido empelados ?>
+        </div>         
+      </div>
+    </div><!-- fin contenido modal-->
+    <div class="modal-footer">
+      <button class="btn btn-sm" data-dismiss="modal" >
+        <i class="ace-icon fa fa-times"></i>
+         Cancelar
+      </button>
+      <button class="btn btn-sm btn-primary" id="registrar" data-dismiss="modal">
+        <i class="ace-icon fa fa-check"></i>
+          Registrar
+      </button>
+    </div>
+  </div>
+</div><!-- FIN VENTANA DE TURNOS -->
+<br />
+<div id="resultadoNR"></div>
+<table border="1">
+<?php
+//print_r($this->datRem);
+$idEmp = 0;
+echo '<tr>';
+echo '<td></td>';
+echo '<td></td>';
+echo $this->semana;
+echo '</tr>';
+echo '<tr>';
+echo '<td></td>';
+echo '<td style="text-align:center;" class="dias"><strong>EMPLEADOS</strong></td>';
+echo $this->tablaHor;
+echo '</tr>';
+$num=1;
+$numEmp =1;
+foreach ( $this->datos as $dat) 
+{
+   if ($dat['idEmpM']!=$idEmp)
+   {
+      if ($idEmp>0) // Cierra los anteriores 
+          echo '<tr/>';
+      $idEmp = $dat['idEmpM'];      
+      echo '<tr>';
+      echo '<td>'.$numEmp.'</td>';
+      echo '<td>'.$dat['nombre'].' '.$dat['apellido'].'</td>';
+      $numEmp ++;
+      if ($this->diasMes==31)
+        $diaConFin = 31;
+
+      $diaConIni = $dat['diaConIni']-1;
+      $diaConFin = $dat['diaConFin'];      
+//      echo $diaConIni.' '.$diaConFin.'<br />';
+
+      // Buscar fecha final de contrato      
+      $swFinIni = 0;
+      foreach ($this->datFcon as $datFc) 
+      {
+        if ($idEmp == $datFc['idEmp'])
+        {  
+           if ($dat['diaConIni']<=1)
+           {
+              $diaConFin = $datFc['diaF'];
+              $swFinIni = 1;
+           }   
+        }   
+      }
+      // Buscar inicio de contrato 
+      $diaConIniDes = 0;
+      foreach ($this->datIcon as $datFc) 
+      {
+        if ($idEmp == $datFc['idEmp'])
+        {  
+           $diaConIniDes = $datFc['diaI'];
+           //$swFinIni = 2;
+        }   
+      }      
+
+        for ($i=1;$i<= $this->diasMes ;$i++)
+        {
+           $horario = $dat['nom'.$i];          
+           $turno=0;
+           if ($dat['t'.$i]>0)
+               $turno = $dat['t'.$i];
+
+          echo '<td>';       
+          echo $horario;
+          if ( $i > $diaConIni) 
+          {                      
+            if ( $i <= $diaConFin) 
+            {                                      
+
+           // Validar si tiene incapacidad en el turno
+           $incapacidad=0;  
+           foreach ($datInc as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp)
+                   and ( ($i>=$datI['diaI']) and ($i<=$datI['diaF']) ) ) 
+              {
+                 $incapacidad=1;
+                 $horario='';
+              }
+           }   
+           // Validar si tiene ausentismos en el turno
+           $ausentismo=0;  
+           foreach ($datAus as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp)
+                   and ( ($i>=$datI['diaI']) and ($i<=$datI['diaF']) ) ) 
+              {
+                 $ausentismo=1;
+                 $horario='';
+              }
+           }               
+           // Validar si tiene vacaciones en el turno
+           $vacaciones=0;  
+           foreach ($datVac as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp)
+                   and ( ($i>=$datI['diaI'])  ) ) 
+              {
+                 $vacaciones=1;
+                 $horario='';
+              }
+           }                          
+           // Validar si tiene reeemplados en el turno
+           $reemplazos=0;  
+           foreach ($datRem as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp) and ($i==$datI['dia'] ) ) 
+              {
+                 $reemplazos=1;
+              }
+           }                          
+           if ( ($incapacidad==0) and ($ausentismo==0) and ($vacaciones==0)  )
+           { 
+              $medida = 2;
+              if ($reemplazos==1)
+                  $medida = 1;
+             // Valores
+               echo ($this->formRow($form->get('horaG')
+                                   ->setAttribute("value", $horario )
+                                   ->setAttribute("size", $medida )
+                                   ->setAttribute("class", "celda" )
+                                   ->setAttribute("readOnly", "readOnly" )
+                                   ->setAttribute("id" , $idEmp.'_'.$i )
+                                   ) );                       
+            }
+             if ($incapacidad==1)
+                echo $this->render('layout/iincapacidad');               
+             if ($ausentismo==1)
+                echo $this->render('layout/iausente');
+             if ($vacaciones==1)
+                echo $this->render('layout/ivacaciones');
+             if ($reemplazos==1)
+                echo '<i class="ace-icon fa fa-bolt green"></i>';
+                //echo $this->render('layout/icambio');              
+            }// Validar fin de contrato  
+          }// Validar inicio de contrato 
+          if ( ( $i > $diaConIniDes) and ( $swFinIni == 1 ) )
+          {                      
+           // Validar si tiene incapacidad en el turno
+           $incapacidad=0;  
+           foreach ($datInc as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp)
+                   and ( ($i>=$datI['diaI']) and ($i<=$datI['diaF']) ) ) 
+              {
+                 $incapacidad=1;
+                 $horario='';
+              }
+           }   
+           // Validar si tiene ausentismos en el turno
+           $ausentismo=0;  
+           foreach ($datAus as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp)
+                   and ( ($i>=$datI['diaI']) and ($i<=$datI['diaF']) ) ) 
+              {
+                 $ausentismo=1;
+                 $horario='';
+              }
+           }               
+           // Validar si tiene vacaciones en el turno
+           $vacaciones=0;  
+           foreach ($datVac as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp)
+                   and ( ($i>=$datI['diaI'])  ) ) 
+              {
+                 $vacaciones=1;
+                 $horario='';
+              }
+           }                          
+           // Validar si tiene reeemplados en el turno
+           $reemplazos=0;  
+           foreach ($datRem as $datI) 
+           {
+              if ( ($datI['idEmp'] == $idEmp) and ($i==$datI['dia'] ) ) 
+              {
+                 $reemplazos=1;
+              }
+           }                          
+           if ( ($incapacidad==0) and ($ausentismo==0) and ($vacaciones==0)  )
+           { 
+              $medida = 2;
+              if ($reemplazos==1)
+                  $medida = 1;
+             // Valores
+               echo ($this->formRow($form->get('horaG')
+                                   ->setAttribute("value", $horario )
+                                   ->setAttribute("size", $medida )
+                                   ->setAttribute("class", "celda" )
+                                   ->setAttribute("id" , $idEmp.'_'.$i )
+                                   ) );                       
+            }
+             if ($incapacidad==1)
+                echo $this->render('layout/iincapacidad');               
+             if ($ausentismo==1)
+                echo $this->render('layout/iausente');
+             if ($vacaciones==1)
+                echo $this->render('layout/ivacaciones');
+             if ($reemplazos==1)
+                echo '<i class="ace-icon fa fa-bolt green"></i>';
+                //echo $this->render('layout/icambio');              
+          }// Validar inicio de contrato 
+
+          echo '</td>';           
+
+      } // Recorrido de campos
+
+   }// Diferente empleado   
+}//  Recorrer tabla de empleados con turnos
+?>
+</table>
+
+<!-- VENTANA MODAL DE HORARIOS -->
+<div id="modal-form_hor" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="blue bigger">Ventana de cambio de puesto</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-8">Buscar puesto <br />
+           <?php
+             $name = $form->get('nombre')->setAttribute("id", "nombre");
+                echo $this->formInput($name);
+                echo $this->formElementErrors($name);
+           ?>    
+          </div>  
+          <div class="col-sm-2"><br />
+          <?php 
+             echo $this->formElement($form->get('buscar')->setAttribute("id","buscar") ); 
+           ?>     
+          </div> 
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-sm-4">Tipo de novedad<br />
+          <?php
+            $select = $form->get('tipoC2')
+                     ->setAttribute("id","tipoNov");
+            echo $this->formSelect($select);
+            echo $this->formElementErrors($select);
+          ?>
+          </div>
+          <div class="col-sm-6">Descripcion:<br />
+             <?php echo ($this->formRow($form->get('comenN')->setAttribute("id", "comenN") ));?>
+          </div>           
+        </div>   
+
+          <hr /> 
+          <div id="resultadoD"></div>      
+          <div id="resultadoDe"></div>      
+<!-- 
+        <div class="row">
+          <div class="col-sm-1"></div><strong>Empleados disponibles</strong>
+          <div id="resultadoD"></div>
+        </div>  
+        -->
+
+      </div>
+    </div><!-- fin contenido modal-->
+    <div class="modal-footer">
+      <button class="btn btn-sm" data-dismiss="modal" id="cancelarHor">
+        <i class="ace-icon fa fa-times"></i>
+         Cancelar
+      </button>
+
+    </div>
+  </div>
+</div><!-- FIN VENTANA DE HORARIOS -->
+
+<script> 
+$( "#idTur" ).change(function() 
+{
+
+  var parametros = {
+      "idTur"   : $('#idTur').val(),
+   };   
+   $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>hor',
+             beforeSend: function () {
+                 $("#resultadoH").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Buscando turnos, por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoH").html(response);  
+//                 alert("Registro exitoso")
+         //        location.reload();
+              }
+         }); // Fin ajax                                                                   
+   
+});
+
+$('#todos').click(function()
+{
+   var id = $(this).attr('id');
+   var valor = 0;
+   if ($(this).is(":checked"))
+   {
+       valor = 1;
+   }  
+   // marcar todo los demas que esten 
+   $(".chkEmp").each(function()
+   {
+      var idDot = $(this).attr('id');
+
+         if (valor == 1)
+         {
+            $(this).prop("checked", true);
+         }else{
+            $(this).prop("checked", false);
+         }
+
+   });
+});   
+
+// REGISTRO DE TURNOS 
+$('#registrar').click(function(){
+   if ($('#idTur').val()==0)
+   {
+      alert("Por favor seleccione el turno")
+      return 
+   }  
+   var empArreglo = '';            
+   $('.chkEmp').each(function(indice, elemento) 
+   {
+      var idEmp = $(this).attr('id') ;   
+      if( $(this).is(':checked'))
+      {      
+         if ( empArreglo == '' )
+         {
+            empArreglo = idEmp;// Armo arreglao con los 
+         }else{ 
+            empArreglo = empArreglo +','+ idEmp;// Armo arreglao con los empleados que necesito para incluirlos en la consulta
+         }  
+      }   
+   });
+
+   if ( empArreglo == '')
+   {
+      alert("Debe seleccionar al menos un empleado")
+      return 
+   }  
+   var parametros = {
+      "idSup"   : $("#idSup").val(),
+      "idTur"   : $('#idTur').val(),
+      "idPue"  : $("#idPue").val(),
+      "diasMes" : <?php echo $this->diasMes ?>,
+      "diaIni"  : $('#dia').val(),
+      "diaInicio"  : $('#diaInicio').val(),      
+      "empArreglo" : empArreglo,
+      "tipo"    : 1,// Para insertar datos
+   }; 
+   $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+        //         $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Registrando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultado").html(response);  
+                 alert("Registro de turnos exitoso")
+                 //$("#idPue").click();
+                 //location.reload();
+              }
+         }); // Fin ajax                                                                 
+});
+// REGISTRO DE HORARIOS
+$('#registrarHor').click(function(){
+
+   var parametros = {
+      "id"      : $('#id').val(),
+      "idSup"   : $("#idSup").val(),      
+      "idPue"   : $('#idPue').val(),
+      "idEmp"   : $('#id2').val(),
+      "diasMes" : $('#id3').val(),
+      "idHor"   : $('#idHor').val(),
+      "tipo"    : 2,// Para editar horarios
+   };   
+
+   $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultado").html(response);  
+                 alert("Registro exitoso")
+         //        location.reload();
+              }
+         }); // Fin ajax                                                                 
+});
+
+$( "#cancelarHor" ).click(function() 
+{  
+  $("#modal-form_hor").hide();
+}); 
+
+// MODIFICACION DE HORARIOS Y REEEMPLAZOS 
+
+
+  $(".celda").keydown(function(event)
+  {
+    if (event.which==39)     
+    {
+       var str   = $(this).attr('id');              
+       var n = str.indexOf("_");
+       var i = 0;
+      var dia = ( parseInt( str.substr(n+1, 2) ) ) + 1 ;       
+       while (i == 0) 
+       {
+          if (dia <= 31)
+          {
+             var campo = ( str.substr(0, n) ) + '_' + dia ;
+             if ( $("#"+campo).length > 0 )             
+             { 
+                 $("#"+campo).focus();
+                 i = 1;
+             }else{
+                dia = parseInt( dia ) + parseInt(1) ;
+             }    
+          }else{
+            i = 1;
+          }               
+       }
+
+
+    }  
+
+
+  }); 
+
+
+$( ".celda" ).dblclick(function() 
+{
+
+  $("#modal-form_hor").show();
+//)  alert(2)
+  var str   = $(this).attr('id');        
+  var idHor = $(this).val(); 
+  var n = str.indexOf("_");  
+  var idEmp = str.substr(0,n);   
+  var dia = str.substr(n+1,100); 
+  // Datos de la selccion 
+  $( "#id2" ).val(idEmp);     
+  $( "#id3" ).val(dia);        
+  $( "#idHor" ).val(idHor);      
+  // Editar comentarios y demas
+   var parametros = {
+      "idEmp"   : $('#id2').val(),
+      "diasMes" : $('#id3').val(),
+      "idHor"   : $('#idHor').val(),
+      "nombre"  : $('#nombre').val(),
+      "tipo"    : 3,// Para consultar posibles reemplazos 
+   };   
+   $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>ne',
+             beforeSend: function () {
+                 $("#resultadoDe").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoDe").html(response);  
+//                 alert("Registro exitoso")
+         //        location.reload();
+              }
+         }); // Fin ajax   
+     
+});
+
+$( "#buscar" ).click(function() 
+{
+   var parametros = {
+      "idEmp"   : $('#id2').val(),
+      "diasMes" : $('#id3').val(),
+      "idHor"   : $('#idHor').val(),
+      "nombre"  : $('#nombre').val(),
+      "tipo"    : 3,// Para consultar posibles reemplazos 
+   };   
+
+   $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>n',
+             beforeSend: function () {
+                 $("#resultadoD").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoD").html(response);  
+//                 alert("Registro exitoso")
+         //        location.reload();
+              }
+         }); // Fin ajax                                                                      
+});
+
+</script>
+
+
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id, tipo)
+{  
+  var empArreglo = '';
+  var diaArreglo = '';
+  for (var i=1; i<=<?php echo $this->diasMes?> ; i++) 
+  {
+      var idEmp = $("#"+id+'_'+i).attr('id') ;   
+
+         if ( empArreglo == '' )
+         {
+            empArreglo = i;// Armo arreglao con los 
+         }else{ 
+            empArreglo = empArreglo +','+ i;// Armo arreglao con los empleados que necesito para incluirlos en la consulta
+         }  
+  }             
+  for (var i=1; i<=<?php echo $this->diasMes?>; i++) 
+  {
+      var val = $("#"+id+'_'+i).val() ;   
+      if (val=='')
+      {
+         if (tipo == 0)
+         {
+            alert("No puedes guardar los turnos si dejeas alguno en blanco")
+            return false;
+         }   
+      }  
+         if ( diaArreglo == '' )
+         {
+            diaArreglo = val;// Armo arreglao con los 
+         }else{ 
+            diaArreglo = diaArreglo +','+ val;// Armo arreglao con los empleados que necesito para incluirlos en la consulta
+         }  
+  }
+               
+      var parametros = {
+         "id"      : $('#id').val(),
+         "idSup"   : $("#idSup").val(),      
+         "idPue"   : $('#idPue').val(),
+         "idEmp"   : id,
+         "diasMes" : i,
+         "idHor"   : val,
+         "tipo"    : 2,// Para editar horarios
+         "empArreglo" : empArreglo,         
+         "diaArreglo" : diaArreglo,         
+         "accion"  : tipo
+      };   
+
+      $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nr',
+             beforeSend: function () {
+                 $("#resultadoNR").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando datos, por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoNR").html(response);  
+                 if (tipo == 1)
+                 {
+                    for (var i=1; i<=<?php echo $this->diasMes?>; i++) 
+                    {
+                      $("#"+id+'_'+i).val('') ;                     
+                    }   
+                 } 
+                 //alert("Registro exitoso")
+         //        location.reload();
+              }
+      }); // Fin ajax                                                                      
+
+};
+
+</script>
+
+<script>
+// Moficicacion en registro de novedades 
+function editarEn(id)
+{                 
+      var parametros = {
+         "id"      : id,
+         "tipo"    : 3,// Para eliminar horarios
+      };   
+
+      $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>eli',
+             beforeSend: function () {
+                 $("#resultadoNR").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando datos, por favor espere...');
+             },
+              success:  function (response) {
+                 alert("Registro eliminado de forma correcta");
+                 $("#buscarP").click();
+              }
+      }); // Fin ajax                                                                      
+
+};
+
+</script>
+
+
+<script>
+// Moficicacion en registro de novedades 
+function editarR(id)
+{  
+   if ( $('#tipoNov').val()==0 )  
+   {
+      alert("Debe seleccionar el tipo de novedad registrada");
+      return false;
+   } 
+   if ( $('#comenN').val()=='' )  
+   {
+      alert("Debe escribir el comentario");
+      return false;
+   }    
+   var parametros = {
+      "id"      : $('#id').val(),
+      "idSup"   : $("#idSup").val(),      
+      "idPue"   : $('#idPue').val(),
+      "idEmp"  :  $('#id2').val(),
+      "diasMes" : $('#id3').val(),
+      "idHor"   : $('#idHor').val(),
+      "idNov"  : $('#tipoNov').val(),
+      "comen"  : $('#comenN').val(),      
+      "idPue"   : id,
+      "tipo"    : 3,// Para reemplazo de empleados 
+   };
+  
+   $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 //$("#resultadoNR").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 //$("#resultadoNR").html(response);  
+                 alert("Registro exitoso");
+                 $("#buscarP").click();
+         //        location.reload();
+              }
+         }); // Fin ajax        
+   
+};
+</script>           
+
+
+

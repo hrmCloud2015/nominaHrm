@@ -1,0 +1,61 @@
+<?php echo $this->render('layout/titulo') ?>
+
+
+<div id="resultado"></div>
+<?php echo $this->render('layout/tabla_c') ?>
+
+<?php
+if ( $this->datos != '' )
+{
+  foreach ($this->datos as $dat){ ?>
+  <tr>
+    <td><?php echo $dat['CedEmp']; ?></td>  
+    <td><?php echo $dat['nombre']; ?></td>      
+    <td><?php echo $dat['apellido']; ?></td>                           
+    <td>
+                    <?php
+                    $asistio = $dat['pagoCes'];
+                       $select = $form->get('check2')
+                                      ->setAttribute("class", "formaPago")
+                                      ->setAttribute("value", $asistio )
+                                      ->setAttribute("id" , $dat['id']);
+                       echo $this->formCheckbox($select);
+                    ?>
+    </td>                
+  <tr>        
+<?php } // FIn recorrido datos forma de pago 
+}?>
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+//$this->ncol='null,null,null,';
+//echo $this->render('layout/tabla_tb') ?>
+
+<script>    
+// cambio de forma de pago
+$(".formaPago").click(function() {
+    var idA = $(this).attr("id");
+    var asis = 0;
+    if($(this).prop("checked") == true)
+    {
+       var asis = 1;
+    }
+alert(idA)
+   var parametros = {
+            "id"  : idA,
+            "asis"  : asis, 
+   };  
+   alert(2) 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>for',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);  
+           }
+        }); // Fin ajax              
+ });
+</script>  

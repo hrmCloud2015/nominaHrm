@@ -1,0 +1,218 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'id' => 'formGuardar',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<input type="hidden" name="campo" id="campo" value='1' />    
+<?php echo $this->form()->closeTag() ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<?php 
+$this->th3 = "Empleado : ".$this->empleado;
+echo $this->render('layout/h3rojo') ?>
+
+<div class="row">    
+<div class="col-sm-4">Concepto de nomina:<br />
+<?php
+    $select = $form->get('tipo')->setAttribute("id","tipo");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+<div class="col-sm-2">Valor:<br />    
+<?php
+    $name = $form->get('numero');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div> 
+<div class="col-sm-4"><br />
+<?php
+    $select = $form->get('check1');
+    echo $this->formCheckbox($select);
+?><span class="lbl"></span>Afectado por dias laborados
+</div>    
+</div>
+<hr />
+<div class="row">    
+<div class="col-sm-4">Centro de costo:<br />
+<?php
+    $select = $form->get('idCencos');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>    
+</div>
+<div class="col-sm-2">Centro de costo del empleado<br />
+<?php
+    $select = $form->get('check2')->setAttribute("id", "cenEmp");
+    echo $this->formCheckbox($select);
+?>
+</div>
+<div class="col-sm-2">Tipo de nomina<br />
+<?php
+    $select = $form->get('idTnomm')->setAttribute("id","idTnomm");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+</div> 
+
+<hr /> 
+<div class="row">    
+  <div class="col-sm-2">Desde el:<br />    
+  <?php
+     $name = $form->get('fechaIni')->setAttribute("id", "fechaIni");
+     echo $this->formInput($name);
+     echo $this->formElementErrors($name);
+  ?>
+  </div>
+  <div class="col-sm-2">Hasta el:<br />    
+  <?php
+     $name = $form->get('fechaFin')->setAttribute("id", "fechaFin");
+     echo $this->formInput($name);
+     echo $this->formElementErrors($name);
+  ?>
+  </div>
+  <div class="col-sm-2">
+    <?php echo $this->formElement($form->get('guardar')->setAttribute("id", "agregar") ) ?>
+  </div>
+</div>
+<hr />
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<input type="hidden" name="campo" id="campo" value='2' />
+<?php echo $this->form()->closeTag() ?>
+
+<div id="resultado"></div>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ 
+        $id=$dato["id"];
+        ?>
+        <tr>
+            <td><?php echo $dato["nombre"] ?></td>
+            <td><?php echo $dato["nomCcos"] ?></td>
+            <td><?php echo $dato["nomTnom"] ?></td>            
+            <td><?php //echo $dato["horas"];
+
+               echo ($this->formRow($form->get('devengado')
+                          ->setAttribute("value", $dato["horas"] )
+                          ->setAttribute("id", "dev_".$dato["id"])
+                          ->setAttribute("size", 20 ) ));          
+              if ( $dato['fechaF']!='0000-00-00') // Es un automatico programado
+              {?>
+                <li class="text-warning bigger-80 red">
+                  <i class="ace-icon fa fa-bullhorn"></i>
+                  <?php  echo '<br />Del ('.$dato['fechaI'].') al ('.$dato['fechaF'].')';?>
+                </li>                             
+             <?php }                    
+             ?>
+
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov">
+                     <i class="ace-icon fa fa-pencil bigger-130"></i>
+                 </a>
+
+           </td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php         
+$this->ncol='null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+        
+<?php
+//$this->lin= $id ;
+echo $this->render('layout/iregresar') ?> 
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id){  
+   var dev = $("#dev_"+id).val();
+        var parametros = {
+            "id"   : id,
+            "dev"  : dev
+        };
+
+        $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>inov',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+        }); // Fin ajax        
+};
+
+$( "#formGuardar" ).submit(function( event ) {
+  var val = $("#tipo").val();
+  if (val == '')
+  {
+    alert('Seleccione el concepto ')
+    event.preventDefault();
+    return true;        
+  }    
+  var fechaIni = $("#fechaIni").val();
+  var fechaFin = $("#fechaFin").val();
+
+  if (fechaFin > fechaIni )
+  {
+    alert('La fecha final no puede ser menor a la fecha inicial')
+    event.preventDefault();
+    return true;        
+  }    
+
+  var val = $("#idTnomm").val();
+  if (val > 0)
+  {
+
+  }else{
+    alert('Seleccione los tipos de nominas afectadas para este automatico')
+    event.preventDefault();
+    return true;  
+  }  
+        
+
+  $('#agregar').attr('disabled', 'disabled');
+  return true;        
+
+});
+</script>

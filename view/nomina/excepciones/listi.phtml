@@ -1,0 +1,94 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<input type="hidden" name="campo" id="campo" value='1' />    
+<?php echo $this->form()->closeTag() ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<?php 
+$this->th3 = "Empleado : ".$this->empleado;
+echo $this->render('layout/h3rojo') ?>
+
+<div class="row">    
+  <div class="col-sm-4">Concepto de nomina:<br />
+  <?php
+    $select = $form->get('tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>
+  <div class="col-sm-2"><br />
+  <?php
+     $select = $form->get('idTnomm');
+     echo $formLabel->openTag().'Tipo de nomina';
+     echo $formLabel->closeTag();
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+  ?>
+  </div>
+</div>    
+<br />
+<div>
+  <?php echo $this->formElement($form->get('agregar')) ?>
+</div>  
+<hr />
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<?php echo $this->form()->closeTag() ?>
+
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ 
+        $id=$dato["id"];
+        ?>
+        <tr>
+            <td><?php echo $dato["nombre"] ?></td>
+            <td><?php echo $dato["nomTnom"] ?></td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php         
+$this->ncol='null,';
+echo $this->render('layout/tabla_tb') ?>        
+        
+<?php
+//$this->lin= $id ;
+echo $this->render('layout/iregresar') ?> 

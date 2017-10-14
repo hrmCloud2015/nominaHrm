@@ -1,0 +1,25 @@
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+<div class="row">    
+<div class="col-sm-4">Fecha inicial:<br />
+<?php
+    $name = $form->get('fechaIni');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>    
+<div class="col-sm-4">Fecha final:<br />
+<?php
+    $name = $form->get('fechaFin');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>    
+</div>

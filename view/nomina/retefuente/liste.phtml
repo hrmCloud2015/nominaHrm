@@ -1,0 +1,51 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo ltrim($dato["CedEmp"]); ?></td>            
+            <td><?php echo $dato["nomEmp"].' '.$dato["apellido"]; ?>
+            <?php if ($dato["conAut"]==1 ){
+             echo $this->render('layout/iok');                  
+            }?>
+            </td>
+            <td><?php echo $dato["nombre"] ?></td>
+            <td><?php echo $dato["nomgrup"] ?></td>
+            <td><?php echo $dato["nomtau"] ?></td>
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>i/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/iitems') ?> </a>
+                <?php if ($dato["conAut"]>0 ){
+                    echo '('.$dato["conAut"].')';
+                    if ($dato["nom"]==0)
+                       echo ' Tipo de nomina no definida'; 
+                }
+                    ?>
+            </td>
+        </tr>
+    <?php } ?>   
+
+<?php         
+$this->ncol='null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+        
+<?php
+// Variables para envio de datos excel maestro
+$this->spdf      = 1;// Activa la salida por PDf
+$this->modelo    = 'new \Principal\Model\AlbumTable($con)';// Modelo de consulta
+$this->funcion   = '$m->getOtauM('."''".')';
+$this->columnas  = "CEDULA, NOMBRE, APELLIDO,CARGO,GRUPO,CODIGO DEL CONCEPTO,NOMBRE DEL CONCEPTO,VALOR,TIPO DE NOMINA ";// Columnas
+$this->datos     = "CedEmp,nomEmp,apellido,nomCar,nomGrup,codigo,nomCon,valor,nomTnom";// Datos de impresion
+$this->filtros   = 1;
+echo $this->render('layout/tabla_p') ?>

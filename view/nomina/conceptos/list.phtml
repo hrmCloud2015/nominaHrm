@@ -1,0 +1,46 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php echo $this->render('layout/inuevo') ?></a>
+Listado de conceptos
+<?php
+  $this->idR = 31; // Id del reporte pre nomina
+  $this->idP = 1;
+  echo $this->render('layout/ipdfNom'); // Fin parametros    
+?>
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>            
+            <td><?php echo $dato["codigo"] ?></td>                        
+            <td><?php echo $dato["nombre"];
+            if ($dato["codigo"] != null)
+                echo ' ('.$dato["codigo"].')';
+                    ?></td>
+            <td><?php echo $dato["nomTipo"] ?></td>            
+            <td><?php echo $dato["nomVal"] ?></td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieditar') ?> </a>
+            </td>
+            <td>
+            <?php if ($dato["estado"]==0 ){ ?>                
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            <?php } ?>    
+            </td>            
+        </tr>
+    <?php } ?>
+       
+<?php
+// Variables para envio de datos excel maestro
+$this->spdf      = 1;// Activa la salida por PDf
+$this->modelo    = 'new \Principal\Model\AlbumTable($con)';// Modelo de consulta
+$this->funcion   = '$m->getConM('."''".')';
+$this->columnas  = "ID,CODIGO, CONCEPTO, TIPO,VAlOR";// Columnas
+$this->datos     = "id,codigo,nombre,nomTipo,nomVal";// Datos de impresion
+$this->filtros   = 1;
+echo $this->render('layout/tabla_p') ?>        
+
+<?php 
+$this->ncol='null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+

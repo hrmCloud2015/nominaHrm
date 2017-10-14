@@ -1,0 +1,118 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php 
+$this->th3 = "Manejo formulario ".$this->nomFor;
+//echo $this->render('layout/h3rojo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i/'.$this->id,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+  <div class="col-sm-4">Dia:<br />
+    <?php
+         $select = $form->get('tipo');
+         echo $this->formSelect($select);
+         echo $this->formElementErrors($select);
+    ?>               
+  </div>
+  <div class="col-sm-4">Dia:<br />
+    <?php echo $this->formElement($form->get('registrar')) ?>              
+  </div>
+
+</div>
+<hr />
+<hr/>
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<?php echo $this->form()->closeTag() ?>
+<?php foreach ($this->datos as $dato){ }?>
+
+<?php
+// Ordenar items de lista de chqueo
+$orden = 1;
+foreach ($this->datos as $dato){
+  $arreglo[$orden]=$orden;    
+  $orden++;
+}
+
+?>
+<div id='resultado'></div>
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td>
+             <?php
+                $select = $form->get('tipoC')->setAttribute("id", "orden".$dato["id"])
+                                             ->setAttribute("value", $dato["orden"] )
+                                             ->setValueOptions($arreglo);
+                echo $this->formSelect($select);
+                echo $this->formElementErrors($select);
+            ?>                   
+            </td>                        
+            <td><?php echo $dato["nombre"] ?></td>
+
+            <td>
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>
+            </td>                   
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id){  
+   var calMin = 0; 
+   var calMax = 0; 
+   var orden =  $("#orden"+id).val(); 
+
+   if ( $("#calMax"+id).length ) 
+   {
+      calMax = $("#calMax"+id).val(); 
+   }   
+   if ( $("#calMin"+id).length ) 
+   {
+      calMin = $("#calMin"+id).val(); 
+   }      
+   var parametros = {
+       "id"     : id,       
+       "calMin" : calMin,
+       "calMax" : calMax,
+       "orden" : orden,
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+   }); // Fin ajax        
+};
+</script>           
+
+        
+<?php echo $this->render('layout/iregresar') ?> 

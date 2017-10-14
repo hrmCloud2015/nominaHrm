@@ -1,0 +1,8 @@
+<?php echo $this->valor; ?>
+
+<?php
+    $name = $form->get('verPer')->setAttribute("value",$this->verPer);
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>                
+

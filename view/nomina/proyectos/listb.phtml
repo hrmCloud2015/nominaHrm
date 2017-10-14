@@ -1,0 +1,353 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i/'.$this->id,
+    'method' => 'post',
+    'id' => 'formGuardar',
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id'); // id de la matriz 
+    echo $this->formInput($name);    
+?>
+<?php    
+    $name = $form->get('id2');
+    echo $this->formInput($name);    
+?>    
+<div id="Vnuevo1" title="Agregar nuevos registros">
+
+<div class="row">    
+  <div class="col-sm-5">Empleado:<br />
+      <?php
+      $select = $form->get('idEmp')->setAttribute("id","idEmp");
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+      <div id='resultadoD'></div>      
+  </div> 
+
+  <div class="col-sm-2">Por programacion<br />
+      <?php
+      $select = $form->get('tipo')->setAttribute("id","prog");
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+  </div> 
+
+  <div class="col-sm-2">Liquidado por<br />
+      <?php
+      $select = $form->get('tipo1')->setAttribute("id","horasLiq");
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+  </div>      
+
+  <div class="col-sm-2">Desde el:<br />
+     <?php
+        $name = $form->get('fechaIni');
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);?>
+  </div>         
+  <div class="col-sm-2">hasta el:<br />
+     <?php
+        $name = $form->get('fechaFin');
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);?>
+  </div>           
+</div>
+<hr />
+<div class="row">    
+  <div class="col-sm-2">Horas trabajo:<br />
+  <?php
+    $name = $form->get('numero')->setAttribute("value",240)
+                                ->setAttribute("id","horas")  ;
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>
+
+  </div>
+  <div class="col-sm-2">Sueldo asignado:<br />
+  <?php
+    $name = $form->get('numero2')->setAttribute("value",0)
+                                 ->setAttribute("id","sueldo");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>
+  </div>
+  <div class="col-sm-7">Puesto predeterminado : ( ( SEDE ) - PUESTO )<br />
+      <?php
+      $select = $form->get('idPtra')->setAttribute("id","idPtra");
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+  </div>       
+   <div class="col-sm-2"><br />
+     <?php echo $this->formElement($form->get('registrar')) ?>
+   </div> 
+</div>
+
+</div><!-- fIN VENTANA MODAL NUEVOS REGISTROS -->
+<hr />
+<?php echo $this->form()->closeTag() ?>
+
+<a class="fa fa-home blue bigger-120" href="<?php echo $this->basePath() ?><?php echo $this->lin?>p/<?php echo $this->id?>">VER PUESTOS DE TRABAJO DEL PROYECTO</a>
+
+<hr />                    
+<div id="resultadoR"></div>
+<!-- LISTADO DE EMPLEADOS EN CURSO -->
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php 
+    $arreglo[0] = 'Fijo';
+    $arreglo[1] = 'Relevante';
+
+    foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php           
+            foreach ($this->datTtra as $dat) 
+            {
+                if ($dat["idEmp"]==$dato["idEmp"])
+                {  
+                    echo $this->render('layout/ifortaleza') ;
+                    echo '<strong>'.$dat["nomPtra"].'</strong><hr />'; ?>
+                 
+                    <a href="#modal-form_puesto" id ="<?php echo $dat["id"] ?>" role="button" class="blue3" data-toggle="modal">
+   
+                    <i class="fa fa-exchange orange bigger-100"></i>
+                     <strong>Cambiar puesto de trabajo</strong>   
+                    </a>
+            <?php   
+                }    
+            }  ?> 
+            </td>        
+            <td><?php echo $dato["CedEmp"].'-'.$dato["nombre"].' '.$dato["apellido"];
+            if ($dato["prog"]!='')
+               echo '<br /><strong>('.$dato["prog"].')</strong>' ;   
+             ?></td>                       
+            <td><?php echo $dato["nomCar"] ?></td>
+
+            <td><?php           
+            foreach ($this->datTtra as $dat) 
+            {
+                if ($dat["idEmp"]==$dato["idEmp"])
+                {  
+                  echo '<strong>'.$dat["nomSed"].' </strong><br />';
+                }    
+            }  ?> 
+            </td>
+            <td><?php   
+            echo number_format($dato["sueldo"]) ?></td>                                    
+            <td><?php echo $dato["horas"];
+            if ($dato["horasLiq"]!='')
+            {
+               echo '('.$dato["horasLiq"].')' ;   
+            }  
+             ?>
+               
+                            <?php
+                $select = $form->get('tipoC')->setAttribute("id", "relevo".$dato["id"])
+                                             ->setAttribute("value", $dato["relevante"] )
+                                             ->setValueOptions($arreglo);
+                echo $this->formSelect($select);
+                echo $this->formElementErrors($select);
+            ?> 
+             </td>                                    
+            
+                      
+            <td><?php echo $dato["fechaI"].' - '.$dato["fechaF"] ?>
+            </td>                                    
+            <td class="col-sm-1">
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>
+            </td> 
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> 
+                    <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php
+// Variables para envio de datos excel maestro
+$this->spdf      = 1;// Activa la salida por PDf
+$this->modelo    = 'new \Principal\Model\AlbumTable($con)';// Modelo de consulta
+$this->funcion   = '$m->getDnovedades( '."''".')';
+$this->columnas  = "CEDULA, NOMBRES, APELLIDOS, CONCEPTO,SUELDO, HORAS, DEVENGADO, DEDUCIDO, FECHA , FECHA ";// Columnas
+$this->datos     = "CedEmp,nomEmp,apeEmp,nomConc,sueldo,horas,devengado,deducido,fechaI,fechaF";// Datos de impresion
+$this->filtros   = 1;
+echo $this->render('layout/tabla_p') ?>  
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+<script>    
+$(function() {         
+  $('.blue3').click(function(){ 
+      var id  = $(this).attr('id'); 
+      $("#id2").val(id);
+   });   
+  // BUSCAR PUESTOS DE TRABAJO 
+$('#agregar').click(function(){ 
+      var id  = $("#id").val();
+      var nombre = $("#buscar").val(); // id Cotizacion            
+      var parametros = {
+         "idReq" :  id,         
+         "nombre" : nombre,
+      };  
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pt',
+             beforeSend: function () {
+                 $("#resultadoPT").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoPT").html(response); 
+               }
+       }); // Fin ajax            
+
+});  //Puestos de trabajo          
+   /// VENTANA NEUVOS DATOS ////  
+   $( "#Vnuevo" ).dialog({
+      autoOpen: false,
+      height: 800,
+      width: 900,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); // FIN VENTANA COMPETENCIAS     
+}); 
+// Agregar nuvo registro
+function nuevo()
+{        
+ $( "#Vnuevo" ).dialog( "open" );     
+}; 
+    $('#idEmp').change(function(){    
+        var id = $("#idEmp").val();
+        var parametros = {
+               "idEmp" : id,
+            };  
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>e',
+            type:  'post',
+            beforeSend: function () {
+                $('#resultadoD').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#resultadoD').html(response);
+            }
+        });                        
+    });       
+// VALIDACIONES 
+$( "#formGuardar" ).submit(function( event ) {
+
+   var tipo  = $("#idEmp").val(); // id empleados
+   if (tipo == '')
+   {
+       alert('Seleccione el empleado');
+       event.preventDefault();
+       return false;
+   }   
+
+   var tipo  = $("#idPtra").val(); 
+   if (tipo == '')
+   {
+       alert('Seleccione la sede y puesto de trabajo');
+       event.preventDefault();
+       return false;
+   }
+   var tipo  = $("#sueldo").val(); 
+   if (tipo == '')
+   {
+       alert('Digite el sueldo por proyecto o coloque 0');
+       event.preventDefault();
+       return false;
+   }   
+   var tipo  = $("#horas").val(); 
+   if (tipo == '')
+   {
+       alert('Digite las horas proproyecto');
+       event.preventDefault();
+       return false;
+   }      
+
+   if ($('#numero2').length){
+      var tipo  = $("#numero2").val(); // 
+      if (tipo == '')
+      {
+         alert('Digite un valor');
+         event.preventDefault();
+         return false;
+      }   
+   }   
+});     
+// Moficicacion en registro de novedades 
+function editarN(id){  
+   var relevo =  $("#relevo"+id).val(); 
+
+   var parametros = {
+       "id"     : id,       
+       "relevo" : relevo,
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pge',
+           beforeSend: function () {
+              $("#resultadoR").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultadoR").html(response);                    
+             }
+   }); // Fin ajax        
+};
+</script> 
+    
+<?php 
+$this->ncol='null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+
+
+<!-- VENTANA MODAL PUESTOS DE TRABAJO -->
+<div id="modal-form_puesto" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="blue bigger">Puestos de trabajo</h4>
+      </div>
+      <div class="modal-body">
+
+    <?php
+
+    $name = $form->get('nombre')->setAttribute("id","buscar");
+    echo $formLabel->openTag()."Buscar puestos de trabajo: ";
+    echo $formLabel->closeTag();
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);         
+    echo $this->formElement($form->get('buscar')->setAttribute("id","agregar") ); 
+   ?>  
+   <hr />
+          <div id="resultadoPT"></div>
+
+      </div>
+    </div><!-- fin contenido modal-->
+    <div class="modal-footer">
+      <button class="btn btn-sm" data-dismiss="modal">
+        <i class="ace-icon fa fa-times"></i>
+         Salir
+      </button>
+    </div>
+  </div>
+</div><!-- FIN VENTANA DE PUESTOS DE TRABAJO -->    

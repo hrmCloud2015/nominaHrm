@@ -1,0 +1,163 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+    
+    $name = $form->get('id2'); // TRuco para no guardar varias veces el resitro QUITAR
+    echo $this->formInput($name);        
+?>
+<?php echo $this->form()->closeTag() ?>
+<div class="row">    
+  <div class="col-sm-4">Empleado:<br />
+      <?php
+      $select = $form->get('idEmp')->setAttribute("id","idEmp");
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+      <div id='resultadoD'></div><!-- Datos del cargo -->            
+  </div>
+  <div class="col-sm-2">Aplicar en nomina:<br />
+      <?php
+      $select = $form->get('tipo');
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+  </div>  
+  <div class="col-sm-2">Estado del documento:<br />
+      <?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+      ?>
+  </div>
+    <div class="col-sm-2">Cerrar periodos(Saldo inicial):<br />
+    <?php
+      $select = $form->get('check3')->setAttribute("id","cerrar");
+    echo $this->formCheckbox($select); ?>
+    </div>  
+    <div class="col-sm-2">Pagar dia 31:<br />
+    <?php
+      $select = $form->get('check4')->setAttribute("id","dia31");
+    echo $this->formCheckbox($select); ?>
+    </div> 
+
+  <div class="col-sm-2">  
+    <?php echo $this->formElement($form->get('buscar')->setAttribute("id","buscarPeriodos")) ?>
+  </div>       
+</div>    
+
+    
+ <?php 
+ $this->th3='Periodos pendientes';
+ echo $this->render('layout/h3rojo') ?>
+
+<div align="right">    
+    <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>">Ver historial</a>                                                
+</div>                 
+
+<div id='resultado'></div>
+
+<script>  
+ $(function (){     
+     // Iniciar 
+     var id   = $("#id").val(); 
+
+     if (id>0)
+     {
+         var idEmp   = $("#idEmp").val();  
+         var parametros = {
+             "id"     : id,
+             "idEmp"  : idEmp,
+           };         
+
+           $.ajax({
+              data:  parametros,     
+              type:  'post',
+              url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>ag',
+              beforeSend: function () {
+                  $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Buscando periodos por favor espere...');
+              },
+               success:  function (response) {
+                  $("#resultado").html(response);  
+                  //   alert("Cuotas registradas de forma correcta")
+               }
+           }); // Fin ajax                                                                                                               
+     }
+     // Recalcular con click
+     $('#buscarPeriodos').click(function(){ 
+       var idEmp   = $("#idEmp").val();  
+       if (idEmp=='')   
+       {
+          alert('Debe seleccionar a algun empleado')    
+          return false;
+       }
+       var parametros = {
+            "idEmp"   : idEmp,
+       };         
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>ag',
+             beforeSend: function () {
+                 $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultado").html(response);  
+                 //alert("Vacaciones registradas de forma correcta")
+                 
+              }
+         }); // Fin ajax                                                                                             
+     });
+
+
+    $('#idEmp').change(function(){    
+        var id = $("#idEmp").val();
+        var parametros = {
+               "idEmp" : id,
+            };  
+        // Datos del cargo    
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>e',
+            type:  'post',
+            beforeSend: function () {
+                $('#resultadoD').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#resultadoD').html(response);
+            }
+        });                        
+        // Datos del proyecto
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>cp',
+            type:  'post',
+            beforeSend: function () {
+                $('#resultadoP').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#resultadoP').html(response);
+            }
+        });                        
+
+    });        
+
+
+ })
+</script> 
+
+
+<?php echo $this->render('layout/iregresar') ?>    
+

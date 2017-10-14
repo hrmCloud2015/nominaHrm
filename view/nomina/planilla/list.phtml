@@ -1,0 +1,131 @@
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php 
+$this->nuevo='Generar una nueva planilla';
+echo $this->render('layout/inuevo') ?></a>
+
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td class="col-sm-1"></td>
+            <td class="col-sm-1"><?php echo $dato["id"]; ?></td>          
+            <td><?php echo $dato["fecha"]; ?></td>
+            <td><?php echo $dato["ano"].' - '.$dato["mes"]; ?></td>            
+            <td>
+             <?php if ($dato["estado"]==0){ ?>               
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>g/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/iitems') ?> </a>
+             <?php }else{ ?>                               
+              <?php echo $this->render('layout/iok') ?> 
+             <?php } ?>                  
+            </td>
+            <td>
+             <?php echo $dato["numEmp"] ?>            
+             <?php if ( ($dato["estado"]==1) or ($dato["estado"]==2) ){ ?>               
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>i/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ipersonal') ?> </a>
+             <?php } ?>                              
+            </td>  
+            <td class="col-sm-3">
+             Plano General  
+             <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>plano/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> </a>
+               <hr />
+             Plano General nuevo formato  
+             <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>planon/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> </a>
+               <hr />
+               <i class="ace-icon fa fa-globe bigger-120 blue">Sucursales</i> 
+               <br /> 
+              <?php
+                // PLANOS POR SUCURSALES  NUEVO FORMATO 
+                foreach ($datPla as $datPl) 
+                {
+                  if ($datPl['idPla']==$dato["id"]){ ?>
+                   <br />                    
+                   <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>planon/<?php echo $dato["id"]?><?php echo '.'.$datPl['codSuc']?>"> <?php echo $this->render('layout/ifortaleza') ;?> 
+                      <?php echo 'Cod:'.$datPl['codSuc'].'-'.$datPl["nombre"].' ('.$datPl["num"].' emp) '; ?>
+                   </a>
+
+              <?php }
+                 } 
+              ?>              
+             <hr />                
+               <i class="ace-icon fa fa-globe bigger-120 blue">Sucursales</i> 
+               <br /> 
+              <?php
+                // PLANOS POR SUCURSALES  
+                foreach ($datPla as $datPl) 
+                {
+                  if ($datPl['idPla']==$dato["id"]){ ?>
+                   <br />                    
+                   <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>planon/<?php echo $dato["id"]?><?php echo '.'.$datPl['codSuc']?>"> <?php echo $this->render('layout/ifortaleza') ;?> 
+                      <?php echo 'Cod:'.$datPl['codSuc'].'-'.$datPl["nombre"].' ('.$datPl["num"].' emp) '; ?>
+                   </a>
+
+              <?php }
+                 } 
+              ?>
+
+            </td>              
+            <td>
+                <?php // Parametros para impresion de documento 
+                $this->idR = 39; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros ?>                
+                
+            </td>            
+            <td>
+                <?php // Parametros para impresion de documento 
+                $this->idR = 103; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros ?>
+
+            <!-- ENVIO A EXCEL PROVISIONES  -->
+            <?php    
+            $form = $this->form;
+                $form->prepare();
+
+                $form->setAttributes(array(
+                    'action' => $this->url.$this->lin.'excelprov',
+                    'method' => 'post',
+                    'target' => '_blank',
+                    'id'     => 'excel',
+                    'name'   => 'excel',
+                ));
+                // Get the form label plugin
+                $formLabel = $this->plugin('formLabel');
+                // Abriendo etiqueta del formulario
+                echo $this->form()->openTag($form);
+                $name = $form->get('id')->setAttribute("value",$dato["id"]);
+                echo $this->formInput($name);    
+             ?>    
+             <div class="col-sm-2"><br />
+
+              <button class="btn btn-white btn-pink btn-sm">Excel planilla</button>     
+             </div>
+            </div>    
+            <?php echo $this->form()->closeTag() ?>                                                                 
+            </td>                        
+            <td>
+            <?php if (  $dato["integrada"]==0) {?>
+              <?php if ( ($dato["estado"]==0) or ($dato["estado"]==1)  ){ ?>  
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+              <?php } ?>    
+            <?php } ?>      
+            </td>    
+            <td>              
+              <?php if (  $dato["estado"]==1) {?>
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>c/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/icerrar') ?> </a>
+              <?php } ?>
+            </td>                    
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+        
+        
+        

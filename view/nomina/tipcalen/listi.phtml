@@ -1,0 +1,102 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+
+?>
+
+<div id="resultado"></div>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>
+            <td><?php echo $dato["nomTnom"] ?></td>
+            <td><?php echo $dato["nomGrupo"] ?></td>
+            <td><?php 
+               echo ($this->formRow($form->get('fecha')
+                                   ->setAttribute("value", $dato["fechaI"] )
+                                   ->setAttribute("id", "fechaI".$dato["id"]) ));
+             ?></td>
+            <td><?php 
+               echo ($this->formRow($form->get('fecha')
+                                   ->setAttribute("value", $dato["fechaF"] )
+                                   ->setAttribute("id", "fechaF".$dato["id"]) ));
+             ?></td>
+            <td><?php 
+               echo ($this->formRow($form->get('fecha')
+                                   ->setAttribute("value", $dato["fechaInfoI"] )
+                                   ->setAttribute("id", "fechaInfoI".$dato["id"]) ));            
+             ?></td>
+            <td><?php 
+               echo ($this->formRow($form->get('fecha')
+                                   ->setAttribute("value", $dato["fechaInfoF"] )
+                                   ->setAttribute("id", "fechaInfoF".$dato["id"]) ));                        
+            ?></td>
+            <td>
+  <?php
+    $arreglo[0] = 'Pendiente';
+    $arreglo[1] = 'Cerrado';
+    $select = $form->get('tipoC')
+                   ->setAttribute("value", $dato["estado"] )
+                   ->setAttribute("id", "estado".$dato["id"])
+                   ->setValueOptions($arreglo);
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>            
+            </td>
+            <td>   
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>                            	
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+<?php echo $this->render('layout/iregresar') ?>
+
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id){  
+   var fechaI =  $("#fechaI"+id).val(); 
+   var fechaF =  $("#fechaF"+id).val(); 
+   var fechaInfoI = $("#fechaInfoI"+id).val(); 
+   var fechaInfoF = $("#fechaInfoF"+id).val(); 
+   var estado = $("#estado"+id).val(); 
+
+   var parametros = {
+       "id"     : id,       
+       "fechaI" : fechaI,
+       "fechaF" : fechaF,
+       "fechaInfoI" : fechaInfoI,
+       "fechaInfoF" : fechaInfoF,
+       "estado" : estado, 
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+   }); // Fin ajax        
+};
+</script>           
+
+
+

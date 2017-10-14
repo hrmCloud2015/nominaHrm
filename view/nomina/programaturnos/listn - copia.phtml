@@ -1,0 +1,54 @@
+      <?php
+           $sw = 0;      
+           foreach ( $this->datNovR as $dat) 
+           {
+              if ($sw == 0 )
+              {
+                echo '<hr />';
+                echo '<strong>   REEMPLAZO ACTUAL</strong>';
+              }    
+              echo $this->render('layout/icambio'); 
+              echo '<strong>'.$dat['CedEmp'].' - '.$dat['nombre'].' '.$dat['apellido'].'</strong>'; 
+           }   
+           $sw = 1;      
+           ?> 
+    
+          <hr />
+          <?php
+           // Empleados con dia de descanzo 
+           foreach ( $this->datNov as $dat) 
+           {
+              $idEmp = $dat['idEmp'];        
+           ?> 
+          <div class="col-sm-1"></div>
+            <i class="ace-icon fa fa-bolt bigger-110 purple"></i>   
+            <?php echo '<strong>'.$dat['nomEmp'].' '.$dat['nomApe'].' </strong>('.$dat['nomPues'].' )'; ?>
+
+             <a href="javascript:editarR(<?php echo $idEmp; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+             </a>            
+
+            <?php
+              echo '<br />';
+            ?>
+            <?php } // Fin recorrido empelados ?>
+
+          <?php
+           // Empleados relevantes
+           foreach ( $this->datRel as $dat) 
+           {
+              $idEmp = $dat['idEmp'];        
+           ?> 
+          <div class="col-sm-1"></div>
+            <i class="ace-icon fa fa-bolt bigger-110 purple"></i>   
+            <?php echo $dat['nomEmp'].' '.$dat['nomApe'].' ( Relevante )'; ?>
+
+             <a href="javascript:editarR(<?php echo $idEmp; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+             </a>            
+
+            <?php
+              echo '<br />';
+            ?>
+            <?php } // Fin recorrido empelados relevantes ?>            
+
+
+

@@ -1,0 +1,54 @@
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<?php echo $this->form()->closeTag() ?>
+
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["CedEmp"] ?></td>              
+            <td>
+                <?php echo $dato["nombre"] ?>
+           <?php if ( ($dato["idVac"]>0) and ($dato["vacAct"]!=2) ) { ?>                
+             <?php echo $this->render('layout/ivacaciones') ?>
+           <?php } ?>                            
+           <?php if ($dato["idInc"]>0){ ?>                
+             <?php echo $this->render('layout/iincapacidad') ?>
+           <?php } ?>                                            
+           <?php if ($dato["idAus"]>0){ ?>                
+             <?php echo $this->render('layout/iausente') ?>
+           <?php } ?>                                                            
+            </td>            
+            <td><?php echo $dato["apellido"] ?></td>  
+            <td><?php echo $dato["nomCar"] ?></td>              
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>in/<?php echo $dato["idInom"]?>" target="_blank"> <?php echo $this->render('layout/iitems') ?> </a>
+            </td>
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+
+<?php echo $this->render('layout/iregresar') ?> 

@@ -1,0 +1,148 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+<div class="col-sm-4">Concepto de nomina:<br />
+  <?php
+    $select = $form->get('tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+</div> 
+<div class="col-sm-2">Valor / hora:<br />
+  <?php
+    $name = $form->get('numero');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>  
+</div> 
+<div class="col-sm-2"><br />
+<?php
+    $select = $form->get('check1');
+    echo $this->formCheckbox($select);
+?><span class="lbl"></span>Horas del calendario
+</div> 
+</div>
+<hr />
+
+<div class="row">    
+<div class="col-sm-4">Centro de costo:<br />
+  <?php
+    $select = $form->get('idCencos');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+</div> 
+<div class="col-sm-4"><br />
+<?php
+    $select = $form->get('check2');
+    echo $this->formCheckbox($select);
+?><span class="lbl"></span>Centro de costo del empleado    
+</div>
+</div>
+
+<hr />
+<div class="form_element">
+  <?php
+    $select = $form->get('check3');
+    echo $this->formCheckbox($select);
+  ?><span class="lbl"></span>Afectado por dias laborados
+</div> 
+<hr />
+<div class="form_element">
+  <?php
+    $select = $form->get('check4');
+    echo $this->formCheckbox($select);
+  ?><span class="lbl"></span>Se tiene en cuenta antes de salir a vacaciones por calendario
+</div> 
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('agregar')) ?>
+</div>  
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<?php echo $this->form()->closeTag() ?>
+
+
+<div id='resultado'></div>
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["idCon"] ?></td>
+            <td><?php echo $dato["codigo"] ?></td>                    
+            <td><?php echo $dato["nombre"] ?></td>
+            <td>
+             <?php
+             if ( $dato["horasCal"] == 1 )
+               echo $dato["horas"] ;
+             else 
+             { 
+               echo ($this->formRow($form->get('horaG')
+                                   ->setAttribute("value", $dato["horas"] )
+                                   ->setAttribute("step", "any" )
+                                   ->setAttribute("id", "valor".$dato["id"]) ));                       
+             ?>    
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>                       
+            <?php }?>  
+            </td>
+            <td><?php echo $dato["nomCcos"] ?></td>
+            <td><?php echo $dato["diasLab"] ?>
+            <?php if ($dato["vaca"]==1){ ?>
+            <hr />
+             Se tiene en cuenta antes de salir a vacaciones por calendario 
+            <?php } ?>    
+            </td>
+            <td><?php echo $dato["periodo"] ?></td>
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+<?php 
+$this->ncol='null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>
+
+<?php echo $this->render('layout/iregresar') ?> 
+
+
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id){  
+   var valor =  $("#valor"+id).val(); 
+
+   var parametros = {
+       "id"     : id,       
+       "valor" : valor,
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+   }); // Fin ajax        
+};
+</script>           

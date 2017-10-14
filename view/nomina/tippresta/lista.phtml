@@ -1,0 +1,114 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post',
+    "id"  => "formGuaradar"
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+<div class="col-sm-4">Nombre:<br />
+<?php
+    $name = $form->get('nombre')->setAttribute("id","nombre");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+    ?>
+</div>
+<div class="col-sm-4">Nomina afectada por ingreso en prestamo rapido:<br />    
+<?php
+    $select = $form->get('idTnom')->setAttribute("id","idTnom");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>    
+</div>
+<div class="col-sm-4">Concepto de descuento en nomina:<br />        
+<?php
+    $select = $form->get('tipo')->setAttribute("id","idCon");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+</div>
+<hr />
+<div class="row">        
+<div class="col-sm-4">Concepto de salida de dinero:<br />        
+<?php
+    $select = $form->get('idConc');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+
+<div class="col-sm-4">Cuenta credito en causacion:<br />
+<?php
+    $select = $form->get('tipo1')->setAttribute("id","cuenta");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+<div class="col-sm-4">Tipo de prestamo:<br />        
+<?php
+    $select = $form->get('tipo3');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div>
+</div>    
+<hr />
+<div class="row">        
+<div class="col-sm-4">Tipos de nomina afectadas por el prestamo:<br />        
+<?php
+    $select = $form->get('idTnomm')->setAttribute("id","idTnomm");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div> 
+</div>
+    
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+
+<script>      
+$("#formGuaradar").submit(function( event ){
+  if ( $("#nombre").val()==0)
+  {
+      alert('Por favor digita el nombre del tipo de prestamo') 
+      event.preventDefault();
+      $("#nombre").focus();
+      return false;
+  }
+  if ( $("#idCon").val()==0)
+  {
+      alert('Por favor seleccione el concepto de descuento en nomina') 
+      event.preventDefault();
+      $("#idCon").focus();
+      return false;
+  }
+  if ( $("#idTnomm").val().lenght < 0 )
+  {
+      alert('Por favor seleccione al menos una nomina afectada por el tipo de prestamo') 
+      event.preventDefault();
+      $("#idTnomm").focus();
+      return false;
+  }
+});  
+</script>

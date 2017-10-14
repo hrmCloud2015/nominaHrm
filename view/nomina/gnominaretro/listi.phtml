@@ -1,0 +1,42 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["NomEmp1"].' '.$dato["NomEmp2"] ?></td>            
+            <td><?php echo $dato["ApeEmp1"].' '.$dato["ApeEmp2"] ?></td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>in/<?php echo $dato["idInom"]?>"> <?php echo $this->render('layout/iitems') ?> </a>
+            </td>
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+        
+<?php echo $this->render('layout/iregresar') ?> 

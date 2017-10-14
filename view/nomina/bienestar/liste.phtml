@@ -1,0 +1,41 @@
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["CedEmp"] ?></td>            
+            <td>
+              <?php if ( ($dato["idVac"]>0) and ($dato["vacAct"]>0) ) { ?>                
+                <?php echo $this->render('layout/ivacaciones') ?>
+              <?php } ?>                                            
+               <?php if ($dato["activo"]==1){ ?>  
+                <?php echo $this->render('layout/iinactivo') ?>
+              <?php } ?>                             
+               <?php if ($dato["estado"]==2){ ?>  
+                <?php echo $this->render('layout/iinactivo') ?>
+              <?php } ?>                                              
+           <?php if ($dato["idInc"]>0){ ?>                
+             <?php echo $this->render('layout/iincapacidad') ?>
+           <?php } ?>                                                            
+              <?php echo $dato["nombre"]?>            
+            </td>
+            <td><?php echo $dato["apellido"] ?></td>
+            <td><?php echo $dato["nomCar"] ?></td>
+            <td>
+                <?php // Parametros para impresion de documento 
+                $this->idR = 18; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros ?>
+            </td>                                       
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>" target='_blank'><?php echo $this->render('layout/ieditar') ?> </a>
+            </td>
+        </tr>
+    <?php } ?>
+  <?php echo $this->render('layout/tabla_p') ?>       
+        
+<?php 
+$this->ncol='null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+<?php if ( $this->bus == 1 ) { ?>
+  <?php echo $this->render('layout/iregresar') ?>    
+<?php } ?>

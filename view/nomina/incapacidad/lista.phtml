@@ -1,0 +1,501 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<div class="tabbable">
+  <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+	<li class="active">
+	    <a data-toggle="tab" href="#datos">Documento de incapacidad</a>
+	</li>
+	<li>
+	    <a data-toggle="tab" href="#prorrogra">Prórrogas <?php if ($this->datosTp['numP']>0) echo '('.$this->datosTp['numP'].')'; ?>  </a>
+	</li>
+
+  </ul>
+
+  <div class="tab-content"> 
+      
+      <div id="datos" class="tab-pane in active"><!-- DATOS BASICOS -->             
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a/'.$this->id,
+    'method' => 'post',
+    'id'     => 'formGuaradar'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">
+<div class="col-sm-4">Empleado:<br />    
+<?php if ($this->estado==0){?>  
+    <?php
+    $select = $form->get('idEmp')->setAttribute("id", "idEmp");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+<?php }else echo '<strong>'.$this->datos['CedEmp'].'-'.$this->datos['nombre'].'
+                              '.$this->datos['apellido'].' </strong>' ;?>   
+</div> 
+<div class="col-sm-4">Tipo de incapacidad:<br />
+<?php if ($this->estado==0){?>
+<?php
+    $select = $form->get('idInc')->setAttribute("id", "idInc");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+<?php }else echo '<strong>'.$this->datos['nomTinc'].'</strong>' ;?>   
+
+</div> 
+<div class="col-sm-2">Estado del documento:<br />
+<?php if ($this->estado==0){?>
+  <?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+?>     
+<?php }else echo '<strong>Aprobado</strong>';?>   
+</div> 
+</div>     
+<hr />
+<div class="row">
+<div class="col-sm-2">Desde el:<br />    
+<?php if ($this->estado==0){?>    
+<?php
+    $name = $form->get('fechaIni')->setAttribute("id", "fechaIni");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);?>
+<?php }else echo '<strong>'.$this->datos['fechai'].'</strong>' ;?>       
+</div>    
+
+<div class="col-sm-2">Hasta el:<br />    
+<?php if ($this->estado==0){?>  
+<?php    
+    $name = $form->get('fechaFin')->setAttribute("id", "fechaFin");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);    
+?>
+<?php }else echo '<strong>'.$this->datos['fechaf'].'</strong>' ;?>   
+</div>
+
+     <div class="col-sm-4">Codigo de enfermedad:<br />
+<?php if ($this->estado==0){?>        
+<?php
+    $select = $form->get('tipo2');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+<?php }else echo '<strong>'.$this->datos['nomEnf'].'</strong>' ;?>   
+      </div>
+</div>
+<div id="resultado"></div>   
+<hr />
+<div class="control-group">
+  <?php if ($this->estado==0){?>        
+    <?php echo ($this->formRow($form->get('comen'))); ?>
+ <?php }else echo '<strong>'.$this->datos['comen'].'</strong>' ;?>      
+</div>  
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<?php if ($this->estado==0)
+{?>
+  <div class="form-actions">    
+    <?php echo $this->formElement($form->get('send')) ?>
+  </div>    
+<?php } ?>  
+<?php echo $this->form()->closeTag() ?>
+
+<?php 
+// Validacion pago de incapacidad por la eps
+if ($this->estado==1){?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'c/'.$this->id,
+    'method' => 'post',
+    'id'     => 'formGuaradarC'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<?php if ($this->cobrada != 1)
+{?>
+  <h3 class="header smaller lighter red">Registro de cobro de incapacidad</h3>
+
+<div class="row">
+  <div class="col-sm-4">Estado de la incapacidad:<br />
+  <?php
+       $arreglo = array("0"=>"", 
+                        "4"=>"No aplica ( 2 dias )", 
+                        "3"=>"No transcrita",
+                        "2"=>"Transcrita",
+                        "1"=>"Pagada");              
+       $select = $form->get('estado')->setValueOptions($arreglo)
+                                     ->setAttribute("value", $this->cobrada) ;
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);  
+   ?>     
+  </div> 
+  <div class="col-sm-2">Fecha de registro:<br />    
+  <?php
+    $name = $form->get('fechaIni')->setAttribute("id", "fechaIni");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);?>
+  </div>    
+</div>    
+<hr />
+<div class="row">
+  <div class="control-group">Observaciones:<br />    
+    <?php echo ($this->formRow($form->get('comenN'))); ?>
+  </div>  
+  <div class="control-group">    
+  <?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+  ?>    
+  </div>
+  <div class="col-sm-4"><br />    
+    <?php echo $this->formElement($form->get('registrar')) ?>
+  </div>    
+</div>    
+<?php }else{
+ echo '<strong>INCAPACIDAD PAGADA</strong>';
+
+} ?>  
+<?php echo $this->form()->closeTag() ?>
+
+
+<?php }?>     
+
+</div><!-- FIN DATOS BASICOS -->    
+
+
+<div id="prorrogra" class="tab-pane in active"><!-- PRORROGRA-->              
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'ap/'.$this->id,
+    'method' => 'post',
+    'id'     => 'formGuaradarP'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<?php    
+    $name = $form->get('id2'); // id de la incapacidad
+    echo $this->formInput($name);    
+?>    
+<?php    
+    $name = $form->get('id3');// id del empleado
+    echo $this->formInput($name);    
+?>    
+
+<br />
+<div class="row">
+<div class="col-sm-3"><strong> Fecha final incapacidad</strong> 
+<?php
+    $name = $form->get('fecDoc')->setAttribute("readOnly",true)
+                                ->setAttribute("id","fecDocI")
+                                ->setAttribute("value",$this->datInc['fechaF'] );
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);?>
+</div>    
+</div>   
+<hr />
+
+<div class="row">
+<div class="col-sm-2">Prórroga desde el:<br />    
+<?php    
+    $name = $form->get('fecIng')->setAttribute("id", "fechaIp");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);    
+?>
+</div>
+
+<div class="col-sm-2">hasta el:<br />    
+<?php    
+    $name = $form->get('fecIng2')->setAttribute("id", "fechaFp");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);    
+?>
+</div>
+  <div class="col-sm-4">Observación:<br />    
+    <?php echo ($this->formRow($form->get('comenN'))); ?>
+</div>
+<?php echo $this->formElement($form->get('agregar2')) ?>
+</div>
+<hr />
+
+<?php // Datos de las prorrogras
+$this->th3  = "Prórrogas";
+echo $this->render('layout/h3rojo') ?>
+
+<?php echo $this->form()->closeTag(); $num = 1; ?>
+
+
+<table class="table table-striped table-bordered table-hover" id="table_report">
+ <thead>
+  <tr>
+    <th width="11%">id</th>
+    <th width="11%">Fecha de registro</th>
+    <th width="11%">Fecha de inicio</th>
+    <th width="11%">Fecha final</th>    
+    <th width="11%">Observación</th>        
+    <th width="11%">Eliminar</th>        
+  </tr>
+ </thead>
+    <?php foreach ($this->datosP as $dato){ ?>
+        <tr>
+            <td><?php echo $num; $num++; ?></td>                            
+            <td><?php echo $dato["fecha"]; ?></td>                    
+            <td><?php echo $dato["fechai"]; ?></td>            
+            <td><?php echo $dato["fechaf"]; ?></td>            
+            <td><?php echo $dato["comen"]; ?></td>                        
+            <td>
+              <?php if ($dato["estado"]==0){?>        
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>pd/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+              <?php } ?>          
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+
+
+
+</div> <!-- FIN PRORROGRA -->                                             
+</div> 
+
+<?php echo $this->render('layout/iregresar') ?> 
+   
+    
+
+<script>         
+// Validar final del periodo 
+$( "#fechaFin" ).focusout(function(){ 
+   var a = $("#idInc").val(); 
+   var b = $("#idEmp").val(); 
+   var c = $("#fechaIni").val();    
+   var d = $("#fechaFin").val();    
+
+   if ( b == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      //alert('Seleccionar al empleado');
+      //return false;
+   }   
+
+   // Valdiar periodo
+   var parametros = {
+       "idInc" : a,                
+       "idEmp"   : b,                
+       "fechaIni": c,                
+       "fechaFin": d,                       
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });           
+});
+
+
+$( "#idInc" ).change(function(){ 
+ //   alert(1)
+});    
+//// Buscar fecha del periodo /////
+$( "#idEmp" ).change(function(){ 
+   var a = $("#idInc").val(); 
+   var b = $("#idEmp").val(); 
+   var c = $("#fechaIni").val(); 
+//alert(1)   
+   // Valdiar periodo
+   var parametros = {
+       "idInc" : a,                
+       "idEmp"   : b,                
+       "fechaIni": c,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });          
+});
+$( "#idInc" ).change(function(){ 
+   var a = $("#idInc").val(); 
+   var b = $("#idEmp").val(); 
+   var c = $("#fechaIni").val();    
+   
+   // Valdiar periodo
+   var parametros = {
+       "idInc" : a,                
+       "idEmp"   : b,                
+       "fechaIni": c,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });           
+});
+$( "#fechaIni" ).change(function(){ 
+   var a = $("#idInc").val(); 
+   var b = $("#idEmp").val(); 
+   var c = $("#fechaIni").val();    
+  //alert(1) 
+   // Valdiar periodo
+   var parametros = {
+       "idInc" : a,                
+       "idEmp"   : b,                
+       "fechaIni": c,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });           
+});
+
+// VALIDAR INCAPACIDAD INICIAL 
+$( "#formGuaradar" ).submit(function( event ) {
+
+   var verPer = $("#verPer").val(); 
+   var idEmp = $("#idEmp").val();   
+   var idInc = $("#idInc").val();   
+   var fechaI = $("#fechaIni").val();    
+   var fechaF = $("#fechaFin").val();       
+
+   if ( idInc == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, debe seleccionar el tipo de incapacidad');
+      return false;
+   }
+
+   if ( idEmp == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, debe seleccionar al empleado');
+      return false;
+   }
+
+   if ( idEmp == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, debe seleccionar al empleado');
+      return false;
+   }
+
+   if ( fechaI == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, seleccione la fecha');
+      return false;
+   }
+
+   if ( fechaF == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, seleccione la fecha');
+      return false;
+   }
+
+   if ( fechaI > fechaF  ) 
+   {
+     alert('La fecha final no puede ser menor a la fecha inicial');
+     event.preventDefault(); 
+     return false;
+   }
+
+   if ( verPer == 1  ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+     // alert('No se puede guardar el documento, la fecha del sistema es menor a la del periodo activo');
+     // return false;
+   }
+});
+// PROROOGRA
+$( "#formGuaradarP" ).submit(function( event ) {
+
+   var verPer = $("#verPer").val(); 
+   var idEmp = $("#idEmp").val();   
+   var fechaI = $("#fechaIp").val();    
+   var fechaF = $("#fechaFp").val();       
+   var fecDocI = $("#fecDocI").val();       
+
+   if ( fechaI == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, seleccione la fecha inicial');
+      return false;
+   }
+
+   if ( fechaF == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, seleccione la fecha final');
+      return false;
+   }
+
+   if ( idEmp == ''   ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, debe seleccionar al empleado');
+      return false;
+   }
+
+   if ( fechaI <= fecDocI  ) 
+   {
+     alert('La fecha inicial no puede ser menor a la fecha final de la incapacidad');
+     event.preventDefault(); 
+     return false;
+   }
+
+   if ( fechaI > fechaF  ) 
+   {
+     alert('La fecha final no puede ser menor a la fecha inicial');
+     event.preventDefault(); 
+     return false;
+   }
+
+   if ( verPer == 1  ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+     // alert('No se puede guardar el documento, la fecha del sistema es menor a la del periodo activo');
+     // return false;
+   }
+});
+</script>

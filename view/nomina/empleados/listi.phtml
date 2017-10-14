@@ -1,0 +1,59 @@
+
+<div id="resultado"></div>
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>                    
+            <td><?php echo $dato["CedEmp"] ?></td>            
+
+            <td>
+
+<?php
+$archivo = $this->basePath()."/Datos/Empleados/e".$dato["id"].".jpg";
+?>
+<img alt="" src="<?php echo $archivo ?>" width='50' height='50' id = "im<?php echo $dato["id"]?>" />    
+
+            </td>                                       
+            <td>
+                <a href="javascript:guardar(<?php echo $dato["id"]?>)">
+                <?php echo $this->render('layout/ieditar') ?> </a>
+            </td>
+        </tr>
+    <?php } ?>
+  <?php echo $this->render('layout/tabla_p') ?>       
+        
+<?php 
+//$this->ncol='null,null,null,null,';
+//echo $this->render('layout/tabla_tb') ?>        
+<?php if ( $this->bus == 1 ) { ?>
+  <?php echo $this->render('layout/iregresar') ?>    
+<?php } ?>
+
+<script type="text/javascript">
+function guardar(id)
+{
+  var  img  = $('#im'+id).attr("src"); 
+  //var file_data = $("#imagen"+id).prop("files")[0];
+  alert(img)
+//       var id  = $(this).attr('id');    
+       var parametros = {                      
+            "id"     : id,
+            "img"    : img,
+       }; 
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultado").html(response); 
+               }
+       }); // Fin ajax                                                                      
+}  
+
+</script>
+
+

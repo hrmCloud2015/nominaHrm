@@ -1,0 +1,67 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+  <div class="col-sm-4">Concepto de nomina:<br />
+<?php
+    $select = $form->get('idConc');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+  </div>
+</div>    
+<hr />
+<?php
+    $name = $form->get('ano')->setAttribute("class",'span2')->setAttribute("type",'numeric');
+    echo $formLabel->openTag().'Se cumple cuando el empleado supere los ';
+    echo $formLabel->closeTag();
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>años
+<hr />
+<div class="row">    
+  <div class="col-sm-4">
+   <?php
+      $select = $form->get('check2');
+      echo $this->formCheckbox($select);
+   ?><span class="lbl"></span>Se repite cada año 
+  </div>     
+</div>    
+<hr />
+<div class="row">    
+  <div class="col-sm-4">
+    <?php echo ($this->formRow($form->get('formula')));?>
+  </div>
+</div>    
+<hr />
+<div class="row">    
+  <div class="col-sm-8">
+
+    <?php echo ($this->formRow($form->get('comen'))); ?>
+  </div>  
+</div>
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    

@@ -1,0 +1,491 @@
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<div class="row">    
+  <div class="col-sm-8">
+     <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a"><?php 
+      $this->nuevo='Generar una nueva nomina';
+      echo $this->render('layout/inuevo') ?></a>
+  </div>
+  <div class="col-sm-4">
+     <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>ar">     Archivos historicos de nomina<?php 
+      echo $this->render('layout/iadministracion') ?></a>     
+  </div>
+</div>   
+
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td class="col-sm-1"></td>
+            <td class="col-sm-1"><?php echo $dato['id']?></td>            
+            <td class="col-sm-2"><?php 
+            // ---------------------------- TIPO DE NOMINA (1)
+            $pre = 'PRE-';            
+            if ($dato["idTnomL"]>0) // LIQUIDACION DEFINITIVA
+            {
+                echo '<i class="ace-icon fa fa-briefcase bigger-120 pink"></i>'; 
+                echo $pre.'-'.$dato["nomTnomL"];// Liquidcion final 
+            }
+            else   // NOMINA NORMAL  
+                echo $pre.'-'.$dato["nomtnom"];
+            ?>
+            <?php 
+            if ($dato["idTnomL"]==0) // SINO ES LIQUIDACION DEFINITIVA GRUPO
+            {
+                echo '<br /><i class="ace-icon fa fa-cogs bigger-120 green"></i>';
+                echo '<strong> '.$dato["nomgrup"].'</strong>'; 
+            }
+            ?>
+            <!--AUIDOTIRAS DE SISTEMA -->
+            <?php
+            // 1. VALIDACION DE DIAS NEGATIVOSS 
+            $neg = 0;
+            $hor = 0;
+            foreach ($datAud as $datA) 
+            {
+              if ($datA['idNom']==$dato['id'])  
+              {                
+               if ($datA['negativo']==1)
+               {
+                  $neg = 1;
+               }
+               if ( ($datA['diasNega']==1) and ($datA['idVac']==0) )
+               {
+                  $hor = 1;
+               } 
+              }               
+            } ?>
+            <?php if ( $neg == 1){ ?>
+            <hr />
+               <span class="label label-warning">
+                 <i class="ace-icon fa fa-exclamation-triangle bigger-120"></i>
+                  Alertas : valores negativos 
+               </span>
+            <?php } ?>   
+            <?php
+            // Valores negativos
+             $i = 1;
+             foreach ($datAud as $datA) 
+             {
+              if ($datA['idNom']==$dato['id'])  
+              {                
+               if ($datA['negativo']==1)
+               { 
+            ?>
+               <br />
+                <span class="badge badge-warning"><?php
+                  echo $i; $i++; ?></span>                   
+
+               <span class="text-warning"><?php
+                  echo $datA['CedEmp'];  ?></span>                                 
+             <?php
+               }   
+              }           
+             } // Fin valores negativos
+            ?> 
+            <?php if ( $hor == 1){ ?>
+            <hr />
+               <span class="label label-warning">
+                 <i class="ace-icon fa fa-exclamation-triangle bigger-120"></i>
+                  Alertas : dias incompletos
+               </span>
+            <?php } ?>   
+            <?php
+            // Dias incompletos
+             $i = 1;
+             foreach ($datAud as $datA) 
+             {
+              if ($datA['idNom']==$dato['id'])  
+              {                
+               if ( ($datA['diasNega']==1) and ($datA['idVac']==0) )
+               { 
+            ?>
+               <br />
+                <span class="badge badge-warning"><?php
+                  echo $i; $i++; ?></span>                   
+
+               <span class="text-warning"><?php
+                  echo $datA['CedEmp'];  ?></span>                                 
+             <?php
+               } 
+              }             
+             } // Fin dias incompletos
+            ?>             
+            <!--FIN AUIDOTIRAS DE SISTEMA -->
+            <?php 
+            // Empleados que hacen parte de la liquidacion final 
+            if ($dato["idTnom"]==6) // LIQUIDACION POR GRUPO 
+            { 
+               foreach ($this->datEmp as $datE) 
+               {
+                 if ($datE['idNom']==$dato["id"])
+                 {
+                    echo '<hr /><spam class="text-muted">'.$datE['CedEmp'].' - '.$datE['nombre'].' '.$datE['apellido'].'</spam><br />';
+                    //echo 'Pdf hist';
+                    //$this->idR = 32; // DETALLADO LIQUIDACION  
+                    //$this->idP = $datE["id"]; 
+                    //echo $this->render('layout/ipdfNom'); // Fin parametros 
+                    echo 'Cesantias';
+                    $this->idR = 33; // CONSOLDADO CESATNTIAS LIQUIDACION  
+                    $this->idP = $datE["id"]; 
+                    echo $this->render('layout/ipdfNom'); // Fin parametros 
+                    echo '<br />Primas';
+                    $this->idR = 34; // CONSOLDADO PRIMAS LIQUIDACION  
+                    $this->idP = $datE["id"]; 
+                    echo $this->render('layout/ipdfNom'); // Fin parametros                            
+                    echo '<br />Vacaciones';
+                    $this->idR = 41; // PERIODOS DE VACACIONES  
+                    $this->idP = $datE["id"]; 
+                    echo $this->render('layout/ipdfNom'); // Fin parametros                                                             
+                 }   
+               }
+            } 
+            // ---------------------------- FIN TIPO DE NOMINA 
+            ?>              
+         </td>
+         <!-- PERIODO DE NOMINA -->
+            <td class="col-sm-3">
+            <i class="ace-icon fa fa-calendar bigger-120 pink"></i>    
+                <?php 
+            if ($dato["idTnomL"]==0) 
+                echo $dato["fechaI"].' - '.$dato["fechaF"]; 
+
+            ?>
+
+            <!-- Validar nomina anterior-->
+            <hr />
+            <?php if ( ($dato["idTnom"]==11) or ($dato["idTnom"]==1) or ($dato["idTnom"]==8) ) { // Diferente de liquidacion final 
+            ?>
+               <i class="ace-icon fa fa-users bigger-120 blue"></i> 
+                      <?php echo 'Anterior ('.$dato["numEmpAnt"].')'; ?>
+               <br />            
+               <a href="#modal-form_docus" id ="<?php echo $dato["id"].'.1' ?>" role="button" class="docControl" data-toggle="modal"><i class="ace-icon glyphicon glyphicon-plus"></i>Relacion de ingresos</a>
+
+               <br />
+               <a href="#modal-form_docus" id ="<?php echo $dato["id"].'.2' ?>" role="button" class="docControl" data-toggle="modal"><i class="ace-icon glyphicon glyphicon-minus"></i>Liquidaciones finales</a>               
+               <br />
+               <a href="#modal-form_docus" id ="<?php echo $dato["id"].'.4' ?>" role="button" class="docControl" data-toggle="modal"><i class="ace-icon glyphicon glyphicon-remove"></i>Desvinculaciones pendientes liquidacion</a>                              
+               <br />
+               <a href="#modal-form_docus" id ="<?php echo $dato["id"].'.6' ?>" role="button" class="docControl" data-toggle="modal"><i class="ace-icon glyphicon glyphicon-upload"></i>Proximos ingresos</a>                                                            
+               <hr />
+                <a href="#modal-form_docus" id ="<?php echo $dato["id"].'.5' ?>" role="button" class="docControl" data-toggle="modal"><i class="ace-icon glyphicon glyphicon-refresh"></i>Relacion de otros si de contratos</a>               
+               <br />
+               <a href="#modal-form_docus" id ="<?php echo $dato["id"].'.3' ?>" role="button" class="docControl" data-toggle="modal"><i class="ace-icon glyphicon glyphicon-time"></i>Terminaciones de contratos</a>
+               <br />
+              <a href="#modal-form_docus" id ="<?php echo $dato["id"].'.7' ?>" role="button" class="docControl" data-toggle="modal"><i class="ace-icon glyphicon glyphicon-time"></i>Empleados vs Nomina</a>                                               
+               <br />
+
+            <?php } // Fin validacion empleados generados en nomina anterior?>
+
+            <!-- FIN PERIODO DE NOMINA -->
+            </td>
+                        
+            <td class="col-sm-1">
+               <!-- DATOS EMPLEADOS -->
+                <?php             
+                if ($dato["numEmp"]==0)
+                { // Nomina pendiente ?>
+                  <i class="ace-icon fa fa-users bigger-120 grease"></i> <?php echo $dato["numEmpN"]; ?>
+          <?php } ?>
+                <?php if ($dato["numEmp"]>0) // Nomina generada (2)
+                { ?>
+                   <a href="<?php echo $this->basePath() ?>/nomina/nomina/listg/<?php echo $dato["id"]?>">
+                   <i class="ace-icon fa fa-users bigger-120 purple"></i> <?php echo $dato["numEmpN"].' - ('.$dato["numEmpGrup"].' act.)'; ?>                
+                   <br /> <i class="ace-icon fa fa-bolt bigger-120 red"></i> <?php echo $dato["numEmp"]; ?></a>
+                 <?php 
+                 // ---------- Nomina de cesantias definicion de pagos (cesantias)
+                 if ( $dato["idTnom"] == 3){ ?>
+                 <hr />
+                   
+                   <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>adi/<?php echo $dato["id"]?>">
+                     <?php echo $this->render('layout/iitems') ?>
+                   </a>Definición consignación cesantias
+                 <?php }
+                 // ---------- Fin Nomina de cesantias definicion de pagos (cesantias)
+                  ?>  
+                 <?php
+                 // DATOS DE LOS EMPLEADOS 
+
+                 ?>             
+                 <hr />
+                 <?php
+                 // DATOS DE LOS FONDOS 
+                 foreach ($datTfon as $datTf) 
+                 {
+                    if ($datTf['id'] == $dato['id'])
+                    {
+                       echo '<div class="text-muted">'.$datTf['tipo'].' ('.$datTf['num'].')</div><br />';
+                    }
+                 } ?>                          
+         <?php }  // Fin nomina generada (2) ?>
+         <!-- FIN DATOS EMPLEADOS -->                              
+            </td> 
+
+            <td class="col-sm-1">
+             <?php if ($dato["estado"]==0){ ?>               
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>g/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/iitems') ?> </a>
+             <?php }else{ ?>                               
+              <?php echo $this->render('layout/iok') ?> 
+             <?php } ?>                  
+            </td>
+
+            <td class="col-sm-1">
+             <?php 
+              // PDF PRE NOMINAS NORMALES ------------------------ (1)
+              if( ( $dato["idTnom"]==8 ) or ( $dato["idTnom"]==1 ) or ( $dato["idTnom"]==5 ) or ( $dato["idTnom"]==2 ) or ( $dato["idTnom"]==3 ) or ( $dato["idTnom"]==4 ) or ( $dato["idTnom"]==7 ) or ( $dato["idTnom"]==10 ) or ( $dato["idTnom"]==11 ))// Nomina quincenal     
+              { 
+                 $this->idR = 1; // NOMINA 
+                 $this->idP = $dato["id"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>
+                 <hr />Devengados
+                 <?php 
+                   $this->idR = 17; // LISTADO SOLO NOVEDADES 
+                   $this->idP = $dato["id"]; 
+                   echo $this->render('layout/ipdfNom'); // Fin parametros              
+                   ?>
+                 <hr />Pdf ordenado
+                 <?php 
+                   $this->idR = 43; // LISTADO SOLO NOVEDADES 
+                   $this->idP = $dato["id"]; 
+                   echo $this->render('layout/ipdfNom'); // Fin parametros                                 
+             ?>
+              Nomina horizontal<br />
+             <?php  
+                 $this->idR = 42; // NOMINA VERTICAL  
+                 $this->idP = $dato["id"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin parametros                    
+              } // Fin nomina validas reportes normales
+             ?>    
+
+             <?php 
+              // PDF LIQUIDACION FINAL ---------------------------- (2) 
+              if( $dato["idTnom"]==6 )
+              {
+                 $this->idR = 20; // Id del reporte pre nomina
+                 $this->idP = $dato["id"];
+                 echo $this->render('layout/ipdfNom'); // Fin parametros    
+              }// Fin pdf liquidacion final    
+              ?>             
+
+             <hr />
+             <?php
+              if( $dato["idTnom"]==1 )
+              {             
+                 // NOMINA POR SUB GRUPOS 
+                 foreach ($this->datSubg as $datTf) 
+                 {
+                    if ($datTf['idNom'] == $dato['id'])
+                    {
+                       $num = $datTf["num"];  
+                       //if ($datTf['idSub']==1)
+                           //$num = 21;  
+
+                       echo '<div class="text-muted">'.$datTf['nomSgrup'].' ('.$num.')'.'</div>';
+                 $this->idR = 40; // NOMINA 
+                 $this->idP = $datTf["idNom"].'.'.$datTf["idSgrup"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin parametros 
+                 echo '<br />';                       
+                    }
+               }
+             } ?>                          
+
+            <?php
+            // PDF RETROACTIVOS  
+            if( $this->datRet["numRet"]>0 ){  // PDF RETRO ACTIVOS ?> 
+             <hr />               
+             <?php 
+                $this->idR = 5; // Id del reporte de retroactivos
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Retro activo      
+             <hr />               
+             <?php 
+                $this->idR = 29; // Id del reporte de retroactivos
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Retro activo por conceptos                   
+            <?php }  ?>                                                    
+            <?php
+            // PDF DETALLADO PRIMAS --------------------------------- (3)    
+            if($dato["tipo"]==3 ){    ?> 
+             <hr />               
+             <?php 
+                $this->idR = 4; // Id del reporte de consolidados primas 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Consolidado primas   
+             <hr />
+             <?php 
+                $this->idR = 45; // Id del reporte de consolidados primas 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Resumen de primas                                    
+            <?php } // FIN PRIMAS ?>
+
+
+            <?php 
+            if( ($dato["tipo"]==1 ) or ($dato["tipo"]==6 ) ) {  // PDF DETALLADO CESANTIAS  ?> 
+              Consolidado cesantias   
+             <hr />               
+             <?php 
+                $this->idR = 19; // Id del reporte de consolidados cesantias
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             }?> 
+             <hr />               
+             <?php 
+            if( $dato["idTnom"]==3 ){  // PDF DETALLADO CESANTIAS    
+                $this->idR = 21; // Id del reporte de consolidados cesantias
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?> Consingación a fondos                
+             <hr />
+             <?php 
+             //   $this->idR = 16; // Id del reporte de consolidados cesantias
+             //   $this->idP = $dato["id"];
+             //   echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>
+            <?php }  ?>                                                                           
+            </td>              
+
+            <td class="col-sm-1">
+             <?php // // PDF RESUMIDOS
+                $this->idR = 2; // Id del reporte de retencion en la fuente
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>
+            </td>      
+
+            <td class="col-sm-1">
+             <?php 
+             // PDF RETEFUENTE (NOMINA NORMAL) ------------------------ (1)
+             if( ($dato["idTnom"]==1 ) or ($dato["idTnom"]==5 )  or ($dato["idTnom"]==8 )  or ($dato["idTnom"]==2 ) or ($dato["idTnom"]==4 )  or ($dato["idTnom"]== 6) )// Nomina quincenal     
+             { 
+                $this->idR = 3; // Id del reporte de retencion en la fuente
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+                ?>            
+                <hr />Ingresos retefuente
+                <?php // // PDF DETALLADO RETENCION EN LA FUENTE 
+                  $this->idR = 18; // Id del reporte de retencion en la fuente
+                  $this->idP = $dato["id"];
+                  echo $this->render('layout/ipdfNom'); // Fin parametros 
+              }// FIN RETEFUENTE    
+                ?>                                            
+            </td>                          
+            <td class="col-sm-1">
+              <?php if ($dato["congelada"]==0){ ?>  
+                <a id="eliminar<?php echo $dato["id"]?>" href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php 
+                   $this->idEli = $dato["id"];
+                   echo $this->render('layout/ieliminar') ?> </a>
+              <?php } ?>    
+            </td>             
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>
+
+<!-- ENVIO A EXCEL 1 -->
+<?php    
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'excel',
+    'method' => 'post',
+    'target' => '_blank',
+    'id'     => 'excel',
+    'name'   => 'excel',
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>    
+ <div class="col-sm-2"><br />
+     
+   <button class="btn btn-white btn-info btn-bold">
+     <i class="ace-icon fa fa-calendar bigger-120 blue"></i>
+       Generar Excel
+   </button>
+     
+ </div>
+</div>    
+<?php echo $this->form()->closeTag() ?>     
+
+<hr />
+<!-- LISTADO E CONTRATOS PARA VENCIMIENTO -->
+<?php 
+if ($this->datAlertN['num'])
+{ 
+$this->th3='Contratos proximos a vencer';    
+echo $this->render('layout/h3rojo');
+$this->ttablas='Empleado, Fecha';
+echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datAlert as $dato){ ?>
+        <tr>
+            <td>
+             <?php echo $dato['CedEmp'].' - '.$dato['nombre'].' '.$dato['apellido'];?>
+            </td>    
+            <td>
+            <i class="ace-icon fa fa-calendar bigger-120 pink"></i>    
+            <?php 
+                echo $dato["fechaI"].' - '.$dato["fechaF"]; 
+            ?>
+            </td>
+        </tr>
+    <?php } ?>        
+<?php echo $this->render('layout/tabla_p') ?>
+<?php 
+
+ }?> 
+
+
+ <!-- VENTANA MODAL DE DOCUMENTOS CONTROLADOR -->
+<div id="modal-form_docus" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="blue bigger">Relacion de ingresos y retiros</h4>
+      </div>
+      <div class="modal-body">
+          <div id="resultadoP"></div>
+
+      </div>
+    </div><!-- fin contenido modal-->
+    <div class="modal-footer">
+      <button class="btn btn-sm" data-dismiss="modal">
+        <i class="ace-icon fa fa-times"></i>
+         Salir
+      </button>
+    </div>
+  </div>
+</div><!-- FIN VENTANA DE VISTAS DE DOCUS CONTROLADOR -->    
+
+<script> 
+// BUSCAR DATOS DEL DOCUMENTO DE CONTROL 
+$('.docControl').click(function(){ 
+       var id  = $(this).attr('id');    
+       var parametros = {                      
+            "id"     : id,
+       }; 
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>au',
+             beforeSend: function () {
+                 $("#resultadoP").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoP").html(response); 
+               }
+       }); // Fin ajax                                                                    
+
+});
+</script>

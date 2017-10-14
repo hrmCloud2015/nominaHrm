@@ -1,0 +1,90 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+  <div class="col-sm-6">Banco:<br /><?php
+    $select = $form->get('idBan');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>
+  <div class="col-sm-6">Alias:<br />
+  <?php
+    $name = $form->get('nombre');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>    
+  </div>  
+  <div class="col-sm-2">Codigo de reemplazo:<br />
+  <?php
+    $name = $form->get('numero');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>
+  </div>
+</div>    
+<hr />
+<div class="row">    
+  <div class="col-sm-6">Numero de cuenta asociada al banco:<br />
+  <?php
+     $name = $form->get('numero1');
+     echo $this->formInput($name);
+     echo $this->formElementErrors($name);
+  ?>
+  </div>  
+</div>  
+<hr />
+
+<div class="row">      
+  <div class="col-sm-4">Cuenta contable:<br />                     
+  <?php
+    $select = $form->get('codCta');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>
+  <div class="col-sm-4">
+  <?php
+     $select = $form->get('check2');
+    echo $this->formCheckbox($select);
+   ?><span class="lbl"></span>Maneja nit de empleado
+</div>       
+</div>    
+
+<hr />
+
+<div class="row">    
+  <div class="col-sm-4">Tipo de banco:<br /><?php
+    $select = $form->get('tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>
+</div>    
+
+
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    

@@ -1,0 +1,62 @@
+<?php
+$this->rss='DETALLE VARIACION DEL INGRESO';
+ echo $this->render('layout/rss'); ?>
+
+<?php 
+   $this->ttablasRSS = 'PERIODO, CONCEPTO, HORAS,  DEVENGADO , DEDUCIDO ';      
+   echo $this->render('layout/tabla_crss');  ?>
+
+   <?php 
+   $periodo = ''; 
+   $devengado = 0;
+   $deducido = 0;         
+   $sw=0;
+   $diasVac = 0;
+   foreach ($this->datos as $dato){ ?>
+    <tr>
+      <?php if ($periodo != $dato['fechaI'] ){
+        $periodo = $dato['fechaI'];
+         ?> 
+         <td><i class="fa fa-flag blue bigger-130"></i><?php echo ' <strong>('.$dato['fechaI'].')-('.$dato['fechaF'].')</strong>' ?></td> 
+      <?php }else{ ?>
+         <td class="col-sm-3"><?php echo $dato['detalle'];?></td> 
+      <?php } ?>     
+      <td><?php echo $dato['nomCon'];?></td> 
+      <td><div align="right"><?php echo $dato['horas'] ?></div></td>             
+      <td><div align="right"><?php 
+          echo number_format($dato['devengado']);
+          $devengado = $devengado + $dato['devengado'];
+       ?></div></td>       
+      <td><div align="right"><?php echo number_format($dato['deducido']) ?></div></td> 
+    </tr>
+   <?php       
+      $deducido = $deducido + $dato['deducido'];      
+      //$diasVac = $dato['diasVaca'];
+      $diasVac = 0;
+    } ?>
+<tr>
+<?php
+if ($diasVac>0)
+{
+?>
+  <tr>
+
+      <td></td>       
+      <td>VACACIONES</td> 
+      <td><div align="right"><?php echo $dato['diasVaca'] ?></div></td>             
+      <td><div align="right"><?php 
+                echo number_format($dato['diasVaca']*$dato['valorDiaVac']);
+          $devengado = $devengado + ($dato['diasVaca']*$dato['valorDiaVac']);
+       ?></div></td>       
+      <td><div align="right"></div></td> 
+    </tr>
+<tr>
+<?php }// FIn validacion vacaciones ?>
+
+  <td></td> 
+  <td></td> 
+  <td><strong>TOTAL LEY 100:<strong></td>             
+  <td><div align="right"><strong><?php echo number_format($devengado) ?></strong></div></td>       
+  <td><div align="right"><strong><?php echo number_format($deducido) ?></strong></div></td> 
+</tr>
+<?php echo $this->render('layout/tabla_rss') ?>

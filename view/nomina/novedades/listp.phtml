@@ -1,0 +1,86 @@
+<?php
+$form = $this->form;
+$form->prepare();
+$formLabel = $this->plugin('formLabel');
+?>
+<?php    
+    $name = $form->get('id')->setAttribute("id","idProy"); // id de la matriz 
+    echo $this->formInput($name);    
+?>
+
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<div id='resultado'></div>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php
+     foreach ($this->datos as $dato){ ?>    
+        <tr>
+            <td><?php echo $dato["CedEmp"] ?></td>                                    
+            <td><?php echo $dato["nombre"].' '.$dato["apellido"] ?></td>
+            <td><?php echo $dato["nombre"].' '.$dato["apellido"] ?></td>            
+            <td>
+             <?php
+               echo ($this->formRow($form->get('horaG')
+                                   ->setAttribute("value", $dato["dias"])
+                                   ->setAttribute("id", "horas".$dato["idEmp"]) ));                         
+             ?>
+            </td>
+            <td>
+            <?php
+                    $arreglo = array("0"=>"Sin domingos", 
+                                 "1"=>"1 domingo",
+                                 "2"=>"2 domingos",
+                                 "3"=>"3 domingos",
+                                 "4"=>"4 domingos",
+                                 );            
+               $select = $form->get('tipoC')->setAttribute("id", "domingo".$dato["idEmp"])
+                                             ->setAttribute("value", $dato["domingo"] )
+                                             ->setValueOptions($arreglo);
+                    echo $this->formSelect($select);
+                    echo $this->formElementErrors($select);            
+            ?>        
+            </td>
+            <td>
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>,<?php echo $dato["idEmp"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>
+
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,null,';
+echo $this->render('layout/tabla_tb') ?>       
+
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id, idEmp){  
+   var idProy = $("#idProy").val(); 
+   var horas = $("#horas"+idEmp).val(); 
+   var domingo = $("#domingo"+idEmp).val(); 
+
+   var parametros = {
+       "idProy" : idProy,
+       "id"     : id,       
+       "idEmp"  : idEmp,              
+       "horas"  : horas,
+       "domingo"  : domingo,
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nov',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+   }); // Fin ajax        
+};
+</script>

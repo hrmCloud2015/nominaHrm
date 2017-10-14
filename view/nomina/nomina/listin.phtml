@@ -1,0 +1,170 @@
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+<?php 
+   foreach ($this->datos as $datoC){ ?>
+<?php } ?>     
+<?php 
+if ( $datoC["idTnomL"]==0 )
+   $this->th3='NOVEDADES '.$datoC["nombre"].' '.$datoC["apellido"];
+else 
+   $this->th3='NOVEDADES LIQUIDACION FINAL '.$datoC["nombre"].' '.$datoC["apellido"];
+
+echo $this->render('layout/h3rojo') ?>
+<div class="row">
+<div class="col-sm-4">
+Agregar una novedad:
+  <?php
+     $select = $form->get('idConc');
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+  ?>
+</div>
+<div class="col-sm-4">Valor/hora:<br />              
+   <?php
+      $name = $form->get('valor');
+      echo $formLabel->closeTag();
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+   ?>
+  <?php echo $this->formElement($form->get('agregarnov')->setAttribute("id","agregarnov")) ?>
+</div>  
+<div class="col-sm-4">Días laborados:<br />        
+  <?php
+     $name = $form->get('dias')->setAttribute("id", "dias");
+     $name->setAttribute("value",$datoC["dias"]);
+     echo $formLabel->closeTag();
+     echo $this->formInput($name);
+     echo $this->formElementErrors($name);
+  ?>
+  <?php echo $this->formElement($form->get('guardar')) ?>
+</div>
+
+</div>    
+<br />
+
+<?php    
+    $name = $form->get('id');
+    $name->setAttribute("value",$datoC["idNom"]);
+    $name->setAttribute("id","idNom");    
+    echo $this->formInput($name);    
+    $name = $form->get('id2');
+    $name->setAttribute("value",$datoC["idInom"]);
+    $name->setAttribute("id","idInom");    
+    echo $this->formInput($name);        
+    $name = $form->get('id3');
+    $name->setAttribute("value",$datoC["idCcos"]);
+    $name->setAttribute("id","idCcos");    
+    echo $this->formInput($name);            
+?>    
+
+
+<!-- FIN AGREGAR NOVEDAD -->
+
+
+<script>
+$(function (){
+// Variables
+var valor   = $("#hora").val();
+var idconc  = $("#idConc").val();
+var idnom   = $("#idNom").val(); // ID nomina
+var idinom  = $("#idInom").val(); // ID nomina_e
+var idccos  = $("#idCcos").val(); // ID nomina_e 
+        
+// Cargar documento de novedades al iniciar opcion
+var parametros = {
+    "valor"   : 0,
+    "idConc"  : idconc,
+    "idNom"   : idnom,
+    "idInom"  : idinom,
+    "idCcos"  : idccos,
+    "idNov"   : 0, // Para que no ingrese a ningunas opciones    
+    "tipo"    : -5,    
+}; 
+$.ajax({
+ data:  parametros,     
+ type:  'post',
+ url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nov',
+ beforeSend: function () {
+    $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+ },
+ success:  function (response) {
+     $("#resultado").html(response);                    
+ }
+});
+
+
+// Agregar una nueva novedad
+$('#agregarnov').click(function(){  
+  var valor   = $("#valor").val();     
+  var idconc  = $("#idConc").val();
+  var parametros = {
+    "valor"   : valor,
+    "idConc"  : idconc,
+    "idNom"   : idnom,
+    "idInom"  : idinom,
+    "idCcos"  : idccos,
+    "idNov"   : 0,     
+    "tipo"    : 0
+  };      
+  $.ajax({
+     data:  parametros,     
+     type:  'post',
+     url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nov',
+     beforeSend: function () {
+        $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+     },
+     success:  function (response) {
+        $("#resultado").html(response);                    
+     }
+    }); // Fin ajax    
+  });// Fin clic check
+ // 
+
+//$('#dias').focusout(function(){  
+$('#guardar').click(function(){  // Guardar dias 
+  var ha  = $("#dias").val();
+  // Quitar caracteres especiales y sacar solo el numero del id
+        // Cargar documento de novedades para recalculo y otras
+        var parametros = {
+            "idConc"  : 122,
+            "idNom"   : idnom,
+            "idInom"  : idinom,
+            "idCcos"  : idccos,    
+            "idNov"   : 0,     
+            "tipo"    : 6,
+            "valor"   : ha ,            
+        }; 
+        $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nov',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response); 
+              alert('Días actualizados de forma correcta')
+             }
+        }); // Fin ajax     
+   
+  }) // Validar focus de la DIAS
+
+ })
+</script>
+
+<!-- NOVEDADADES  -->
+
+<div id="resultado"></div>
+
+
+<!-- FIN NOVEDADADES  -->
+
+
+<?php 
+//$this->idp = $datoC["idNom"] ; // id de nomina actual para retorno
+//echo $this->render('layout/iregresar_p') ?> 

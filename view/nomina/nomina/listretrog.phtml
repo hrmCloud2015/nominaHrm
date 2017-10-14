@@ -1,0 +1,39 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'inretro',
+    'method' => 'post',
+
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>  
+
+<div class="row">
+  <div class="col-sm-4">Buscar empleado:<br />              
+  <?php
+    $select = $form->get('idEmp')->setAttribute("name","cedula");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>   
+  </div>
+  <div class="col-sm-2"><br />              
+    <?php echo $this->formElement($form->get('buscar')) ?>
+  </div>
+</div>   
+
+<?php echo $this->form()->closeTag() ?>    
+
+<?php echo $this->render('layout/iregresar') ?> 

@@ -1,0 +1,67 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>
+<?php echo $this->form()->closeTag() ?>
+ <?php 
+ $this->th3='Novedades de empleados';
+ echo $this->render('layout/h3rojo') ?>
+
+<div class="row-fluid">
+<table class="table table-striped table-bordered table-hover" id="table_report">
+ <thead>
+   <tr>
+     <th>Empleado</th>  
+     <th>Cargo</th>  
+<?php foreach ($this->datosM as $dato){ ?>
+     <th><?php echo $dato['alias']; ?></th>
+<?php } ?>
+     <th>Generar</th> 
+   </tr>
+  </thead>           
+  
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["nomEmp"] ?></td>            
+            <td><?php echo $dato["nomCar"] ?></td>
+           <?php foreach ($this->datosM as $dato){ // Scar conceptos de la matriz?>  
+             <td><?php
+                $name = $form->get('valor')->setAttribute('id','val'.$dato['id']);
+                echo $this->formInput($name);
+                echo $this->formElementErrors($name);
+                $name = $form->get('id2')->setAttribute('id','conc'.$dato['id'])->setAttribute('value',$dato['idConc']);
+                echo $this->formInput($name);    
+              ?>      
+             </td>  
+           <?php } ?>               
+           <td><?php echo $this->formElement($form->get('agregarnov')) ?></td>
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+ 
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+<?php 
+$null='';
+foreach ($this->datosM as $dato){ 
+  $null=$null.'null,';       
+}?>        
+<?php 
+$this->ncol='null,'.$null;
+echo $this->render('layout/tabla_tb') ?>   

@@ -1,0 +1,47 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?><i class="ace-icon fa fa-briefcase bigger-120 pink"></i> 
+Seleccione el grupo de nómina:<br />
+  <?php
+    $select = $form->get('idGrupo')->setAttribute("id","idGrupo")
+                                   ->setAttribute("name","idGrupo");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+// Validar permido de usuarios para generar nomina de correccion    
+?>
+hola 
+<?php 
+// Permiso para generar nomina individual
+if ($this->perInd==1)
+{
+ ?>
+<div id="resulEmpGrupo"></div>    
+<?php } ?>
+
+<script>
+$("#idGrupo").change(function ()  // Validacion segun el tipo de nomina
+{
+    var idGrupo  = $("#idGrupo").val(); 
+    var parametros = {
+       "idGrupo"    : idGrupo,
+    };  
+    $.ajax({
+       data:  parametros, 
+       url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>agi',
+       type: 'post',
+       beforeSend: function () {
+        $("#resulEmpGrupo").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+       },
+       success: function (response) {   
+         $("#resulEmpGrupo").html(response); 
+       }
+     }); // Fin  agregar nuevo componente al sistema                               
+
+   });// Fin Validacion tipo de nomina
+</script>

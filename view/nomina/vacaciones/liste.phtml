@@ -1,0 +1,21 @@
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+<i class="ace-icon fa fa-bullhorn bigger-110 red"></i>
+<strong>Centro costo: <?php echo $datos['nomCos'] ; ?></strong>
+<br />
+<i class="ace-icon fa fa-calendar bigger-110 red"></i>
+<strong>Sabado: <?php echo $datos['sabado'] ; ?></strong>
+
+<i class="ace-icon fa fa-calendar bigger-110 red"></i>
+<strong>Domingo: <?php echo $datos['domingo'] ; ?></strong>
+
+<script>  
+ //$(function (){         
+   $("#chDomingo").val(1);  
+
+</script>    

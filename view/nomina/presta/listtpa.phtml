@@ -1,0 +1,108 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'tpa/'.$this->id,
+    'method' => 'post',
+    'id'     => 'formGuaradar'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php
+  $name = $form->get('id');
+  echo $this->formInput($name);
+  echo $this->formElementErrors($name);
+?>    
+<?php // tipo de prestamo
+  $name = $form->get('id2');
+  echo $this->formInput($name);
+  echo $this->formElementErrors($name);
+?>    
+<div class="row">    
+  <div class="col-sm-3">Empleado:<br />
+  <?php
+    $select = $form->get('idEmp');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);           
+  ?>
+  </div>
+  <div class="col-sm-2">Valor total:<br />
+   <?php
+      $name = $form->get('valorR')->setAttribute("min",'0')
+                                  ->setAttribute("required",'required');
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+   ?>    
+  </div>
+  <div class="col-sm-2">Cuotas:<br />
+   <?php
+      $name = $form->get('ncuotas')->setAttribute("min",'0')
+                                   ->setAttribute("required",'required');
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+   ?>    
+  </div>
+  <div class="col-sm-2">Doc de ref:<br />
+   <?php
+      $name = $form->get('docRef')->setAttribute("required","required")
+                                  ->setAttribute("type","number")
+                                  ->setAttribute("min",0);
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+   ?>    
+  </div>
+  <div class="col-sm-3">Fecha del documento:<br />
+   <?php
+      $name = $form->get('fecDoc')->setAttribute("required","required");
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+   ?>    
+  </div>  
+  <div class="col-sm-3"><br />
+    <?php echo $this->formElement($form->get('guardar')) ?>
+  </div>  
+</div>
+<?php echo $this->form()->closeTag() ?>
+
+<hr />
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td></td>
+            <td><?php echo $dato["id"] ?></td>            
+            <td><?php echo $dato["fecDoc"] ?></td>            
+            <td><?php echo 'C.C. '.$dato["CedEmp"].'-<br />'.$dato["nombre"].' '.$dato["apellido"]; ?></td>            
+            <td><?php echo '<strong> $'.number_format($dato["valor"]).'</strong> '; ?></td>
+             <td>      
+                  <h6><?php echo number_format( $dato["cuotas"] ); ?></h6> 
+             </td>                        
+             <td>      
+                  <h6>
+                  <?php echo '<strong> $ '.number_format( ($dato["pagado"]+$dato["abonosExtra"]) )."</strong></h6><br />";?></h6> 
+             </td>                         
+             <td>      
+                  <i class="fa fa-flag red bigger-130"></i>
+                  <h6>
+                  <?php echo '<strong> $ '.number_format( $dato["valor"]-($dato["pagado"]+$dato["abonosExtra"]) )."</strong></h6><br />";?></h6> 
+             </td>            
+            <td>
+             <?php if ( ($dato["pagado"]==0) and ($dato["abonosExtra"]==0) ) { ?>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>tpad/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+             <?php } ?>   
+            </td>                        
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>
+
+<?php echo $this->render('layout/iregresar') ?>    

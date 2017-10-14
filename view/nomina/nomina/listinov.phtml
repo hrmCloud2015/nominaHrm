@@ -1,0 +1,683 @@
+<?php
+$formn = $this->formn;
+$formn->prepare();
+$formLabel = $this->plugin('formLabel');
+?>
+<!-- Agregar novedad -->   
+    
+<div class="tabbable">
+  <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+	<li class="active">
+	    <a data-toggle="tab" href="#nove">Novedades <?php if ($datNauN['num']>0) echo '('.$datNauN['num'].')'; ?></a>
+	</li>
+	<li>
+	    <a data-toggle="tab" href="#auto">Automaticos <?php if ($datTauN['num']>0) echo '('.$datTauN['num'].')'; ?></a>
+	</li>
+
+	<li>
+	   <a data-toggle="tab" href="#calculo">Calculados <?php if ($datCauN['num']>0) echo '('.$datCauN['num'].')'; ?></a>
+	</li>
+	<li>
+	   <a data-toggle="tab" href="#otros">Prestamos <?php if ($datOauN['num']>0) echo '('.$datOauN['num'].')'; ?></a>
+	</li>        
+	<li>
+	   <a data-toggle="tab" href="#info">Informativas <?php if ($datIauN['num']>0) echo '('.$datIauN['num'].')'; ?></a>
+	</li>                
+  </ul> 
+    
+    
+<?php 
+$Tdevengado=0;
+$Tdeducido=0;        
+// Cargar centro de costo en arreglo
+$arreglo='';
+foreach ($this->datccos as $datcc){
+   $idc=$datcc['id'];$nom=$datcc['nombre'];
+   $arreglo[$idc]= $nom;
+}              
+?>
+<div class="tab-content">    
+      <div id="nove" class="tab-pane in active"><!-- Novedades -->   
+  <?php 
+
+   $ttablas = 'CONCEPTO, HORA ,DEVENGADO, DEDUCIDO, CENTRO DE COSTO ';
+   $this->ttablas = 'CONCEPTO, HORA ,DEVENGADO, DEDUCIDO, CENTRO DE COSTO, EDITAR,ELIMINAR ';
+      
+   echo $this->render('layout/tabla_cF'); $this->ttablas = $ttablas; ?>
+    <?php
+    // Recorrer valores del documento        
+    foreach ($this->datNau as $dato){
+        $devengado = 0;
+        $deducido  = 0;      
+        $natura    = $dato["tipo"]; // Devengado / deducido
+        $valor     = $dato["valor"]; // Hoas / Pesos
+        if ($natura==1)
+        {
+           $devengado = $dato["devengado"];            
+           $Tdevengado = $Tdevengado+$devengado;
+         }
+         else 
+         {
+            $deducido = $dato["deducido"];                        
+            $Tdeducido= $Tdeducido+$deducido;
+         }       
+        //---------------------------------------------------
+    ?>
+       <tr>
+           <td>
+             <?php 
+               // Id del item               
+               echo $dato["nombre"]; 
+                ?></td>
+            <td>                
+            <?php
+             // Horas de la novedad
+            if ($valor==1)// manejo por horas
+            {
+               echo ($this->formRow($formn->get('horaG')
+                                   ->setAttribute("value", $dato["horas"])
+                                   ->setAttribute("readonly", true)
+                                   ->setAttribute("id", "hor_".$dato["id"]) ));                           
+               echo ($this->formRow($formn->get('id4')->setAttribute("value", $dato["horas"])->setAttribute("id", "ho".$dato["id"]) ));
+            }else
+                echo 0;
+            ?>                
+            </td>                       
+            <td>
+              <div class="col-sm-10">            
+              <?php 
+            // Devengados
+            if ($natura==1)
+            {
+               echo ($this->formRow($formn->get('devengado')
+                          ->setAttribute("value", $devengado )
+                          ->setAttribute("id", "dev_".$dato["id"])
+                          ->setAttribute("size", 20 ) ));          
+               echo ($this->formRow($formn->get('id4')->setAttribute("value", $devengado )->setAttribute("id", "dv".$dato["id"]) ));
+            }else 
+               echo 0;  
+            ?>
+              </div>
+              </td>            
+            <td><?php 
+            // Deducidos
+            if ($natura==2)
+            {            
+               echo ($this->formRow($formn->get('deducido')
+                                    ->setAttribute("value", $deducido )
+                                    ->setAttribute("id", "ded_".$dato["id"]) 
+                                    ->setAttribute("size", 20 ) ));          
+               echo ($this->formRow($formn->get('id4')->setAttribute("value", $deducido )->setAttribute("id", "dd".$dato["id"]) ));
+            }else
+            {
+                echo 0;
+            }
+            ?>
+            </td>            
+            <td>
+              <div class="col-sm-4">    
+                <?php 
+            $this->formRow($formn->get('idCencosS')->setValueOptions($arreglo));             
+            echo ($this->formRow($formn->get('idCencosS')
+                          ->setAttribute("value", $dato["idCcos"])
+                          ->setAttribute("id", "cc_".$dato["id"]) ));
+            
+            echo ($this->formRow($formn->get('id4')->setAttribute("value", $dato["idCcos"])
+                                                   ->setAttribute("id", "cc".$dato["id"]) ));
+            ?></div>  </td>                                    
+            <td>
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>
+                                            ,<?php echo $dato["idCon"]; ?>,<?php echo $dato["idInov"]; ?>);" class="blue" id="nov">
+                     <i class="ace-icon fa fa-pencil bigger-130"></i>
+                 </a>
+            </td>     
+            <td>  
+              <?php if ( $dato["idInov"]==0 ){ // Solo se pueden eliminar novedades que sean agregada en liquidacion 
+                ?>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+              <?php } ?>  
+            </td>                        
+        </tr>
+    <?php 
+    }?>
+  <?php echo $this->render('layout/tabla_p') ?>                            
+      </div><!-- Fin novedades -->
+  
+<!---------------- ***********************************************************    NOVEDADES AUTOMATICAS -->      
+<!-------------------------------------------------------------------------------------------------------->      
+      
+<div id="auto" class="tab-pane"><!-- Automaticos -->         
+
+  <?php echo $this->render('layout/tabla_c') ?>
+    <?php
+    // Recorrer valores del documento        
+    foreach ($this->datTau as $dato){
+        $devengado = 0;
+        $deducido  = 0;      
+        $natura    = $dato["tipo"]; // Devengado / deducido
+        $valor     = $dato["valor"]; // Hoas / Pesos
+        if ($natura==1)
+        {
+           $devengado = $dato["devengado"];            
+           $Tdevengado = $Tdevengado+$devengado;
+         }
+         else 
+         {
+            $deducido = $dato["deducido"];                        
+            $Tdeducido= $Tdeducido+$deducido;
+         }       
+        //---------------------------------------------------
+    ?>
+       <tr>
+           <td>
+             <?php 
+               // Id del item               
+               echo $dato["nombre"]; 
+                ?></td>
+            <td>                
+            <?php
+             // Horas de la novedad
+            //if ($valor==1)// manejo por horas
+            //{
+            //   echo $dato["horas"];
+            //}else
+            //    echo 0;
+            //?>                
+
+            <?php
+             // Horas de la novedad
+            if ($dato["horas"]>0)// manejo por horas
+            {
+               echo ($this->formRow($formn->get('horaG')
+                                   ->setAttribute("value", $dato["horas"])
+                                   ->setAttribute("readonly", true)
+                                   ->setAttribute("id", "hor_".$dato["id"]) ));                           
+               echo ($this->formRow($formn->get('id4')->setAttribute("value", $dato["horas"])->setAttribute("id", "ho".$dato["id"]) ));
+            }else
+                echo 0;
+            ?>                
+
+            </td>                       
+            <td><?php 
+            // Devengados
+            if ($natura==1)
+            {
+               echo ($this->formRow($formn->get('devengado')
+                          ->setAttribute("value", $devengado )
+                          ->setAttribute("id", "deva_".$dato["id"])
+                          ->setAttribute("size", 20 ) ));          
+               echo ($this->formRow($formn->get('id4')->setAttribute("value", $devengado )->setAttribute("id", "dva".$dato["id"]) ));
+            }else 
+               echo 0;  
+            ?>
+            </td>            
+            <td><?php 
+            // Deducidos
+            if ($natura==2)
+            {            
+               echo ($this->formRow($formn->get('deducido')
+                                    ->setAttribute("value", $deducido )
+                                    ->setAttribute("id", "deda_".$dato["id"]) 
+                                    ->setAttribute("size", 20 ) ));          
+               echo ($this->formRow($formn->get('id4')->setAttribute("value", $deducido )->setAttribute("id", "dda".$dato["id"]) ));
+            }else
+            {
+                echo 0;
+            }
+            ?>
+            </td>            
+            <td><?php 
+            $this->formRow($formn->get('idCencosS')->setValueOptions($arreglo));             
+            echo ($this->formRow($formn->get('idCencosS')->setAttribute("value", $dato["idCcos"])->setAttribute("id", "cc_".$dato["id"])->setAttribute("disabled", true) ));            
+            ?>
+              <a href="javascript:editarNa(<?php echo $dato["id"]; ?>,<?php echo $dato["idCon"]; ?>,<?php echo $dato["idInov"]; ?>);" class="blue" id="nova">
+                     <i class="ace-icon fa fa-pencil bigger-130"></i>
+                 </a>              
+            </td>  
+        </tr>
+    <?php 
+    }?>
+  <?php echo $this->render('layout/tabla_p') ?>                            
+ 
+                 
+         
+         
+
+     </div><!-- Fin automaticos -->
+
+
+<!---------------- ***********************************************************    CALCULADOS -->      
+<!-------------------------------------------------------------------------------------------------------->           
+     
+     <div id="calculo" class="tab-pane"><!-- calculados -->
+
+  <?php echo $this->render('layout/tabla_c') ?>
+    <?php
+    // Recorrer valores del documento        
+    foreach ($this->datCau as $dato){
+        $devengado = 0;
+        $deducido  = 0;      
+        $natura    = $dato["tipo"]; // Devengado / deducido
+        $valor     = $dato["valor"]; // Hoas / Pesos
+        if ($natura==1)
+        {
+           $devengado = $dato["devengado"];            
+           $Tdevengado = $Tdevengado+$devengado;
+         }
+         else 
+         {
+            $deducido = $dato["deducido"];                        
+            $Tdeducido= $Tdeducido+$deducido;
+         }       
+        //---------------------------------------------------
+    ?>
+       <tr>
+           <td>
+             <?php 
+               // Id del item               
+               echo $dato["nombre"]; 
+                ?></td>
+            <td>                
+            <?php
+             // Horas de la novedad
+            if ($valor==1)// manejo por horas
+            {
+               echo $dato["horas"];
+            }else
+                echo 0;
+            ?>                
+            </td>                       
+            <td><?php 
+            // Devengados
+            if ($natura==1)
+            {
+               echo number_format($devengado);
+            }else 
+               echo 0;  
+            ?></td>            
+            <td><?php 
+            // Deducidos
+            if ($natura==2)
+            {            
+               echo number_format($deducido);
+            }else
+            {
+                echo 0;
+            }
+            ?></td>            
+            <td><?php 
+            $this->formRow($formn->get('idCencosS')->setValueOptions($arreglo));             
+            echo ($this->formRow($formn->get('idCencosS')->setAttribute("value", $dato["idCcos"])->setAttribute("id", "cc_".$dato["id"])->setAttribute("disabled", true) ));            
+            ?></td>                                    
+        </tr>
+    <?php 
+    }?>
+  <?php echo $this->render('layout/tabla_p') ?>                            
+         
+         
+     </div><!-- Fin calculados -->          
+
+
+<!---------------- ***********************************************************    OTROS AUTOMATICOS -->      
+<!-------------------------------------------------------------------------------------------------------->      
+
+     <div id="otros" class="tab-pane"><!-- Programados -->
+
+   <?php 
+   $ttablas = 'CONCEPTO, HORA ,DEVENGADO, DEDUCIDO, CENTRO DE COSTO ';
+   $this->ttablas = 'CONCEPTO, HORA ,DEVENGADO, DEDUCIDO, SALDO ACTUAL, CENTROS DE COSTO, EDITAR ';
+   echo $this->render('layout/tabla_c');
+   $this->ttablas = $ttablas;
+    ?>
+    <?php
+    // Recorrer valores del documento        
+    foreach ($this->datOau as $dato){
+        $devengado = 0;
+        $deducido  = 0;      
+        $natura    = $dato["tipo"]; // Devengado / deducido
+        $valor     = $dato["valor"]; // Hoas / Pesos
+        if ($natura==1)
+        {
+           $devengado = $dato["devengado"];            
+           $Tdevengado = $Tdevengado+$devengado;
+         }
+         else 
+         {
+            $deducido = $dato["deducido"];                        
+            $Tdeducido= $Tdeducido+$deducido;
+         }       
+        //---------------------------------------------------
+    ?>
+       <tr>
+           <td>
+             <?php 
+               // Id del item               
+               echo $dato["nombre"]; 
+                ?></td>
+            <td>                
+            <?php
+             // Horas de la novedad
+//            if ($valor==1)// manejo por horas
+//            {
+               echo $dato["horas"];
+//            }else
+//                echo 0;
+            ?>                
+            </td>                                            
+            <td><?php 
+            // Devengados
+            if ($natura==1)
+            {
+               echo number_format($devengado);
+            }else 
+               echo 0;  
+            ?></td>            
+            <td><?php 
+            // Deducidos
+            if ($natura==2)
+            {            
+                echo ($this->formRow($formn->get('deducido')
+                                   ->setAttribute("value", $deducido )
+                                   ->setAttribute("name", "dedP_".$dato["id"]) 
+                                   ->setAttribute("id", "dedP_".$dato["id"])                                    
+                                   ->setAttribute("size", 20 ) ));                      
+            }else
+            {
+                echo 0;
+            }
+            ?></td>          
+            <td><?php 
+               echo number_format($dato['saldoPact']);
+            ?></td>                      
+            <td><?php 
+            $this->formRow($formn->get('idCencosS')->setValueOptions($arreglo));             
+            echo ($this->formRow($formn->get('idCencosS')->setAttribute("value", $dato["idCcos"])
+                                                         ->setAttribute("id", "ccP_".$dato["id"])
+                                                         ->setAttribute("disabled", true) ));            
+            ?></td>               
+            <td>      
+                 <a href="javascript:editarP(<?php echo $dato["id"]; ?>,<?php echo $dato["idCpres"]; ?>);" class="blue" id="nov">
+                     <i class="ace-icon fa fa-pencil bigger-130"></i>
+                 </a>                      
+            </td>                        
+        </tr>
+    <?php 
+    }?>
+  <?php echo $this->render('layout/tabla_p') ?>                                             
+<?php
+$this->rss='MODIFICACIONES EN REGISTRO DE PROGRAMADOS';
+ echo $this->render('layout/rss'); ?><hr />
+
+<?php 
+   $this->ttablasRSS = 'FECHA, CONCEPTO ,CUOTA FIJA, CUOTA APLICADA, USUARIO ';      
+   echo $this->render('layout/tabla_crss');  ?>
+
+   <?php  foreach ($this->datPresM as $dato){ ?>
+    <tr>
+      <td><i class="fa fa-flag red bigger-130"></i><?php echo $dato['fecha'] ?></td> 
+      <td><?php echo $dato['nomTpres'] ?></td> 
+      <td><small>
+          <s class="red">$ <?php echo number_format($dato['valorCuota']) ?></s>
+        </small></td> 
+      <td> <b class="green">$ <?php echo number_format($dato['valor']) ?></b></td> 
+      <td><?php echo $dato['usuario'] ?></td> 
+    </tr>
+   <?php } ?>
+<?php echo $this->render('layout/tabla_rss') ?>
+
+
+</div><!-- FIN PROGRAMADOS-->
+                        
+    
+
+      <div id="info" class="tab-pane in active"><!-- Novedades informativas-->   
+  <?php echo $this->render('layout/tabla_cF') ?>
+    <?php
+    // Recorrer valores del documento        
+    foreach ($this->datIau as $dato){
+        $devengado = 0;
+        $deducido  = 0;      
+        $natura    = $dato["tipo"]; // Devengado / deducido
+        $valor     = $dato["valor"]; // Hoas / Pesos
+        if ($natura==1)
+        {
+           $devengado = $dato["devengado"];            
+           $Tdevengado = $Tdevengado+$devengado;
+         }
+         else 
+         {
+            $deducido = $dato["deducido"];                        
+            $Tdeducido= $Tdeducido+$deducido;
+         }       
+        //---------------------------------------------------
+    ?>
+       <tr>
+           <td>
+             <?php 
+               // Id del item               
+               echo $dato["nombre"]; 
+                ?></td>
+            <td>                
+            <?php
+             // Horas de la novedad
+            if ($valor==1)// manejo por horas
+            {
+               echo ($this->formRow($formn->get('horaG')
+                                   ->setAttribute("value", $dato["horas"])
+                                   ->setAttribute("readonly", true)
+                                   ->setAttribute("id", "hor_".$dato["id"]) ));                           
+               echo ($this->formRow($formn->get('id4')->setAttribute("value", $dato["horas"])->setAttribute("id", "ho".$dato["id"]) ));
+            }else
+                echo 0;
+            ?>                
+            </td>                       
+            <td>
+              <div class="col-sm-10">            
+              <?php 
+            // Devengados
+            if ($natura==1)
+            {
+               echo number_format($devengado); 
+            }else 
+               echo 0;  
+            ?>
+              </div>
+              </td>            
+            <td><?php 
+            // Deducidos
+            if ($natura==2)
+            {            
+               echo number_format($deducido); 
+            }else
+            {
+                echo 0;
+            }
+            ?></td>            
+            <td>
+              <div class="col-sm-4">    
+                <?php 
+            $this->formRow($formn->get('idCencosS')->setValueOptions($arreglo));             
+            echo ($this->formRow($formn->get('idCencosS')
+                          ->setAttribute("value", $dato["idCcos"])
+                          ->setAttribute("id", "cc_".$dato["id"]) ));
+            
+            echo ($this->formRow($formn->get('id4')->setAttribute("value", $dato["idCcos"])
+                                                   ->setAttribute("id", "cc".$dato["id"]) ));
+            ?></div>  </td>                                    
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>                        
+        </tr>
+    <?php 
+    }?>
+  <?php echo $this->render('layout/tabla_p') ?>                            
+      </div><!-- Fin novedades informativas -->     
+     
+     
+   </div>
+ </div>
+
+<table class="table table-striped table-bordered table-hover" id="table_report">
+ <tr>
+        <td></td>           
+        <td></td>            
+        <td><strong>TOTALTES</strong></td>            
+        <td><strong><?php 
+        // Devengados
+            echo number_format($Tdevengado);
+        ?></strong></td>            
+        <td><strong><?php 
+        // Deducidos
+            echo number_format($Tdeducido);
+        ?></strong></td>            
+        <td><strong><?php 
+        // Deducidos
+            echo number_format($Tdevengado-$Tdeducido);
+        ?></td>                                
+        </tr>    
+</table>
+
+<hr />
+    
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id, idCon, idInov ){  
+   var idnom   = $("#idNom").val(); // ID nomina
+   var idinom  = $("#idInom").val(); // ID nomina_e  
+   var dev  = 0;
+   if ($("#dev_"+id).length){  
+      var dev = $("#dev_"+id).val();
+   }
+   var ded  = 0;
+   if ($("#ded_"+id).length){  
+      var ded = $("#ded_"+id).val();
+   }
+   var hora  = 0;
+   if ($("#hor_"+id).length){  
+      var hora = $("#hor_"+id).val();
+   }   
+   var cc  = 0;
+   if ($("#cc_"+id).length){  
+      var cc = $("#cc_"+id).val();
+   }   
+        var parametros = {
+            "idNom"   : idnom,
+            "idInom"  : idinom,
+            "idInov"  : idInov, // Novedad tabla n_novedades            
+            "idNov"   : id, 
+            "dev"     : dev,
+            "ded"     : ded,
+            "hora"    : hora,
+            "idCcos"  : cc,    
+            "idCpres" : 0,  
+            "tipo"    : 1,  // Para modificaciones 
+            "idConc"  : idCon, // ID nomina_e           
+            "auto"    : 0, // Edicion de una novedad
+        };   
+        $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nov',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response); 
+              location.reload();                   
+             }
+        }); // Fin ajax        
+};
+
+
+// Moficicacion en registro de automaticos
+function editarNa(id, idCon, idInov ){  
+   var idnom   = $("#idNom").val(); // ID nomina
+   var idinom  = $("#idInom").val(); // ID nomina_e  
+   var dev  = 0;
+   if ($("#deva_"+id).length){  
+      var dev = $("#deva_"+id).val();
+   }
+   var ded  = 0;
+   if ($("#deda_"+id).length){  
+      var ded = $("#deda_"+id).val();
+   }
+   var hora  = 0;
+   var hora  = 0;
+   if ($("#hor_"+id).length){  
+      var hora = $("#hor_"+id).val();
+   }   
+   
+   var cc  = 0;
+//   if ($("#cc_"+id).length){  
+  //    var cc = $("#cc_"+id).val();
+   //}   
+        var parametros = {
+            "idNom"   : idnom,
+            "idInom"  : idinom,
+            "idInov"  : idInov, // Novedad tabla n_novedades            
+            "idNov"   : id, 
+            "dev"     : dev,
+            "ded"     : ded,
+            "hora"    : hora,
+            "idCcos"  : cc,    
+            "idCpres" : 0,  
+            "tipo"    : 1,  // Para modificaciones 
+            "idConc"  : idCon, // ID nomina_e           
+            "auto"    : 1, // Edicion de un automatico
+        };   
+        $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nov',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+        }); // Fin ajax        
+};
+
+// Moficicacion en registro de programados
+function editarP(id, idCpres){  
+   var idnom   = $("#idNom").val(); // ID nomina
+   var idinom  = $("#idInom").val(); // ID nomina_e  
+   var dev  = 0;
+
+   var ded  = 0;
+   if ($("#dedP_"+id).length){  
+      var ded = $("#dedP_"+id).val();
+   }
+   var hora  = 0;
+
+   var cc  = 0;
+   if ($("#ccP_"+id).length){  
+      var cc = $("#ccP_"+id).val();
+   }   
+   
+        var parametros = {
+            "idNom"   : idnom,
+            "idInom"  : idinom,
+            "idNov"   : id, 
+            "dev"     : dev,
+            "ded"     : ded,
+            "hora"    : hora,            
+            "idCcos"  : cc,    
+            "idCpres" : idCpres,  
+            "tipo"    : 1,  // Para modificaciones          
+        }; 
+   
+        $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>nov',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+        }); // Fin ajax        
+};
+</script>
+ 

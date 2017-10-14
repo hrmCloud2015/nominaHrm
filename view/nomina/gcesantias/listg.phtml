@@ -1,0 +1,118 @@
+<?php echo $this->render('layout/titulo'); ?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?> 
+<h3 class="header smaller lighter green"><i class="icon-bullhorn"></i> Importante</h3>
+
+<div class="alert alert-warning">
+  <button type="button" class="close" data-dismiss="alert"><i class="icon-remove"></i></button>
+ Antes de generar este proceso tenga en cuenta que debe tener configurado los automáticos de nomina, 
+ así como los conceptos. Una vez generado este proceso podrá revisar el reporte de nominas activas y agregar novedades.<br>
+</div>
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('GenerarN')) ?>
+</div>
+
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+?>
+<?php    
+echo $this->tipo;
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+    // Tipo de nomina  generar
+    switch ($this->tipo) 
+    {
+        case 1:
+            $tipo = 'p'; // Nomina general
+            break;
+        case 1:
+            $tipo = 'c'; // Cesantias
+            break;
+        case 2:
+            $tipo = 'pm'; // Primas
+            break;        
+        default:
+            break;
+    }
+    
+?>  
+
+
+<?php 
+echo $this->render('layout/iregresar') ?> 
+<div id="resultado"></div> 
+
+<script>
+$(function () {
+  $("#generarnom").click(function () {  
+        var b = $("#id").val();
+        var parametros = {
+            "id"  : b,                
+        };            
+        // Validar que no genere 2 veces la misma nomina         
+        $.ajax({
+            data:  parametros,
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin ?>vp',
+            type:  'post',
+            beforeSend: function () {
+                $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Validando nomina, por favor espere...');
+            },
+            success:  function (response) {
+                $("#resultado").html(response);
+                var val = ($("#valido").val())                
+                if (val==1)
+                {
+                   alert("Esta nomina ya fue generada , no puede volver a generarla")                                                        
+                }else{ // Inicio generacion de nomina 
+                   $.ajax({
+                        data:  parametros,
+                        url:   '<?php echo $this->basePath() ?><?php echo $this->lin.$tipo ?>',
+                        type:  'post',
+                        beforeSend: function () {
+                            $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Generando nomina, por favor espere...');
+                        },
+                        success:  function (response) {
+                            alert('Nomina generada de forma correcta');
+                            location.href='<?php echo $this->basePath() ?><?php echo $this->lin?>';                    
+                        }
+                    });                                                   
+                    
+                }// Fin generación de nomina
+            }
+        }); // Ajax envio de datos       
+
+      });// Generacion de nomina
+  })
+
+</script>
+
+
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'pm',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>

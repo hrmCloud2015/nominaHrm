@@ -1,0 +1,40 @@
+<?php
+//print_r($correos);
+if(empty($correos)){
+    echo '<p><div class="alert alert-success" role="alert">
+        <strong>Listo! </strong>Operaci&oacute;n Exitosa.
+</div></p>';
+}else{
+?>
+<form id="reintentarenvio">
+<h4>ERROR:los siguientes usuarios no recibieron su email correspondiente</h4>
+ <table class="table table-striped table-bordered table-hover" id="table_report">
+ <thead>
+  <tr>
+             <th width="10%">cedula</th>
+             <th width="90%">Nombre</th>
+             
+        
+  </tr>
+ </thead>
+ <tbody>
+    <?php foreach ($this->correos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>
+            <td><?php echo htmlentities($dato["nom"].' '.$dato["ape"]); ?></td>
+            <input type='hidden' value='<?php echo $dato["id"] ?>' name='reintento_emp_id[]' >
+        </tr>
+    <?php } ?>
+        
+
+ </tbody>
+ </table>
+<div class="row">
+    <div class="col-sm-6">
+        <input type="submit" id="reintentarEnvio"  value="Reintentar Envio" class="btn btn-warning">
+    </div>
+</div>
+ </form>
+
+<?php } ?> 
+ 

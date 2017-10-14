@@ -1,0 +1,16 @@
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["nomTpres"] ?></td>           
+            <td>
+             <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>tpa/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/iitems') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,';
+echo $this->render('layout/tabla_tb') ?> 

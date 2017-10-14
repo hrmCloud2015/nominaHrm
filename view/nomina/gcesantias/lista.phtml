@@ -1,0 +1,83 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a/'.$this->id,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+  <div class="col-sm-4">Tipo de nómina:<br />              
+<?php
+    $select = $form->get('tipo');
+    $select->setAttribute('id', 'tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+  </div> 
+</div>
+<hr />
+<div class="row">      
+  <div class="col-sm-4" id='grupos' >Grupo de nómina:<br />              
+<?php
+    $select = $form->get('idGrupo')->setAttribute("id","idGrupo")->setAttribute("name","idGrupo");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+    ?>
+</div>    
+
+  <div class="col-sm-4" id='empleados' >Empleados:<br />              
+<?php
+    $select = $form->get('idEmp')->setAttribute("id","idEmpM");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+    ?>
+</div>    
+
+</div>    
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+
+<script>
+$(function () {
+  $("#tipo").change(function () {  
+  	var nombre =  $("#tipo option:selected").text();
+	var lon = nombre.length;
+	var tipo = nombre.substr(lon-2, 1) ;
+	
+    if (tipo==0)// Nomina normal	
+	{
+	    $("#grupos").show();
+	    $("#idEmpM").val('');
+		$("#empleados").hide();
+    }
+    if (tipo==4)// Liquidacion de empleado	
+	{
+	    $("#empleados").show();
+	    $("#idGrupo").val('');
+		$("#grupos").hide();
+    }
+	
+   });// Generacion de nomina
+ })
+
+</script>

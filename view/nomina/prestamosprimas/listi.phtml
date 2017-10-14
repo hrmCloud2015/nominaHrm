@@ -1,0 +1,90 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i/'.$this->id,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<input type="hidden" name="campo" id="campo" value='1' />    
+<?php echo $this->form()->closeTag() ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+    $name = $form->get('id2'); // Id para el calendario 
+    echo $this->formInput($name);        
+?>
+
+<?php 
+$this->th3 = "Empleado : ".$this->empleado;
+echo $this->render('layout/h3rojo') ?>
+<hr />
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ 
+        $id=$dato["id"];
+        if ( ($dato["pagado"]+$dato["abonosExtra"]) < ($dato["valor"]) ){
+        ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>
+            <td><?php echo $dato["fecDoc"] ?></td>
+            <td><?php echo $dato["nomTpres"] ?></td>            
+            <td><?php echo number_format($dato["valor"]);?></td>            
+            <td><?php echo number_format($dato["pagado"]+$dato["abonosExtra"]);?></td>                        
+            <td><?php echo number_format($dato["valor"]-($dato["pagado"]+$dato["abonosExtra"]) ) ;?></td>
+            <td>
+<div class="col-sm-2">
+<?php
+    $name = $form->get('numero')
+                 ->setAttribute("name",'valor'.$dato["id"])
+                 ->setAttribute("value", $dato["valorAbonar"] );
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div> 
+            </td>            
+        </tr>
+    <?php } // Fin validacion saldo cero  ?>        
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+
+<?php echo $this->form()->closeTag() ?>
+
+<?php         
+$this->ncol='null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+        
+<?php echo $this->render('layout/iregresar') ?> 

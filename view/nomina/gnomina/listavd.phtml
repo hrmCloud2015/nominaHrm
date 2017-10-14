@@ -1,0 +1,38 @@
+<hr />
+<?php
+$this->th3='Empleados preparados para liquidacion de prestaciones sociales';    
+echo $this->render('layout/h3rojo');
+?>
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["CedEmp"] ?></td>
+            <td><?php echo $dato["nombre"] ?></td>
+            <td><?php echo $dato["apellido"] ?></td>
+            <td><?php echo $dato["nomTcon"];
+             if ($dato["nomTcon"]=='') 
+                echo '<i class="fa fa-flag red bigger-130">Inconsistencia';
+             if ($dato["fechaIngreso"]=='0000-00-00') 
+                echo '<i class="fa fa-flag red bigger-130">Incosistencia fi-TIPO=0';            
+             ?></td>            
+            <td><?php echo $dato["fechaIcon"] ;
+             if ($dato["fechaIcon"]=='0000-00-00') 
+                echo '<i class="fa fa-flag red bigger-130">Inconsistencia';
+            ?></td>                        
+            <td><?php echo $dato["fechaFcon"];
+             if ($dato["fechaFcon"]=='') 
+                echo '<i class="fa fa-flag red bigger-130">Inconsistencia';            
+             ?></td>                                  
+            <td><?php echo $dato["fechaF"] ?></td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>avd/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>     
+   
+<?php
+echo $this->render('layout/tabla_p') ?>        
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>       

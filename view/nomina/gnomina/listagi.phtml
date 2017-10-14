@@ -1,0 +1,31 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+<?php
+$this->th3='Pago a empleados calendario cerrado';    
+echo $this->render('layout/h3rojo');
+?>
+
+  <div class="col-sm-12">Empleados del grupo:<br />              
+  <?php
+    $select = $form->get('tipoC2');
+    $select->setAttribute('id', 'idEmp');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>   
+  <hr />
+  <div class="col-sm-12">Calendario:<br />              
+  <?php
+    $select = $form->get('tipoS');
+    $select->setAttribute('id', 'idCal');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>
+  </div>    

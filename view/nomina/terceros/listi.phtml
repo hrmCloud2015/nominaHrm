@@ -1,0 +1,55 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+<div class="col-sm-4">Agregar nombre de la sucusal o sede:<br />    
+<?php
+    $name = $form->get('nombre');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>     
+<div class="col-sm-2">    
+  <?php echo $this->formElement($form->get('agregar')) ?>
+</div> 
+</div>   
+<?php echo $this->form()->closeTag() ?>
+
+
+<h3 class="header smaller lighter blue">Sucursales o sedes del tercero</h3>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ 
+        $id=$dato["id"];
+        ?>
+        <tr>
+            <td><?php echo $dato["nombre"] ?></td>           
+            <td>
+             <?php if ( $dato["central"]==0 ){ ?>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+             <?php } ?>   
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php echo $this->render('layout/iregresar') ?>
+

@@ -1,0 +1,126 @@
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td class="col-sm-1"><?php echo ' '.$dato["id"]; ?></td>
+            <td class="col-sm-2"><?php 
+            if ($dato["idTnomL"]>0) // LIQUIDACION DEFINITIVA
+            {
+                echo '<i class="ace-icon fa fa-briefcase bigger-120 pink"></i>'; 
+                echo ' '.$dato["nomTnomL"];// Liquidcion final 
+            }
+            else   // NOMINA NORMAL  
+                echo $dato["nomtnom"];
+            ?>
+            <?php 
+            if ($dato["idTnomL"]==0) // SINO ES LIQUIDACION DEFINITIVA GRUPO
+            {
+              echo '<br /><i class="ace-icon fa fa-cogs bigger-120 green"></i>';
+                echo '<strong> '.$dato["nomgrup"].'</strong>'; 
+            }
+            ?>
+            <?php 
+            // EMPLEADOS EN LIQUIDACION 
+            if ($dato["idTnomL"]>0) // LIQUIDACION POR GRUPO 
+            { 
+               foreach ($this->datEmp as $datE) 
+               {
+                 echo '<hr />'.$datE['CedEmp'].' - '.$datE['nombre'].' '.$datE['apellido'];
+               }
+            } 
+            ?>              
+         </td>
+            <td class="col-sm-2">
+            <i class="ace-icon fa fa-calendar bigger-120 pink"></i>    
+                <?php 
+            if ($dato["idTnomL"]==0) 
+                echo $dato["fechaI"].' - '.$dato["fechaF"]; 
+            if ($dato["idTnomL"]>1) 
+            {
+               foreach ($this->datEmp as $datE) 
+               {
+                 echo '<hr />'.$datE['fechaI'].' - '.$datE['fechaF'];
+               }
+            }
+
+            ?>
+
+            </td>
+                        
+            <td class="col-sm-1"><?php             
+// Nomina pendiente ?>
+            <i class="ace-icon fa fa-users bigger-120 grease"></i> <?php echo $dato["numEmp"]; ?>
+            </td>           
+
+            <td class="col-sm-1">
+             <?php // PDF PRE NOMINA
+              if( $dato["idTnomL"]>0 )
+              {
+                 $this->idR = 101; // Id del reporte pre nomina
+                 $this->idP = $dato["id"];
+                 echo $this->render('layout/ipdf'); // Fin parametros              
+              }   
+              else    
+              { 
+                 $this->idR = 6; // Id del reporte pre nomina
+                 $this->idP = $dato["id"];
+                 echo $this->render('layout/ipdf'); // Fin parametros 
+              }
+             ?>
+           <?php 
+            if( $dato["idTnomL"]>0 ){  // PDF CONSOLIDADOS ?> 
+             <hr />               
+             <?php 
+                $this->idR = 93; // Id del reporte de retroactivos
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?> Consolidado cesantias   
+            <?php }  ?>                                                                 
+            <?php 
+            if( $dato["idRet"]>0 ){  // PDF RETRO ACTIVOS ?> 
+             <hr />               
+             <?php 
+                $this->idR = 90; // Id del reporte de retroactivos
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?> Retro activo      
+            <?php }  ?>                                                    
+            <?php 
+            if( $dato["tipo"]==3 ){  // PDF DETALLADO PRIMAS  ?> 
+             <hr />               
+             <?php 
+                $this->idR = 78; // Id del reporte de consolidados primas 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?> Consolidado primas               
+            <?php }  ?>                                                                
+            </td>              
+            <td class="col-sm-1">
+             <?php //if ($dato["tipo"]==0) // // PDF RESUMIDOS
+                //{     
+                  $this->idR = 94; // Id del reporte de retencion en la fuente
+               // }
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>                              
+            </td>                          
+            <td class="col-sm-1">
+             <?php //if ($dato["tipo"]==0) // // PDF RETENCIONES
+                //{     
+                  $this->idR = 76; // Id del reporte de retencion en la fuente
+               // }
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdf'); // Fin parametros 
+             ?>                              
+            </td>                          
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol='null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>

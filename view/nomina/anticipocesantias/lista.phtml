@@ -1,0 +1,188 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a/'.$this->id,
+    'method' => 'post',
+    'id'     => "formGuaradar"
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">
+
+<div class="col-sm-4">Empleado:<br />
+  <?php
+    $select = $form->get('idEmp')->setAttribute("id","idEmp");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</div> 
+<div class="col-sm-2">Fecha de corte:<br />
+<?php
+    $name = $form->get('fecDoc')->setAttribute("id","fechaCorte");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+</div>
+<div class="col-sm-2">Estado:<br />        
+<?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+?>        
+</div>
+<div class="col-sm-2">
+<a href="#" id = "calcular" ><i class="fa fa-flag orange bigger-130"></i> Calcular </a>
+
+</div>
+</div>
+<br />
+<div class="row">
+  <div class="col-sm-4">
+     <div id='resultado'></div>
+  </div> 
+</div>
+<hr />
+<div class="row">
+<div class="col-sm-2">Anticipo solicitado:<br />
+<?php
+    $name = $form->get('numero')->setAttribute("id","valor");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);?>
+</div> 
+
+<div class="col-sm-2">Interes solicitado:<br />
+<?php
+    $name = $form->get('numero1')->setAttribute("id","interesSol");
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);?>
+</div> 
+
+</div> 
+<hr />
+<div class="row">
+<div class="col-sm-4">Motivo:<br /><?php
+    $select = $form->get('tipo');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+</div>
+<div class="col-sm-4">Cesantias dirigidas a:<br /><?php
+    $select = $form->get('tipo1');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+</div>
+<div class="col-sm-4">Intereses dirigidas a:<br /><?php
+    $select = $form->get('tipo2');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+</div>
+</div>
+<hr />
+<div class="control-group">
+    <?php echo ($this->formRow($form->get('comen'))); ?>
+</div>  
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+    
+<script>      
+$(function (){    
+   var id = $("#id").val();
+   var idCesantia = <?php echo $this->id; ?>;
+   if (idCesantia>0) // Realizar calculos con los datos guardados
+   {
+        var idEmp = $("#idEmp").val();
+        var fechaCorte = $("#fechaCorte").val();
+        var parametros = {
+               "idEmp" : idEmp,
+               "id" : id,
+               "fechaCorte" : fechaCorte,
+            };  
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>e',
+            type:  'post',
+            beforeSend: function () {
+                $('#resultado').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#resultado').html(response);
+            }
+        });                        
+   }
+
+   // Calculo por cambio   
+   $('#calcular').click(function(){         
+        var idEmp = $("#idEmp").val();
+        var fechaCorte = $("#fechaCorte").val();
+        var parametros = {
+               "id" : id,
+               "idEmp" : idEmp,
+               "fechaCorte" : fechaCorte,
+            };  
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>e',
+            type:  'post',
+            beforeSend: function () {
+                $('#resultado').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#resultado').html(response);
+                var valor = $("#valor").val();
+                var dias  = $("#dias").val();
+                var cesa  = $("#cesantiasNeta").val();
+                var inte  = $("#interesNeta").val();       
+
+                var inte = parseInt( ( valor * inte ) / cesa );
+                $("#interesSol").val( inte );                
+            }
+        });                        
+    });       
+    // Calculo del interes
+   $('#interesSol').focus(function(){         
+       var valor = $("#valor").val();
+       var dias  = $("#dias").val();
+       var cesa  = $("#cesantiasNeta").val();
+       var inte  = $("#interesNeta").val();       
+
+       var inte = parseInt( ( valor * inte ) / cesa );
+
+       $("#interesSol").val( inte );
+    });       
+
+})
+
+$( "#formGuaradar" ).submit(function( event ) {
+   var tope = $("#tope").val(); 
+   var valor = $("#valor").val();    
+   if (valor> tope)
+   {
+     /// alert('No se puede guardar el documento, el valor supera al calculado');    
+      //event.preventDefault();
+   }
+   
+     // alert('No se puede guardar el documento, la fecha del sistema es menor a la del periodo activo');
+     // return false;
+
+});
+</script>    

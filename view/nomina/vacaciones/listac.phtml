@@ -1,0 +1,428 @@
+<?php
+$form = $this->form;
+$form->prepare();
+
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+
+    <?php // Promedio vacaciones disfrute 
+    $promedio = 0;
+    foreach ($this->datos as $dato){ ?>
+     <?php
+      if ($dato['promedio']>0)
+         $promedio = $dato['promedio'];     
+     ?>
+    <?php 
+    } ?>
+
+    <?php // Promedio vacaciones dinero
+    $promedioD = 0;
+    foreach ($this->datosD as $dato){ ?>
+     <?php
+      if ($dato['promedio']>0)
+         $promedioD = $dato['promedio'];     
+     ?>
+    <?php 
+    } ?>
+
+    <?php // Ultimo salario
+    $sueldo = 0;
+    foreach ($this->datEmp as $dato){ ?>
+     <?php
+      $sueldo = $dato['sueldo'];     
+     ?>
+    <?php 
+
+    } ?>
+      
+<table id="table_bug_report" class="table table-bordered table-striped">
+<tbody>
+
+ <tr>
+   <td class=""><strong>Sueldo actual</strong></td>
+   <td>
+     <b class="blue"><?php echo number_format($sueldo); ?></b>
+   </td>   
+ </tr>
+ <tr>
+   <td class="">
+<a href="#modal-form_turnos" id ="promedios" role="button" class="blue" data-toggle="modal">
+   <strong>Promedio conceptos de vacaciones</strong>   
+   <i class="fa fa-flag orange bigger-130"></i>
+   </a>
+
+   </td>
+   <td align="right"> 
+
+     <b class="blue"><?php echo number_format($promedio); ?></b>
+   </td>   
+ </tr> 
+<tr>
+   <td class=""><strong>Base</strong></td>
+   <td align="right">
+     <b class="blue"><?php echo number_format($sueldo+$promedio); ?></b>
+   </td>   
+ </tr>  
+ <tr>
+   <td class=""><strong>Promedio por día</strong></td>
+   <td align="right">
+     <b class="blue"><?php 
+      $promedioMes = ( ($sueldo+$promedio) / 30 ) ;
+     echo number_format(($sueldo+$promedio)/30); ?></b>
+   </td>   
+ </tr>  
+ <tr>
+   <td class=""><strong>Días habiles</strong></td>
+   <td align="right">
+     <b class="blue"><?php echo $this->diasHab; ?>  </b>
+   </td>   
+ </tr>   
+ <tr>
+   <td class=""><strong>Días no habiles</strong></td>
+   <td align="right">
+     <b class="blue"><?php 
+if ( $this->dias31sab > 0 ) 
+   echo '( '.$this->dias31sab.' Sabado 31 )  :  ' ;
+
+//     echo $this->diasNhab-$this->dias31sab;
+
+      ?></b>
+
+     <?php
+       $name = $form->get('numero')->setAttribute("id","diasNoHabiles")
+                                   ->setAttribute("value", $this->diasNhab-$this->dias31sab );
+                                   //->setAttribute("readonly",true)
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);
+     ?>                  
+
+   </td>   
+ </tr>    
+
+ <tr>
+   <td class=""><strong>Días 31</strong></td>
+   <td align="right">
+     <b class="blue"><?php 
+     ?></b>
+     <?php
+       echo $this->dias31;
+     ?>                  
+
+   </td>   
+ </tr>    
+
+ <tr>
+   <td class=""><strong>Días 28 o 29 de febrero</strong></td>
+   <td align="right">
+     <b class="blue"><?php 
+     ?></b>
+     <?php
+       echo $this->diasFeb;
+     ?>                  
+
+   </td>   
+ </tr>    
+
+ <tr>
+   <td class=""><strong>Días totales</strong></td>
+   <td align="right">
+     <b class="blue"><?php 
+       $dia31 = 0;
+       if ($this->chDia31==1)
+           $dia31 = $this->dias31;
+       ?>
+
+     <?php
+
+       $daisTotales = $this->diasNhab + $this->diasHab - $this->dias31sab + $dia31; 
+       $name = $form->get('numero')->setAttribute("readonly",true)
+                                   ->setAttribute("id","diasTotales")
+                                   ->setAttribute("value", $daisTotales );
+                                   //->setAttribute("readonly",true)
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);
+     ?>                  
+
+     </b>
+   </td>   
+ </tr>    
+ <tr>
+   <td class=""><strong>Fecha fin de vacaciones</strong></td>
+   <td align="right">
+     <b class="blue">
+     <?php
+       $name = $form->get('fecDoc')->setAttribute("id","fecReg")
+                                   ->setAttribute("value",$this->fecReg);
+                                   //->setAttribute("readonly",true)
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);
+     ?>                  
+     </b>
+   </td>   
+ </tr>
+ <tr>
+   <td class=""><strong>Fecha de regreso</strong></td>
+   <td align="right">
+     <b class="blue">
+     <?php
+       $name = $form->get('fecDoc')->setAttribute("id","fecRegR")
+                                   ->setAttribute("value",$this->fecRegR);
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);
+     ?>                  
+     </b>
+   </td>   
+ </tr> 
+ <tr>
+   <td class=""><strong>Valor a pagar por disfrute</strong></td>
+   <td align="right">
+     <b class="blue">
+     <?php
+       $name = $form->get('numero')->setAttribute("readonly",true)
+                                   ->setAttribute("id","valor")
+                                   ->setAttribute("value",round( ( ( ($sueldo+$promedio)/30 ) * $daisTotales  ), 0 ) );
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);
+     ?>                           
+     </b>
+   </td>   
+ </tr>   
+<!-- DIAS EN PESOS --> 
+ <tr>
+   <td class=""><strong>Días compensados en pesos</strong></td>
+   <td align="right">
+     <b class="blue"><?php echo $this->diasDin; ?></b>
+   </td>   
+ </tr>    
+ <tr>
+   <td class="">
+<a href="#modal-form_turnos" id ="promediosD" role="button" class="blue" data-toggle="modal">
+<strong>Valor a pagar en pesos</strong> 
+<i class="fa fa-flag orange bigger-130"></i>
+</a>  </td>
+   <td align="right">
+     <b class="blue"><?php echo 'PROM '.number_format( $promedioD )?>
+     <?php
+       $name = $form->get('numero')->setAttribute("readonly",true)
+                                   ->setAttribute("id","valorPesos")
+                                   ->setAttribute("value",round( ( ( ($sueldo+$promedioD)/30 ) * ($this->diasDin)  ), 0 ) );
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);
+     ?>                           
+     </b>
+   </td>   
+ </tr>   
+<!-- FIN DIAS EN PESOS -->
+ </tbody>
+</table>
+   
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')->setAttribute("id","generar")) ?>
+</div>    
+<div id='resultadog'> </div>
+<script>  
+ $(function (){        
+// Recalcular cuando se cambien los dias no habiles 
+$( "#diasNoHabiles" ).blur(function() {
+   var sueldo = <?php echo $sueldo ?> ;
+   var prom = <?php echo round( $promedioMes , 0) ?> ;
+   var diasHab = <?php echo $this->diasHab ?> ;
+   var diasNoHab = parseInt( $("#diasNoHabiles").val() ) ;
+
+   var valor =  ( prom * ( parseInt(diasNoHab) + parseInt(diasHab) ) ) ; 
+   $( "#valor" ).val( valor );
+
+   var valor =  ( parseInt(diasNoHab) + parseInt(diasHab) )  ; 
+   $( "#diasTotales" ).val( valor );
+   
+
+});
+    // Calculos generales 
+     $('#generar').click(function(){ 
+
+     var id2 = $("#id2").val();
+     if (id2>0)
+     {
+        $(location).attr('href',"<?php echo $this->basePath() ?><?php echo $this->lin?>/1"); 
+        return false;
+     }       // Quitar este codigo cuando se encuentre la forma de redireccinal despues del ajax  
+       var id      = $("#id").val();  
+       var idEmp   = $("#idEmp").val();  
+       var tipo   = $("#tipo").val();  
+       var fecsal  = $("#fecDoc").val();  
+       var cerrar  = 0;  
+       if($("#cerrar").is(':checked')) 
+          cerrar = 1;
+
+       var totalDisfrutado = $("#totalDisfrute").val();  
+       var totalDinero  = $("#totalDinero").val();  
+       var fecReg  = $("#fecReg").val();  
+       var fecRegR  = $("#fecRegR").val();         // Fecha de regrso real 
+       var valor   = $("#valor").val();
+       var estado  = $("#estado").val();
+       var salario = <?php echo $sueldo; ?>;
+       var valCon  = <?php echo $promedio; ?>;  
+       var promDia = <?php echo ($sueldo+$promedio)/30; ?>;
+       var diasNhReal  = <?php echo $this->diasNhab; ?>;// los dias no habies que viene por defaul
+       var diasNh  = $("#diasNoHabiles").val();// Los dias habiles si fueron alterados
+       var dias31  = <?php echo $this->dias31; ?>;// Dias 31
+       var diasCal = <?php echo $this->diasNhab + $this->diasHab; ?>;
+
+       var sabado = <?php echo $this->chSabado; ?>;
+       var domingo = <?php echo $this->chDomingo; ?>;
+
+       var diasDin = <?php echo $this->diasDin; ?>;
+       var valorPesos = $("#valorPesos").val();;
+
+       var idPer  = [];
+       var diasP  = [];// Disfrute 
+       var diasPd = [];// Dinero
+       $('.clDisfrute').each(function(indice, elemento) 
+       {
+          var ref  = $(this).attr('id');        
+          var idV  = ref.substring(5, 10);                 
+          var valor  = parseInt( $("#dDis_"+idV).val() ); // dias disfrute
+          var valorDin  = parseInt( $("#dPag_"+idV).val() ); // Dias en dinero          
+          idPer.push(idV);  
+          diasP.push(valor); // Dias disfrute     
+          diasPd.push(valorDin); // Dias en dinero
+       }); 
+       var parametros = {                      
+            "id"     : id,
+            "idEmp"   : idEmp,
+            "tipo"   : tipo,
+            "fecsal"  : fecsal,
+            "fecReg"  : fecReg,
+            "fecRegR" : fecRegR,
+            "fechaIni" : $("#fechaIni").val(),
+            "dias"    : totalDisfrutado, // Dias para disfrute de vacaciones 
+            "dias31"  : dias31,
+            "diasDinero" : totalDinero, // Dias en dinero de vacaciones             
+            "diasNh"  : diasNh, // Dias no habiles reales
+            "diasNhReal" : diasNhReal, // Dias no habiles digitados
+            "sabado" : sabado, // Sabado como dia habil
+            "domingo" : domingo, // Sabado como dia n habil
+            "valor"   : valor,// Valor vacaciones disfrute
+            "valorDinero" : valorPesos, // Valor vacaciones en pesos             
+            "estado"  : estado,
+            "idVac"   : id,                
+            "idPer"   : idPer, // Periodos de vacaciones     
+            "diasP"   : diasP, // Dias para disfrute
+            "diasPd"  : diasPd, // Dias en dinero            
+            "diasCal" : diasCal,    
+            "salario" : salario,    
+            "valCon"  : valCon,  
+            "promDia" : promDia,
+            "cerrar"  : cerrar,  
+       }; 
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+             beforeSend: function () {
+                 $("#resultadog").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadog").html(response); 
+                 alert('Vacaciones generadas de forma correcta !')
+                 $("#id2").val(1);
+                 $(location).attr('href',"<?php echo $this->basePath() ?><?php echo $this->lin?>/1"); 
+              }
+       }); // Fin ajax                                                                                       
+
+        var idPer = [];
+        var diasP = [];
+      $('.span5').each(function(indice, elemento) {
+        var idV   = $(this).attr('id');
+
+        if (idV!='total')
+        {          
+          var valor  = parseInt( $("#"+idV).val() );
+          idPer.push(idV);  // Funciones con matrices
+          diasP.push(valor);// Funciones con matrices      
+        }
+      });
+             
+        //$(location).attr('href',"<?php echo $this->basePath() ?><?php echo $this->lin?>/1"); 
+     });
+ })
+
+// BUSCAR PROMEDIOS DISFRUTES
+$('#promedios').click(function(){ 
+       var id      = $("#id").val();  
+       var idEmp   = $("#idEmp").val();  
+       var fecsal  = $("#fecDoc").val();  
+       var fechaIni  = $("#fechaIni").val();// Fecha inicio de promedios 
+      var parametros = {                      
+            "id"     : id,
+            "idEmp"   : idEmp,
+            "fecsal"  : fecsal,
+            "fechaIni"  : fechaIni,
+            "proceso"  : 6, // Proceso de vacaciones para disfrute             
+       }; 
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 $("#resultadoP").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoP").html(response); 
+               }
+       }); // Fin ajax                                                                    
+
+});
+    
+// BUSCAR PROMEDIOS DINERO
+$('#promediosD').click(function(){ 
+       var id      = $("#id").val();  
+       var idEmp   = $("#idEmp").val();  
+       var fecsal  = $("#fecDoc").val();  
+       var fechaIni  = $("#fechaIni").val();// Fecha inicio de promedios 
+      var parametros = {                      
+            "id"     : id,
+            "idEmp"   : idEmp,
+            "fecsal"  : fecsal,
+            "fechaIni"  : fechaIni,
+            "proceso"  : 7, // Proceso de vacaciones para disfrute             
+       }; 
+       $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 $("#resultadoP").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultadoP").html(response); 
+               }
+       }); // Fin ajax                                                                    
+
+});
+</script> 
+
+<!-- VENTANA MODAL DE PROMEDIO DISFRUTE -->
+<div id="modal-form_turnos" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="blue bigger">Promedio de vacaciones para disfrute</h4>
+      </div>
+      <div class="modal-body">
+
+          <div id="resultadoP"></div>
+
+      </div>
+    </div><!-- fin contenido modal-->
+    <div class="modal-footer">
+      <button class="btn btn-sm" data-dismiss="modal">
+        <i class="ace-icon fa fa-times"></i>
+         Salir
+      </button>
+    </div>
+  </div>
+</div><!-- FIN VENTANA DE TURNOS -->    

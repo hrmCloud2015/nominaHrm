@@ -1,0 +1,192 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'p/'.$this->id,
+    'method' => 'post',
+    'id' => 'formGuardar',
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id'); // id de la matriz 
+    echo $this->formInput($name);    
+?>
+
+<div class="row">    
+  <div class="col-sm-4">Nombre:<br />
+     <?php
+        $name = $form->get('nombre')->setAttribute("id","nombre") ;
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);?>
+  </div>    
+  <div class="col-sm-4">Ciudad del puesto:<br />                      
+  <?php
+    $select = $form->get('idCiu');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>       
+  <div class="col-sm-4">Direccion:<br />
+     <?php
+        $name = $form->get('dir');
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);?>
+  </div>           
+</div>
+<hr />
+<div class="row">    
+  <div class="col-sm-4">Sede:<br />                      
+  <?php
+    $select = $form->get('idSed')->setAttribute("id", "idSed");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+  </div>       
+  <div class="col-sm-3">Zonas:<br />
+      <select name="idZon" id="idZon" ></select>
+  </div>     
+   <div class="col-sm-2"><br /> 
+     <?php echo $this->formElement($form->get('registrar')) ?>
+   </div> 
+</div>
+<?php echo $this->form()->closeTag() ?>
+
+<br /> 
+
+<a class="fa fa-users blue bigger-120" href="<?php echo $this->basePath() ?><?php echo $this->lin?>i/<?php echo $this->id?>">VER EMPLEADOS DEL PROYECTO</a>
+
+<hr />
+<div id='resultado'></div>
+<!-- LISTADO DE EMPLEADOS EN CURSO -->
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php 
+    $arreglo = '';
+      foreach ($this->datCiu as $dat)
+      {
+         $idc=$dat['id'];$nom = $dat['nombre'].' ('.$dat['departamento'].')';
+         $arreglo[$idc]= $nom;
+      }                  
+    foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td class="col-sm-10">
+             <i class="message-star ace-icon fa fa-lemon-o blue"></i>
+             <?php echo '<strong>Zona: '.$dato["nomZon"].'</strong>' ?>
+             <i class="message-star ace-icon fa fa-home-o blue"></i>
+             <?php echo '<strong>- Sede : '.$dato["nomSede"].'</strong>' ?>
+             <hr />
+             <?php
+              $name = $form->get('nombre')
+                           ->setAttribute("id","nombre".$dato["id"])
+                           ->setAttribute("value", $dato["nombre"] ) ;
+              echo $this->formInput($name);
+              echo $this->formElementErrors($name);                          
+             ?>              
+            </td>                        
+            <td>
+             <?php
+                $select = $form->get('tipoC')->setAttribute("id", "ciudad".$dato["id"])
+                                             ->setAttribute("value", $dato["idCiu"] )
+                                             ->setValueOptions($arreglo);
+                echo $this->formSelect($select);
+                echo $this->formElementErrors($select);
+            ?>  
+             <hr />Direccion:
+             <?php
+              $name = $form->get('nombre')
+                           ->setAttribute("id","dir".$dato["id"])
+                           ->setAttribute("value", $dato["direccion"] ) ;
+              echo $this->formInput($name);
+              echo $this->formElementErrors($name);                          
+             ?>                                                                                 
+            </td>            
+
+            <td class="col-sm-1">
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>
+            </td>                                                   
+            <td class="col-sm-1">
+            <?php if($dato['numPtra']==0){ ?>
+
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>zid/<?php echo $dato["id"]?>"> 
+                    <?php echo $this->render('layout/ieliminar') ?> </a>
+            <?php }else{?>
+
+  <i class="fa fa-bullhorn red bigger-100">No se puede eliminar este puesto de trabajo ya que tiene empleados asingados </i>              
+            <?php } ?>        
+            </td>            
+        </tr>
+    <?php } ?>
+
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+
+<script>      
+$(function (){    
+    $('#idSed').change(function(){    
+        $('#idZon').children().remove();
+        var id = $("#idSed").val();
+        var parametros = {
+               "id" : id,
+            };  
+        $.ajax({
+            data:  parametros,     
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>z',
+            type:  'post',
+            beforeSend: function () {
+                $('#res').html('<option value="">Cargando...</option>')                
+               },
+            success:  function (response) {
+                $('#idZon').html(response);
+            }
+        });                        
+    });        
+})
+
+// VALIDACIONES 
+$( "#formGuardar" ).submit(function( event ) {
+   var tipo  = $("#nombre").val(); // conceptos de cotizaciones     
+   if (tipo == '')
+   {
+       alert('Digite el nombre del puesto de trabajo');
+       event.preventDefault();
+   }
+});     
+
+// Moficicacion en registro de novedades 
+function editarN(id){  
+   var nombre =  $("#nombre"+id).val(); 
+   var dir =  $("#dir"+id).val(); 
+   var ciudad =  $("#ciudad"+id).val(); 
+
+   var parametros = {
+       "id"     : id,       
+       "nombre" : nombre,
+       "dir"    : dir,
+       "ciudad" : ciudad,
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+   }); // Fin ajax        
+};
+
+</script> 
+
+<?php echo $this->render('layout/iregresar') ?>    

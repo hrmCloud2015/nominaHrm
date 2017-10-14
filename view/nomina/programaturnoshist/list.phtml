@@ -1,0 +1,103 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$formLabel = $this->plugin('formLabel');
+
+$name = $form->get('numero')
+                ->setAttribute('id','idSup')
+                ->setAttribute('type','hidden')
+                ->setAttribute('value', $this->idUsu);
+echo $this->formInput($name); // id del horario
+
+?>
+
+<div class="row">
+   <div class="col-sm-6">Puesto <br />
+   <?php
+     $select = $form->get('tipo')->setAttribute('id','idPue');
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+  ?>
+   </div>    
+
+   <div class="col-sm-2">Año <br />
+<?php
+    $name = $form->get('ano')->setAttribute('id','ano')
+                             ->setAttribute('value', 2017 );
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+?>
+   </div>       
+   <div class="col-sm-2">Mes <br />
+   <?php
+     $select = $form->get('meses')->setAttribute('id','mes');
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+  ?>
+   </div>  
+   <div class="col-sm-2"><br />
+     <?php echo $this->formElement($form->get('buscar')->setAttribute('id','buscarP'))  ?>
+   </div> 
+
+
+</div>    
+<hr />
+
+<div id="resultado"></div>
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+<script>  
+
+$( "#buscar" ).click(function(){
+  // CARGAR DATOS DE EMPLEADOS 
+  var idSup = 0;
+  if ( $("#idSup").val() > 0 )
+     var idSup = $("#idSup").val(); 
+
+  var parametros = {
+     "idSup"  : idSup,
+     "idPue"  : 0,
+     "tipo"   : 0,// Para mostrar datos 
+  };   
+  $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultado").html(response);  
+                 //alert("Cuotas registradas de forma correcta")
+              }
+   }); // Fin jax                                                                 
+});
+
+$( "#buscarP" ).click(function(){
+  // CARGAR DATOS DE EMPLEADOS 
+  var idSup = $("#idSup").val();
+
+  var parametros = {
+     "idSup"  : idSup,
+     "idPue"  : $("#idPue").val(),
+     "ano"  : $("#ano").val(),
+     "mes"  : $("#mes").val(),
+     "tipo"   : 0,// Para mostrar datos 
+  };   
+  $.ajax({
+             data:  parametros,     
+             type:  'post',
+             url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+             beforeSend: function () {
+                 $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Recalculando por favor espere...');
+             },
+              success:  function (response) {
+                 $("#resultado").html(response);  
+                 //alert("Cuotas registradas de forma correcta")
+              }
+   }); // Fin jax                                                                 
+});
+
+</script>

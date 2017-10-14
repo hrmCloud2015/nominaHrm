@@ -1,0 +1,91 @@
+<?php
+$form = $this->form;
+$form->prepare();
+$formLabel = $this->plugin('formLabel');
+?>
+<?php    
+    $name = $form->get('id')->setAttribute("id","idProy"); // id de la matriz 
+    echo $this->formInput($name);    
+?>
+
+<?php 
+$nombre = '';
+$idCon  = '';   
+$nomCon = $this->datTpre['nomTpres'];?>  
+
+<?php 
+$this->th3 = $idCon.'-'.$nomCon;
+echo $this->render('layout/h3rojo') ?>
+
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<div id='resultado'></div>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php
+     foreach ($this->datos as $dato){ ?>    
+        <tr>
+            <td><?php echo $dato["CedEmp"] ?></td>                                    
+            <td><?php echo $dato["nombre"].' '.$dato["apellido"] ?></td>
+            <td><?php echo $dato["nomCar"] ?></td>            
+            <td>
+             <?php
+               echo ($this->formRow($form->get('numero')
+                                   ->setAttribute("value", $dato["docRef"])
+                                   ->setAttribute("id", "docu".$dato["id"]) ));                        
+             ?>
+            </td>            
+            <td>
+             <?php
+               echo ($this->formRow($form->get('horaG')
+                                   ->setAttribute("value", $dato["valor"])
+                                   ->setAttribute("id", "horas".$dato["id"]) ));                        
+             ?>
+            </td>
+            <td>
+                 <a href="javascript:editarN(<?php echo $dato["id"]; ?>, <?php echo $this->idIcal; ?>);" class="blue" id="nov"><?php echo $this->render('layout/iok') ?>
+                 </a>
+
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<?php 
+$this->ncol='null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>       
+
+<script>
+// Moficicacion en registro de novedades 
+function editarN(id, idIcal){  
+   var valor = $("#horas"+id).val(); 
+   var docu = $("#docu"+id).val(); 
+
+   var parametros = {
+       "id"     : id,       
+       "idIcal" : idIcal,              
+       "idTpres": <?php echo $this->datTpre['idTpres'];?>, 
+       "valor"  : valor,
+       "docu"   : docu,       
+   }; 
+   $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+           beforeSend: function () {
+              $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Actualizando por favor espere...');
+             },
+           success:  function (response) {
+              $("#resultado").html(response);                    
+             }
+   }); // Fin ajax        
+};
+</script>
+
+<?php
+//$this->lin= $id ;
+echo $this->render('layout/iregresar') ?>
+

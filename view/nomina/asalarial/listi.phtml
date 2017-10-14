@@ -1,0 +1,314 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i/'.$this->id,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario 
+echo $this->form()->openTag($form);
+?>
+
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>
+<div class="row">
+  <div class="col-sm-3">Filtrar sueldos 
+    <?php
+    $select = $form->get('tipo4')->setAttribute("id", "sueldo");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>
+  <div class="col-sm-3"> <br />   
+    <?php echo $this->formElement($form->get('buscar')) ?>
+  </div>     
+</div>
+<hr />
+<?php echo $this->form()->closeTag() ?>
+
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'g/'.$this->id,
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>
+<?php    
+    $name = $form->get('id2'); // Sueldos 
+    echo $this->formInput($name);    
+?>
+<?php    
+    $name = $form->get('id3'); // grupo de empleado 
+    echo $this->formInput($name);    
+?>
+<div class="row">
+ <div class="col-sm-2">Aplicar porcentaje:<br />
+  <?php
+    $name = $form->get('numero')->setAttribute("value", 0);
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>    
+  </div>    
+ <div class="col-sm-3">Aplicar nuevo sueldo:<br />
+  <?php
+    $name = $form->get('numero1')->setAttribute("value", 0);
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>    
+  </div>      
+</div>  
+<hr />
+<div class="row">
+ <div class="col-sm-2">Estado del documento:<br />
+      <?php
+       $select = $form->get('estado');
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+      ?>
+  </div>  
+  <div class="col-sm-3">Periodo inicio de retroactivo
+    <?php
+    $select = $form->get('tipo1');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>     
+  <div class="col-sm-3">Periodo de fin de retroactivo
+    <?php
+    $select = $form->get('tipo2');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>       
+  <div class="col-sm-3">Periodo de aplicacion de retroactivo
+    <?php
+    $select = $form->get('tipo3');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+   ?>
+  </div>     
+</div>
+<hr />       
+<?php echo $this->render('layout/tabla_c') ?>
+<?php
+// ESCALA SALARIAL
+ if ( $escala == 1  ){ ?>
+    <?php
+    $datos = $this->datos ;
+     $i = 1;
+     foreach ($datos as $dato){
+          $idI = $dato['id']; 
+      ?>
+        <tr>
+            <td><?php
+               echo $dato["codigo"]; ?></td>
+            <td>                
+               <?php       
+               if ( $this->estado == 0 )
+               {          
+                  $name = $form->get('numero')->setAttribute("value",$dato["salario"])
+                                 ->setAttribute("class","numero")
+                                 ->setAttribute("id",'sa'.$idI) 
+                                 ->setAttribute("name",'sa'.$idI) 
+                                 ->setAttribute("readonly",true);            
+                  echo $this->formInput($name);
+                  echo $this->formElementErrors($name);     
+               }else{
+                  echo number_format( $dato["salarioAct"],2 ); 
+               }
+               ?>                                                
+            </td>                        
+            <td>
+               <?php      
+               if ( $this->estado == 0 )
+               {          
+                 $name = $form->get('diasVac')->setAttribute("value",0)
+                                 ->setAttribute("id",  $idI)
+                                 ->setAttribute("name", "por".$idI);
+                 echo $this->formInput($name);
+                 echo $this->formElementErrors($name);            
+                 $por = $dato["porInc"];
+                 if ( $dato["porInc"]>0 )
+                      echo $dato["porInc"].' %';
+                 // porcentaje oculto cuando vuelvan a cargarlo
+                 $name = $form->get('id2')->setAttribute("value",$por)
+                                 ->setAttribute("por2",  $idI)
+                                 ->setAttribute("name", "por2".$idI);
+                 echo $this->formInput($name);
+                 echo $this->formElementErrors($name);                                
+
+               }else{
+                  echo number_format( $dato["porInc"],2 ); 
+               }                   
+               ?>                
+            </td>            
+            <td>
+               <?php 
+                  $valor = $dato["salario"];                
+                  if ( $dato["salarioNue"] > 0 )
+                     $valor = $dato["salarioNue"];
+
+                  if ( $valor != $dato["salario"] )
+                      echo $this->render('layout/ibanAmarilla');
+               if ( $this->estado == 0 )
+               {          
+                  $name = $form->get('diasVacP')->setAttribute("value",$valor)
+                                 ->setAttribute("id",'nsa'.$idI) 
+                                 ->setAttribute("name",'nsa'.$idI);            
+                  echo $this->formInput($name);
+                  echo $this->formElementErrors($name);     
+                  // Colocar sueldo guardado para poder editar
+
+                 $name = $form->get('id2')->setAttribute("value",$valor)
+                                 ->setAttribute("id", "salario2".$idI)
+                                 ->setAttribute("name", "salario2".$idI);
+                 echo $this->formInput($name);
+                 echo $this->formElementErrors($name);
+
+               }else{
+                  echo number_format( $valor,2 ); 
+               }                                     
+               ?>                                
+            </td>
+        </tr>
+    <?php } ?>      
+
+<?php
+// SIN ESCALA SALARIAL-----------------------------------------------------------------------
+ }else{ 
+     $numero = 1;
+  ?>
+
+
+    <?php foreach ($this->datosE as $dato){
+     $idI = $dato['id'];
+
+           ?>
+        <tr>
+            <td><?php
+               echo $numero; $numero++; ?></td>        
+            <td><?php
+               echo $dato["id"]; ?></td>        
+            <td><?php echo $dato["CedEmp"] ?></td>            
+            <td>
+              <?php echo $dato["nombre"]?>            
+            </td>
+            <td><?php echo $dato["apellido"] ?></td>
+            <td><?php echo $dato["nomCar"] ?></td>
+            <td><?php echo $dato["nomCcos"] ?></td>                                       
+            <td><?php 
+              $valor = $dato["sueldo"];
+              $porInc = 0;
+              $salarioNue = 0;
+              foreach ($this->datEmpG as $datE) // Datos guardados del aumento de sueldo 
+              {
+                 if ( $datE["idEmp"] == $idI )
+                 {
+                    $valor = $datE["salarioNue"];
+                    $porInc = $datE["porInc"];
+                    $salarioNue = $datE["salarioAct"];                    
+                 }     
+              }        
+
+              $name = $form->get('numero')->setAttribute("value",$dato["sueldo"])
+                                 ->setAttribute("class","numero")
+                                 ->setAttribute("id",'sa'.$idI) 
+                                 ->setAttribute("name",'sa'.$idI) 
+                                 ->setAttribute("readonly",true);            
+              echo $this->formInput($name);
+              echo $this->formElementErrors($name);     
+
+              if ( $this->estado == 0 ){ 
+                  //echo number_format($dato["sueldo"],2);
+               }else{
+                  echo number_format( $salarioNue ,0 ); 
+
+               }                                     
+             ?></td>
+            <td>
+               <?php      
+               if ( $this->estado == 0 )
+               {          
+                 $name = $form->get('diasVac')->setAttribute("value",0)
+                                 ->setAttribute("id",  $idI)
+                                 ->setAttribute("name", "por".$idI);
+                 echo $this->formInput($name);
+                 echo $this->formElementErrors($name);            
+                 $por = $porInc;
+                 if ( $porInc>0 )
+                      echo '<br />'.$porInc.' %';
+                 // porcentaje oculto cuando vuelvan a cargarlo
+                 $name = $form->get('id2')->setAttribute("value",$por)
+                                 ->setAttribute("por2",  $idI)
+                                 ->setAttribute("name", "por2".$idI);
+                 echo $this->formInput($name);
+                 echo $this->formElementErrors($name);                                
+
+               }else{
+                  echo number_format( $porInc,2 ); 
+               }                   
+               ?>                
+            </td>            
+            <td>
+              <?php   
+                  if ( $valor != $dato["sueldo"] )
+                      echo $this->render('layout/ibanAmarilla');
+              if ( $this->estado == 0 ){                
+                  $name = $form->get('diasVacP')->setAttribute("value",$valor)
+                                 ->setAttribute("id",'nsa'.$idI) 
+                                 ->setAttribute("name",'nsa'.$idI);            
+                  echo $this->formInput($name);
+                  echo $this->formElementErrors($name);
+               }else{
+                  echo number_format( $valor ,2 ); 
+               }                                     
+              ?>                 
+            </td>            
+        </tr>
+    <?php } ?>
+
+<?php } ?>
+<?php echo $this->render('layout/tabla_p') ?>
+<?php if ( $this->estado == 0 ){ ?>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')->setAttribute("id","generar")) ?>
+</div>         
+<?php } ?>
+        
+<?php echo $this->form()->closeTag() ?>
+
+<script>  
+ 
+    $('.span5').focusout(function(){  
+      var id   = $(this).attr('id');  
+      var porc = $("#"+id).val();      
+      var sal  = parseInt( $("#sa"+id).val() ) ;
+      var nsal =  ( parseFloat ( (porc/100) * sal) ) + sal  ;
+      nsal = Math.round(nsal);
+
+      if (porc>0)
+      {
+          $(" #nsa"+id).val(nsal);
+      }    
+    })   
+ 
+ </script>
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+

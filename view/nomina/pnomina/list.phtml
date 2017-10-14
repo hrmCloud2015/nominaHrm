@@ -1,0 +1,159 @@
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+?>
+<?php 
+echo $this->render('layout/titulo') ?>
+
+            <?php 
+               foreach ($datPlaG as $datP) 
+               { ?>
+                 <a href="<?php echo $this->basePath() ?><?php echo $this->lin?><?php echo $datP['plano'] ?>/<?php echo '1.'.$datP["id"]?>" > <?php echo $this->render('layout/ifortaleza') ?> <?php echo $datP['nombre'] ?> </a>
+                  <?php echo '<spam class="text-muted"> Cuenta : '.$datP["numCuenta"].' )<br /> </spam> ';
+                 ?><hr />
+             <?php        
+               }  // Final recorrido archivos planos 
+            ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td class="col-sm-1"></td>              
+            <td class="col-sm-1"><?php echo $dato['id']; ?></td>              
+            <td class="col-sm-3"><?php 
+
+            if ($dato["idTnomL"]>0) // LIQUIDACION DEFINITIVA
+            {
+                echo '<i class="ace-icon fa fa-briefcase bigger-120 pink"></i>'; 
+                echo $dato["nomTnomL"];// Liquidcion final 
+            }
+            else   // NOMINA NORMAL  
+                echo $dato["nomtnom"];
+            ?>
+            <?php 
+            if ($dato["idTnomL"]==0) // SINO ES LIQUIDACION DEFINITIVA GRUPO
+            {
+              echo '<br /><i class="ace-icon fa fa-cogs bigger-120 green"></i>';
+                echo '<strong> '.$dato["nomgrup"].'</strong>'; 
+            }
+            ?>
+            <?php 
+            // EMPLEADOS EN LIQUIDACION 
+            if ($dato["idTnomL"]>0) // LIQUIDACION POR GRUPO 
+            { 
+               foreach ($this->datEmp as $datE) 
+               {
+                 echo '<hr />'.$datE['CedEmp'].' - '.$datE['nombre'].' '.$datE['apellido'];
+               }
+            } 
+            ?>              
+         </td>
+            <td class="col-sm-2">
+            <i class="ace-icon fa fa-calendar bigger-120 pink"></i>    
+                <?php 
+            if ($dato["idTnomL"]==0) 
+                echo $dato["fechaI"].' - '.$dato["fechaF"]; 
+            if ($dato["idTnomL"]>1) 
+            {
+               foreach ($this->datEmp as $datE) 
+               {
+                 echo '<hr />'.$datE['fechaI'].' - '.$datE['fechaF'];
+               }
+            }
+
+            ?>
+            </td>                        
+            <td class="col-sm-1">
+             <?php      
+                // RELACION DE BANCOS 
+                $this->idR = 7; 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>Transferencias 
+             <hr />
+             <?php      
+                // RELACION DE BANCOS 
+                $this->idR = 8; 
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>Cheques                              
+            <hr />
+             <?php // RELACION EFECTIVO
+                $this->idR = 9; // Id del reporte de retencion en la fuente
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+             ?>Efectivo                       
+            </td>         
+
+            <td class="col-sm-4">
+            <?php 
+            if ( $dato["pagada"] == 0 ) 
+            {
+               foreach ($datPla as $datP) 
+               { 
+                  if ( $datP['idNom'] == $dato['id'])
+                  {  
+                  ?>
+<a href="<?php echo $this->basePath() ?><?php echo $this->lin?><?php echo $datP['plano'] ?>/<?php echo $dato["id"].'.'.$datP["id"]?>" > <?php echo $this->render('layout/ifortaleza') ?> <?php echo $datP['nombre'] ?> </a>
+                  <?php echo '<spam class="text-muted"> Cuenta : '.$datP["numCuenta"].' 
+                     <br /><strong> TRANSFERENCIA: $ '.number_format( $datP["valor"] ).'   ('.$datP["numEmp"].')EMP </strong>   
+                  <br /> </spam> ';
+                 ?><hr />
+             <?php 
+                 }        
+               }  // Final recorrido archivos planos 
+             }  
+            ?>
+            </td>
+            <td>  
+              <?php if ( $dato["pagada"] == 0 ) { ?>            
+                  <?php echo $this->formElement( $form->get('confirmar')
+                                  ->setAttribute("name", "c".$dato["id"])
+                                  ->setAttribute("id", "c".$dato["id"]) 
+                                  ->setAttribute("class", "btn-purple") );?>
+              <?php } ?>                
+            </td> 
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol=',null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>
+
+
+<script>  
+
+    $('.btn-purple').click(function(){ 
+      if( !confirm(" Esta seguro de reportar el pago realizado ?") )
+      {
+          return true;
+      };
+
+        var id     = $(this).attr('id') ;   
+        var n = id.split("c"); // Extraer numeros del id 
+        var idReal = n[1] ;
+        var parametros = {
+            "id"   : idReal,
+        }; 
+   
+        $.ajax({
+           data:  parametros,     
+           type:  'post',
+           url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>p',
+           success:  function (response) {
+              //$("#resultado").html(response);                    
+              alert("Registro actualizado de forma correcta ! "); 
+              location.reload();
+
+           }
+        }); // Fin ajax        
+
+
+    });            
+</script> 

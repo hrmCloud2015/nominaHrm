@@ -1,0 +1,70 @@
+<?php foreach ($this->datos as $dato){ }?>
+<?php
+$this->rss='DETALLE ABONO PRESTAMO  $ '.number_format($datTit['valor']);
+ echo $this->render('layout/rss'); ?><hr />
+
+<?php 
+   $this->ttablasRSS = 'PERIODO, CUOTA PRESTAMO, DESCONTADO,  SALDO  ';      
+   echo $this->render('layout/tabla_crss');  ?>
+   <?php 
+   $valorPrestamo = $datTit['valor'];
+   $deducido = 0;         
+   $saldoIni = $dato['saldoIni'];
+   $valor    = $dato['valor'];
+   foreach ($this->datos as $dato){ // Abonos por nomina
+    ?>
+    <tr>
+      <td><?php echo $dato['fechaI'].' - '.$dato['fechaF'];  ?></div></td>       
+      <td><div align="right"><?php echo number_format($dato['valCuota']) ?></div></td>       
+      <td><div align="right">
+       <?php if( $dato['idUsu']>0 ) { ?>
+          <i class="ace-icon fa fa-pencil-square-o"></i>
+       <?php } ?>
+        <?php echo number_format($dato['deducido']) ?></div></td>       
+      <td><div align="right"><?php 
+      $valorPrestamo = $valorPrestamo - $dato['deducido'];
+      echo number_format($valorPrestamo) ?></div></td> 
+    </tr>
+   <?php 
+      $deducido = $deducido + $dato['deducido'];      
+    } ?>
+
+<?php  foreach ($this->datAbo as $dato){ // Abonos extraordinarios 
+  ?>
+    <tr>
+      <td><?php echo $dato['fecha'];  ?></div></td>       
+      <td><div align="right"><i class="ace-icon fa fa-plus-circle bigger-120 green"></i></div></td>       
+      <td><div align="right"><?php echo number_format($dato['valor']) ?></div></td>       
+      <td><div align="right"><?php 
+      $valorPrestamo = $valorPrestamo - $dato['valor'];
+      echo number_format($valorPrestamo) ?></div></td> 
+    </tr>
+   <?php 
+      $deducido = $deducido + $dato['valor'];      
+    } ?>    
+<tr>
+  <td></td> 
+  <td><strong><i class="fa fa-flag green bigger-130"></i>TOTAL DESCONTADO:<strong></td>             
+  <td><div align="right"><?php 
+  if ( $saldoIni > 0 )
+      echo 'S.I. ('.number_format($saldoIni).') + <strong>'.number_format($deducido); 
+  else
+      echo number_format($deducido); 
+    ?></strong></div></td> 
+  <td></td>         
+</tr>
+<?php if ( $saldoIni >0){?>
+<tr>
+  <td></td> 
+  <td><strong><i class="fa fa-flag green bigger-130"></i> TOTAL DESCUENTOS:<strong></td>             
+  <td><div align="right"><strong><?php echo number_format($deducido+$saldoIni) ?></strong></div></td> 
+  <td></td>         
+</tr>
+<?php } ?>
+<tr>
+  <td></td> 
+  <td><strong><i class="fa fa-flag red bigger-130"></i> SALDO:<strong></td>             
+  <td><div align="right"><strong><?php echo number_format($valor - ($deducido+$saldoIni) ) ?></strong></div></td> 
+  <td></td>         
+</tr>
+<?php echo $this->render('layout/tabla_rss') ?>

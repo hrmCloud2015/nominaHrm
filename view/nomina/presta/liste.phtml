@@ -1,0 +1,97 @@
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"] ?></td>            
+            <td><?php echo $dato["fecDoc"] ?></td>            
+            <td><?php echo 'C.C. '.$dato["CedEmp"].'-<br />'.$dato["nombre"].' '.$dato["apellido"]; ?></td>            
+            <td><?php echo $dato["nomcar"]; ?></td>            
+            <td><?php echo $dato["nomTpres"]; 
+                  if($dato["docRef"]!='') echo '<br /><strong> Doc:('.$dato["docRef"].')</strong>' ?></td>   
+            <td><?php 
+                 $this->idR = 22; // Id del reporte pre nomina
+                 $this->idP = $dato["id"];
+                 echo $this->render('layout/ipdfNom'); // Fin parametros    
+            ?></td>
+            <td><?php echo '<strong> $'.number_format($dato["valor"]).'</strong><br /> '; echo 'en '.number_format($dato["cuotas"]).' de $'.number_format($dato["valCuota"])              
+             ?></td>
+            <td>
+                <a href="javascript:pagos(<?php echo $dato["id"]; ?>)"><i class="fa fa-flag green bigger-130"></i></a>
+                  <h6>
+                  <?php echo '<strong> $ '.number_format( $dato["pagado"] + $dato["abonosExtra"])."</strong></h6><br />";?></h6>
+            </td>
+             <td>      
+                  <i class="fa fa-flag red bigger-130"></i>
+                  <h6>
+                  <?php echo '<strong> $ '.number_format( $dato["valor"]-($dato["pagado"]+$dato["abonosExtra"]) )."</strong></h6><br />";?></h6>                  
+            </td>            
+
+            <td>
+              <?php if ( ($dato["valor"]-($dato["pagado"]+$dato["abonosExtra"])) > 0 ) {?>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>a/<?php echo $dato["id"]?>" target='_blank'> <?php echo $this->render('layout/ieditar'); ?> </a>
+                <?php } ?>
+                <?php if ($dato["estado"]==0){ ?>
+                   <?php echo $this->render('layout/ipendiente') ?>
+                <?php } ?>
+                <?php if ($dato["estado"]==1){ ?>
+                   <?php echo $this->render('layout/iaprobado') ?>                
+                <?php } ?>
+                <?php if ($dato["estado"]==3){ ?>
+                   <?php echo $this->render('layout/iinactivoD') ?>                
+                <?php } ?>                                
+            </td>            
+            <td>
+              <?php if ( ( $dato["pagado"] + $dato["abonosExtra"]) == 0 ){ ?>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>d/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ieliminar') ?> </a>
+              <?php } ?>  
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+
+<script>        
+$(function() {     
+ /// VENTANA PAGOS ////  
+   $( "#ventanaPagos" ).dialog({
+      autoOpen: false,
+      height: 500,
+      width: 700,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function pagos(id)
+{       
+    var parametros = {
+         "id": id,    
+    };  
+    $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoPagos").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoPagos").html(response); 
+        }
+    }); // Fin  agregar nuevo 
+
+    $( "#ventanaPagos" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaPagos" title="Abonos a prestamo">
+  <fieldset>
+     <div id="resultadoPagos"></div>    
+  </fieldset>
+</div>
+    
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?> 

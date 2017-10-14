@@ -1,0 +1,2 @@
+[01-Sep-2014 16:45:08 America/Chicago] PHP Fatal error:  Using $this when not in object context in /home/tecnolog/public_html/nis/module/Nomina/view/nomina/tippresta/index.phtml on line 1
+[03-Sep-2014 08:24:27 America/Chicago] PHP Fatal error:  Using $this when not in object context in /home/tecnolog/public_html/nis/module/Nomina/view/nomina/tippresta/index.phtml on line 1

@@ -1,0 +1,103 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'i/'.$this->id,
+    'method' => 'post',
+    'id' => 'formGuardar',
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<?php    
+    $name = $form->get('id'); // id de la matriz 
+    echo $this->formInput($name);    
+?>
+<div id="Vnuevo1" title="Agregar nuevos registros">
+
+<div class="row">    
+  <div class="col-sm-5">Concepto:<br />
+      <?php
+      $select = $form->get('idConc')->setAttribute("id","idConc");
+      echo $this->formSelect($select);
+      echo $this->formElementErrors($select);
+      ?>
+  </div>     
+  <div class="col-sm-2">Horas trabajo:<br />
+  <?php
+    $name = $form->get('numero');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+  ?>
+  </div>  
+   <div class="col-sm-2"><br />
+     <?php echo $this->formElement($form->get('registrar')) ?>
+   </div>   
+</div>
+<hr />
+
+</div><!-- fIN VENTANA MODAL NUEVOS REGISTROS -->
+<hr />
+<?php echo $this->form()->closeTag() ?>
+
+<a href="javascript:nuevo()"> <?php echo $this->render('layout/inuevo') ?> 
+</a>
+
+<!-- LISTADO DE EMPLEADOS EN CURSO -->
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["id"]; ?></td>                       
+            <td><?php echo $dato["nombre"] ?></td>
+            <td><?php   
+            echo number_format($dato["horas"],2) ?></td>                                  
+
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>id/<?php echo $dato["id"]?>"> 
+                    <?php echo $this->render('layout/ieliminar') ?> </a>
+            </td>            
+        </tr>
+    <?php } ?>
+        
+<?php
+echo $this->render('layout/tabla_p') ?>  
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+<script>    
+
+// VALIDACIONES 
+$( "#formGuardar" ).submit(function( event ) {
+   var tipo  = $("#tipo").val(); // conceptos de cotizaciones     
+   if (tipo == '')
+   {
+       alert('Seleccione el concepto');
+       event.preventDefault();
+   }
+   var tipo  = $("#idEmp").val(); // id empleados
+   if (tipo == '')
+   {
+       alert('Seleccione el empleado');
+       event.preventDefault();
+   }   
+   if ($('#numero').length){
+      var tipo  = $("#numero").val(); // 
+      if (tipo == '')
+      {
+         alert('Digite el valor');
+         event.preventDefault();
+      }   
+   }   
+});     
+</script> 
+    
+<?php 
+$this->ncol='null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+
+

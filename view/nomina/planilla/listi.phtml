@@ -1,0 +1,956 @@
+<?php echo $this->render('layout/titulo') ?>
+</div>
+<div class="row">    
+
+<div class="col-sm-8">
+<!-- INDICACIONES DE LOS SIMBOLOS-->
+<div class="infobox infobox-green">
+  <i class="fa fa-flag orange bigger-130"></i> : Variaciones<br />
+  <i class="fa fa-flag red bigger-130"></i> : Tope maximo <br />
+  <i class="fa fa-flag black bigger-130"></i> : Tope mínimo<br />  
+</div>
+<div class="infobox infobox-green">
+  <?php echo $this->render('layout/ivacaciones') ?> Vacaciones<br />
+  <?php echo $this->render('layout/iincapacidad') ?> Incapacidad<br />
+</div>                    
+<div class="infobox infobox-green">
+  <?php echo $this->render('layout/iniContra') ?> Inicio de contrato <br /> 
+  <?php echo $this->render('layout/finContra') ?> Fin de contrato
+</div>                    
+<div class="infobox infobox-green">
+  <?php echo $this->render('layout/iinactivo') ?> Ausentismo<br /> 
+  <?php echo $this->render('layout/ipensionado'); ?> Pensionado
+</div>                    
+</div><!-- FIN SIMBOLOS -->
+
+  <div class="col-sm-3">
+<!-- MODO VISTA -->
+<?php
+  $form = $this->form;
+  $form->prepare();
+  $form->setAttributes(array(
+      'action' => $this->url.$this->lin.'i/'.$this->id,
+      'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+   ?>
+   <?php    
+      $name = $form->get('id');
+      echo $this->formInput($name);    
+    ?>       
+   <?php    
+      $name = $form->get('id2')->setAttribute("value",1);
+      echo $this->formInput($name);    
+     ?>   
+<div class="row">    
+  <div class="col-sm-6">Sucursal : <?php
+     $select = $form->get('tipoC');
+     echo $this->formSelect($select);
+     echo $this->formElementErrors($select);
+   ?>  
+  </div>
+  <div class="col-sm-6">  
+   Filtrar por :
+    <select name="filtro" id="filtro" >
+       <option value="0">General</option>
+       <option value="3">VARIACIONES</option>                     
+       <option value="1">Incapacidades</option>       
+       <option value="7">Ausentismos</option>
+       <option value="2">Vacaciones</option>                     
+       <option value="4">Aprendices</option>                     
+       <option value="5">Retirados</option>                            
+       <option value="6">Ingresos</option>                                   
+       <option value="8">Fondo de solidaridad</option>
+       <option value="9">Dias riesgos cero</option>
+    </select>
+  </div>  
+  <div class="col-sm-6"> 
+    <?php echo $this->formElement($form->get('buscar')) ?>
+  </div>  
+</div>      
+<?php echo $this->form()->closeTag() ?>    
+  </div> <!-- FINAL FILTROS -->  
+
+  <div class="col-sm-3">
+  <!-- ESTADO -->
+    <?php
+      $form = $this->form;
+      $form->prepare();
+      $form->setAttributes(array(
+        'action' => $this->url.$this->lin.'i',
+        'method' => 'post'
+    ));
+    // Get the form label plugin
+    $formLabel = $this->plugin('formLabel');
+    // Abriendo etiqueta del formulario
+    //echo $this->form()->openTag($form);
+   ?>
+   <?php    
+      $name = $form->get('id');
+      echo $this->formInput($name);    
+    ?>      
+   <?php    
+     // $name = $form->get('id2')->setAttribute("value",0);
+     // echo $this->formInput($name);    
+    ?>             
+    <!-- 
+      <select name="estado" id="estado" >
+        <option value="0">Abierta</option>
+        <option value="1">Cerrar planilla</option>       
+      </select>-->
+      <?php //echo $this->formElement($form->get('guardar')) ?>    
+<?php echo $this->form()->closeTag() ?>      
+  </div><!-- FIN ESTADO -->  
+
+</div>
+<div class="row">    
+   
+  <!-- ENVIO A EXCE -->
+  <div class="col-sm-4">
+    <?php 
+      // FUNCIONS PUBLICAS SOLO DE ALBUM TABLE
+        $this->funcion   = ''; // Si esta en blanco usa la consulta
+        $this->consulta  = "select a.ano, a.mes,
+           c.CedEmp, c.nombre, c.apellido, b.* ,           
+           case when b.diasVaca > 0 then 1 else 0 end as xVac,
+           case when b.nAus = 1 then 1 else 0 end as xAus,
+           case when b.nInca = 1 then 1 else 0 end as xInca,
+           case when b.at = 1 then 1 else 0 end as xAt,
+           case when b.Mat = 1 then 1 else 0 end as xMat,
+           case when b.Pat = 1 then 1 else 0 end as xPat,
+           case when b.nRetiro = 1 then 1 else 0 end as xRetiro,
+           case when b.nIngreso = 1 then 1 else 0 end as xIngreso,
+           case when b.nVst = 1 then 1 else 0 end as xVst,
+           case when b.nVsp = 1 then 1 else 0 end as xVsp,
+           case when b.topMax = 1 then 1 else 0 end as xMax,
+          case when b.topMin = 1 then 1 else 0 end as xMin                                
+             from n_planilla_unica a
+               inner join n_planilla_unica_e b on b.idPla = a.id
+               inner join a_empleados c on c.id = b.idEmp where a.estado=1"; // Consulta 
+         $this->columnas  = "ANO,MES,CEDULA,NOMBRES,APELLIDOS,SUELDO,VARIACION,DIAS SALUD, DIAS PENSION,DIAS RIESGOS,IBC SALUD,IBC PENSION,IBC RIESGOS,IBC CAJA,APORTE SALUD,APORTE PENSION,APORTE SOLIDARIDAD, TARIFA ARL,APORTE RIESGOS,APORTE CAJA,APORTE SENA,APORTE ICBF,VACACIONES,AUSENTISMOS,ENF GENERAL,AT,MATERNIDAD,PATERNIDAD,INGRESO,RETIRO, nVST,nVSP,Top Max,Top Min";// Columnas
+         $this->datosE    = "ano,mes,CedEmp,nombre, apellido,sueldo,varSueldo,diasSalud,diasPension,diasRiesgos, ibcSalud, ibcPension,ibcRiesgos, ibcCaja, aporSalud, aporPension, aporSolidaridad,tarifaArl,aporRiesgos, aporCaja, aporSena, aporIcbf,xVac,xAus,xInca,xAt,xMat,xPat,xIngreso,xRetiro,xVst,xVsp,xMax, xMin";// Datos de la consulta
+         $this->filtros   = 1;
+        echo $this->render('layout/iexcel') ;
+      // FIN ENVIO DE DATOS A EXCEL
+    ?>  
+  </div>  
+             Pdf fondos
+    <?php // PDF PRE NOMINA
+        $this->idR = 30; // Id del reporte pre nomina
+        $this->idP = $this->id;
+        echo $this->render('layout/ipdfNom'); // Fin parametros    
+     ?>
+</div>                      
+
+
+<div id="resultadoMa"></div>
+
+<div class="tabbable">
+  <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+     <li class="active">
+       <a data-toggle="tab" href="#home">Planilla detallada</a>
+     </li>
+     <li>
+       <a data-toggle="tab" href="#fondosres">Totales por fondos</a>
+     </li>
+     <li>
+       <a data-toggle="tab" href="#resumen">Planilla resumida</a>
+     </li>     
+     <li>
+       <a data-toggle="tab" href="#errores">Errores encontrados</a>
+     </li>          
+  </ul>
+  <div class="tab-content">
+    <!-- DATOS PLANILLA DETALLADA--> 
+    <div id="home" class="tab-pane in active">
+
+<!-- VISTAS -->
+<?php echo $this->render('layout/tabla_c') ?>
+    <?php 
+    $totAporSalud = 0;
+    $totAporPension = 0;
+    $totAporRiesgos = 0;
+    $totAporCaja = 0;
+    $totAporSena = 0;    
+    $totAporIcbf = 0;    
+    $totAporSolidaridad = 0;
+    $totales = 0;
+    $item = 1; 
+    foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["CedEmp"].' - '.$dato["nomEmp"].' '.$dato["apellido"]; 
+              if ($dato["numReg"]>0)
+                  echo ' ('.$dato["numReg"].')';
+ 
+             ?>
+
+             <?php if ($dato["codSuc"]!=''){
+                    echo '<br /><i class="ace-$dato["CedEmp"]icon fa fa-home orange">'.$dato["codSuc"].'</i>';  
+                 }else echo 'Sin sucursal'; 
+             ?>             
+             <?php if ($dato["integral"]==1){
+                   echo 'Salario integral'; 
+                 }
+             ?>             
+
+             <?php if ($dato["nInca"]!='0'){
+                 echo $this->render('layout/iincapacidad');
+                 foreach ($datInc as $datIn) 
+                 {
+                    if ($datIn['idEmp']==$dato["idEmp"])
+                        echo '<li class="text-warning bigger-110 orange">('.$datIn['nomTinc'].')</li>';  
+                 } 
+                 echo '<br /><strong> ('.$dato["diasInc"].' dias)</strong><br />';  }?>
+
+             <?php if ($dato["mat"]!='0'){
+                 echo $this->render('layout/iincapacidad');
+                 foreach ($datInc as $datIn) 
+                 {
+                    if ($datIn['idEmp']==$dato["idEmp"])
+                        echo '<li class="text-warning bigger-110 orange">('.$datIn['nomTinc'].')</li>';  
+                 } 
+                 echo '<br /><strong> ('.$dato["diasInc"].' dias)</strong><br />';  }?>
+             <?php if ($dato["Pat"]!='0'){
+                 echo $this->render('layout/iincapacidad');
+                 foreach ($datInc as $datIn) 
+                 {
+                    if ($datIn['idEmp']==$dato["idEmp"])
+                        echo '<li class="text-warning bigger-110 orange">('.$datIn['nomTinc'].')</li>';  
+                 } 
+                 echo '<br /><strong> ('.$dato["diasInc"].' dias)</strong><br />';  }?>
+
+             <?php if ($dato["nVaca"]!='0'){
+                 echo $this->render('layout/ivacaciones'); echo '<br /><strong> ('.$dato["fecIniVac"].' al '.$dato["fecFinVac"].')</strong>'; }?>
+             <?php if ( ($dato["nVaca"]!='0') and ($dato["diasRetVaca"]>0) ){ ?>
+                 <?php echo $this->render('layout/iabajo') ?>
+             <?php } ?>
+
+             <?php if ( ($dato["nVaca"]!='0') and ($dato["diasRetVaca"]==0) ){ ?>
+                 <?php echo $this->render('layout/iarriba') ?>
+             <?php } ?>
+
+             <?php if ($dato["nAus"]!='0')
+                 echo $this->render('layout/iinactivo'); ?>
+             <?php  ?>
+             <?php if ($dato["nIngreso"]!='0') {
+                 echo $this->render('layout/iniContra'); ?>
+             <?php } ?>
+             <?php if ( ($dato["finContrato"]==1) or ($dato["nRetiro"]!='0') ){
+                 echo $this->render('layout/finContra'); ?>
+             <?php } ?>
+             <?php if ($dato["aprendiz"]!='0'){ ?>
+                 <?php echo $this->render('layout/iaprendizh') ?>
+             <?php } ?>
+            </td>            
+            <td><div align="right"><?php echo number_format($dato["sueldo"]); ?>
+            <?php if ($dato["topMax"]!=0) { // Verificar si paso el tope maximo de sueldos  ?>
+                <i class="fa fa-flag red bigger-130">
+            <?php } ?>       
+
+            <?php if ($dato["nVsp"]!=0) { // Verificar si hay variacion permanente de devengado  ?>
+                   <i class="fa fa-flag blue bigger-130"></i>
+
+            <?php } ?>       
+            </div></td>            
+            <td><div align="right"><?php echo number_format($dato["varSueldo"]); ?>
+            <?php if ($dato["nVst"]!='0') { // Verificar si hay variacion temporal de devengado  ?>
+                   <i class="fa fa-flag orange bigger-130"></i>
+                   <a href="javascript:ventSueldos(<?php echo $dato["idEmp"]; ?>, 1, <?php echo $dato["id"]; ?>)"> <?php echo $this->render('layout/iitems') ?></a>
+            <?php } ?>       
+              </div>
+            </td>            
+            
+            <td><div align="right"><?php echo $dato["diasSalud"]; ?>
+               <?php if ($dato["diasSalud"]<30) {  ?>
+                   <i class="fa fa-flag orange bigger-130"></i>                   
+              <?php } ?>       
+            </div></td>            
+            <td><div align="right">
+               <?php if ($dato["pensionado"]==1) {  // Pension 
+                   echo $this->render('layout/ipensionado'); 
+                }else { ?>       
+                   <?php echo $dato["diasPension"]; ?>
+                      <?php if ($dato["diasPension"]<30) {  ?>
+                          <i class="fa fa-flag orange bigger-130"></i>                   
+                      <?php } ?>       
+                <?php } ?>     
+            </div></td>          
+            <td><div align="right"><?php echo $dato["diasRiesgos"]; ?>
+               <?php if ($dato["diasRiesgos"]<30) {  ?>
+                   <i class="fa fa-flag orange bigger-130"></i>                   
+              <?php } ?>       
+            </div></td>                                  
+            
+            <td><div align="right"><?php echo number_format($dato["ibcSalud"]); ?>
+               <a href="javascript:ventLey(<?php echo $dato["idEmp"]; ?>, 1,<?php echo $dato["id"]; ?>)"> <?php echo $this->render('layout/iitems') ?></a>
+               <br />
+               <spam class="text-muted"><?php echo '(ibc ant '.number_format($dato["ibcSaludAnt"]).')'; // Ibc anterior de salud
+               if ( $dato["novIng"] == 1 )  echo '(Ingreso)';
+                 ?></spam>
+            </div></td>            
+            <td><div align="right"><?php echo number_format($dato["aporSalud"]); ?></div></td>                     
+            <td><div align="right">
+               <?php if ($dato["pensionado"]==1) {  // Pension 
+                   echo $this->render('layout/ipensionado'); 
+                }else { 
+                  echo number_format($dato["ibcPension"]); 
+                }?>                                      
+            </div></td>                                  
+            <td><div align="right"><?php echo number_format($dato["aporPension"]); ?></div></td>                                                         
+            <td><div align="right"><?php echo number_format($dato["aporSolidaridad"]); ?></div></td>                                  
+            <td><div align="right"><?php echo number_format($dato["ibcRiesgos"]); ?></div>
+               <a href="javascript:ventLeyRiesgos(<?php echo $dato["idEmp"]; ?>, 1,<?php echo $dato["id"]; ?>)"> <?php echo $this->render('layout/iitems') ?></a>
+
+               <br />
+               <spam class="text-muted"><?php echo '(ibc ant '.number_format($dato["ibcRiesgosAnt"]).')' // Ibc anterior de riesgos  ?></spam>               
+
+            </td>                                                                     
+            <td><div align="right"><?php echo number_format($dato["tarifaArl"],3); ?></div></td>                                  
+            <td><div align="right"><?php echo number_format($dato["aporRiesgos"]); ?></div></td>                                                                                  
+            <td><div align="right"><?php echo number_format($dato["ibcCaja"]); ?></div>
+
+               <a href="javascript:ventLeyPara(<?php echo $dato["idEmp"]; ?>, 1,<?php echo $dato["id"]; ?>)"> <?php echo $this->render('layout/iitems') ?></a>
+
+               <br />
+               <spam class="text-muted"><?php echo '(ibc ant '.number_format($dato["ibcCajaAnt"]).')' // Ibc anterior de caja  ?></spam>               
+
+            </td>                                  
+            <td><div align="right"><?php echo number_format($dato["aporCaja"]); ?></div></td>                                                                                  
+            <td><div align="right"><?php echo number_format($dato["aporSena"]); ?></div></td>                                  
+            <td><div align="right"><?php echo number_format($dato["aporIcbf"]); ?></div></td>
+            <td>                                                                           <?php echo $item; $item++; ?>                  
+             <?php if ( $dato["revisado"] == 0 ){?>   
+                <a href="javascript:matOk(<?php echo $dato["id"]; ?>, 1)"> <?php // echo $this->render('layout/niok') ?></a>                   
+             <?php }else{?>    
+                <a href="javascript:matOk(<?php echo $dato["id"]; ?>, 0)"> <?php // echo $this->render('layout/iok') ?></a>       
+
+             <?php }?>    
+            </td>
+
+        </tr>
+    <?php 
+    $totAporSalud = $totAporSalud + $dato["aporSalud"] ;
+    $totAporPension = $totAporPension + $dato["aporPension"];
+    $totAporRiesgos = $totAporRiesgos + $dato["aporRiesgos"];
+    $totAporSolidaridad = $totAporSolidaridad + $dato["aporSolidaridad"];
+    $totAporCaja = $totAporCaja + $dato["aporCaja"];
+    $totAporSena = $totAporSena + $dato["aporSena"];    
+    $totAporIcbf = $totAporIcbf + $dato["aporIcbf"];    
+
+    $totales = $totAporSalud + $totAporPension + $totAporRiesgos + $totAporSolidaridad + $totAporCaja + $totAporSena + $totAporIcbf ;
+
+    } // Fin recorrido  ?>        
+<?php echo $this->render('layout/tabla_p') ?>
+<!-- FIN VISTAS -->
+
+    </div>
+    <!-- FIN DATOS PLANILLA DETALLADA--> 
+
+
+
+    <!-- DATOS PLANILLA RESUMIDA--> 
+    <div id="resumen" class="tab-pane">
+      <p>
+
+<div class="row">    
+<div class="col-sm-4">        
+        <h4 class="widget-title lighter">
+          <i class="ace-icon fa fa-star orange"></i>
+            Totales aportes 
+        </h4>
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Fondo
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Valor
+              </th>
+            </tr>
+          </thead>
+           <tbody>
+            <tr>
+              <td>Salud</td>
+              <td><div align="right"><?php echo number_format( $totAporSalud ); ?></div></td>
+            </tr>
+            <tr>
+              <td>Pensión</td>
+              <td><div align="right"><?php echo number_format( $totAporPension + $totAporSolidaridad ); ?></div></td>
+            </tr>            
+            <tr>
+              <td>Riesgos</td>
+              <td><div align="right"><?php echo number_format( $totAporRiesgos ); ?></div></td>
+            </tr>                        
+            <tr>
+              <td>Caja</td>
+              <td><div align="right"><?php echo number_format( $totAporCaja ); ?></div></td>
+            </tr>                                    
+            <tr>
+              <td>Sena</td>
+              <td><div align="right"><?php echo number_format( $totAporSena ); ?></div></td>
+            </tr>   
+            <tr>
+              <td>Icbf</td>
+              <td><div align="right"><?php echo number_format( $totAporIcbf ); ?></div></td>
+            </tr>                                                            
+
+            <tr>
+              <td><strong>TOTALES</strong></td>
+              <td><div align="right"><strong><?php echo number_format( $totales ); ?></strong></div></td>
+            </tr>                                                            
+
+          </tbody>
+        </table>
+  </div>
+</div>
+      </p>
+    </div>
+    <!-- DATOS PLANILLA RESIMIDA--> 
+
+    <!-- DATOS FONDOS PRESTACIONALES--> 
+    <div id="fondosres" class="tab-pane">
+
+
+<div class="tabbable">
+  <ul class="nav nav-tabs padding-12 tab-color-blue background-blue" id="myTab4">
+     <li class="active">
+       <a data-toggle="tab" href="#fondos">FONDOS DE SALUD</a>
+     </li>
+     <li>
+       <a data-toggle="tab" href="#pension">FONDOS DE PENSION</a>
+     </li>
+     <li>
+       <a data-toggle="tab" href="#riesgos">ARL</a>
+     </li>     
+     <li>
+       <a data-toggle="tab" href="#caja">CAJA DE COMPENSACION</a>
+     </li>          
+     <li>
+       <a data-toggle="tab" href="#icbf">ICBF</a>
+     </li>          
+     <li>
+       <a data-toggle="tab" href="#sena">SENA</a>
+     </li>                    
+  </ul>
+  <div class="tab-content">
+    <!-- DATOS FONDOS --> 
+    <div id="fondos" class="tab-pane in active">
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Codigo
+              </th>              
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Fondo
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Valor
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>
+              </th>              
+            </tr>
+          </thead>
+           <tbody>     
+          <?php
+           $totales = 0;
+           foreach ($this->datFon as $dato)
+           { 
+              if ( $dato['fondo'] == 'SALUD') 
+              {
+           ?>
+              <tr>
+                <td class="col-sm-1"><?php echo $dato['codigo'] ?></td>                
+                <td class="col-sm-3"><?php echo $dato['nombre'] ?></td>
+                <td class="col-sm-1"><div align="right"><?php echo number_format( $dato['aporte'] ); ?></div></td>
+                <td></td>
+              </tr>
+           <?php 
+                $totales = $totales +  $dato['aporte'];
+              }             
+           } ?>
+              <tr>
+                <td><strong>TOTALES</strong></td>
+                <td><strong><div align="right"><?php echo number_format( $totales ); ?></div></strong></td>
+              </tr>           
+          </tbody>
+        </table>           
+    </div>
+    <!-- FIN DATOS FONDOS -->     
+    <!-- DATOS PENSION --> 
+    <div id="pension" class="tab-pane in active">
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Codigo 
+              </th>              
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Fondo
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Valor
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>
+              </th>              
+            </tr>
+          </thead>
+           <tbody>     
+          <?php
+           $totales = 0;
+           foreach ($this->datFon as $dato)
+           { 
+              if ( $dato['fondo'] == 'PENSION') 
+              {
+           ?>
+              <tr>
+                <td class="col-sm-1"><?php echo $dato['codigo'] ?></td>                
+                <td class="col-sm-3"><?php echo $dato['nombre'] ?></td>
+                <td class="col-sm-1"><div align="right"><?php echo number_format( $dato['aporte'] ); ?></div></td>
+                <td></td>
+              </tr>
+           <?php 
+             $totales = $totales +  $dato['aporte'];           
+              }
+           } ?>
+              <tr>
+                <td><strong>TOTALES</strong></td>
+                <td><strong><div align="right"><?php echo number_format( $totales ); ?></div></strong></td>
+              </tr>                      
+          </tbody>
+        </table>           
+    </div>
+    <!-- FIN DATOS PENSION -->         
+    <!-- DATOS RIESGOS --> 
+    <div id="riesgos" class="tab-pane in active">
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Codigo
+              </th>              
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Fondo
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Valor
+              </th>
+            </tr>
+          </thead>
+           <tbody>     
+          <?php
+           $totales = 0;
+           foreach ($this->datFon as $dato)
+           { 
+              if ( $dato['fondo'] == 'RIESGOS') 
+              {
+           ?>
+              <tr>
+                <td><?php echo $dato['codigo'] ?></td>                                               
+                <td><?php echo $dato['nombre'] ?></td>
+                <td><div align="right"><?php echo number_format( $dato['aporte'] ); ?></div></td>
+              </tr>
+           <?php 
+             $totales = $totales +  $dato['aporte'];           
+              }
+           } ?>
+              <tr>
+                <td><strong>TOTALES</strong></td>
+                <td><strong><div align="right"><?php echo number_format( $totales ); ?></div></strong></td>
+              </tr>                      
+          </tbody>
+        </table>  
+    </div>
+    <!-- FIN DATOS RIESGOS -->             
+    <!-- DATOS CAJA --> 
+    <div id="caja" class="tab-pane in active">
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Codigo
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Fondo
+              </th>              
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Valor
+              </th>
+            </tr>
+          </thead>
+           <tbody>     
+          <?php
+           $totales = 0;
+           foreach ($this->datFon as $dato)
+           { 
+              if ( $dato['fondo'] == 'CAJA') 
+              {
+           ?>
+              <tr>
+                <td><?php echo $dato['codigo'] ?></td>                
+                <td><?php echo $dato['nombre'] ?></td>
+                <td><div align="right"><?php echo number_format( $dato['aporte'] ); ?></div></td>
+              </tr>
+           <?php 
+             $totales = $totales +  $dato['aporte'];           
+              }
+           } ?>
+          </tbody>
+              <tr>
+                <td><strong>TOTALES</strong></td>
+                <td><strong><div align="right"><?php echo number_format( $totales ); ?></div></strong></td>
+              </tr>                     
+        </table>  
+    </div>
+    <!-- FIN DATOS CAJA -->                 
+    <!-- DATOS ICBF--> 
+    <div id="icbf" class="tab-pane in active">
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Codigo
+              </th>              
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Fondo
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Valor
+              </th>
+            </tr>
+          </thead>
+           <tbody>     
+          <?php
+           $totales = 0;
+           foreach ($this->datFon as $dato)
+           { 
+              if ( $dato['fondo'] == 'ICBF') 
+              {
+           ?>
+              <tr>
+                <td><?php echo $dato['codigo'] ?></td>                                
+                <td><?php echo $dato['nombre'] ?></td>
+                <td><div align="right"><?php echo number_format( $dato['aporte'] ); ?></div></td>
+<td><?php echo $dato['codigo'] ?></td>                                                
+              </tr>
+           <?php 
+             $totales = $totales +  $dato['aporte'];           
+              }
+           } ?>
+          </tbody>
+        </table>  
+    </div>
+    <!-- FIN DATOS ICBF -->                     
+    <!-- DATOS SENA--> 
+    <div id="sena" class="tab-pane in active">
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Codigo
+              </th>              
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Fondo
+              </th>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Valor
+              </th>
+            </tr>
+          </thead>
+           <tbody>     
+          <?php
+           $totales = 0;
+           foreach ($this->datFon as $dato)
+           { 
+              if ( $dato['fondo'] == 'SENA') 
+              {
+           ?>
+              <tr>
+                <td><?php echo $dato['codigo'] ?></td>                                
+                <td><?php echo $dato['nombre'] ?></td>
+                <td><div align="right"><?php echo number_format( $dato['aporte'] ); ?></div></td>
+              </tr>
+           <?php 
+             $totales = $totales +  $dato['aporte'];           
+              }
+           } ?>
+          </tbody>
+        </table>  
+    </div>
+    <!-- FIN DATOS SENA -->                         
+  </div>  
+</div>    
+
+    </div>
+    <!-- FIN DATOS FONDOS PRESTACIONALES--> 
+
+    <!-- DATOS PLANILLA ERRORES--> 
+    <div id="errores" class="tab-pane">
+      <p>
+
+        <table class="table table-bordered table-striped">
+          <thead class="thin-border-bottom">
+            <tr>
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Cedula
+              </th>                            
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Empleado
+              </th>              
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Apellido
+              </th>                            
+              <th>
+                <i class="ace-icon fa fa-caret-right blue"></i>Novedad
+              </th>
+            </tr>
+          </thead>
+           <tbody>     
+          <?php
+           $totales = 0;
+           foreach ($this->datError as $dato)
+           { ?>
+              <tr>
+                <td class="col-sm-1"><?php echo $dato['CedEmp'] ?></td>                                
+                <td class="col-sm-1"><?php echo $dato['nombre'] ?></td>                
+                <td class="col-sm-1"><?php echo $dato['apellido'] ?></td>                                
+                <td class="col-sm-3"><?php echo $dato['tipo'] ?></td>
+              </tr>
+           <?php 
+           $totales++;
+           } ?>
+              <tr>
+                <td><strong>TOTALES</strong></td>
+                <td><strong><div align="right"><?php echo number_format( $totales ); ?></div></strong></td>
+              </tr>           
+          </tbody>
+        </table>           
+
+
+      </p>
+    </div>
+    <!-- DATOS ERRORES--> 
+
+  </div>
+</div>
+
+<?php echo $this->render('layout/iregresar') ?>
+
+
+
+
+<!-- VENTANAS MODALES  -->
+<script>        
+$(function() {     
+ /// VENTANA SUELDOS ////  
+   $( "#ventanaSueldos" ).dialog({
+      autoOpen: false,
+      height: 500,
+      width: 1000,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function ventSueldos(idEmp, tipo, id )
+{       
+    var parametros = {
+         "id": id,    
+         "idEmp": idEmp,    
+         "idPla": $("#id").val(),     
+    };  
+    $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>var',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoSueldos").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoSueldos").html(response); 
+        }
+    }); // Fin  agregar nuevo 
+
+    $( "#ventanaSueldos" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaSueldos" title="Detalle variación">
+  <fieldset>
+     <div id="resultadoSueldos"></div>    
+  </fieldset>
+</div>
+
+
+<script>        
+$(function() {     
+ /// VENTANA LEY IBC SALUD////  
+   $( "#ventanaLey" ).dialog({
+      autoOpen: false,
+      height: 500,
+      width: 1000,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function ventLey(idEmp, tipo, id)
+{       
+    var parametros = {
+         "id": id,    
+         "idEmp": idEmp,    
+         "idPla": $("#id").val(),     
+    };  
+    $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>ley',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoLey").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoLey").html(response); 
+        }
+    }); // Fin  agregar nuevo 
+
+    $( "#ventanaLey" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaLey" title="Detalle ley 100">
+  <fieldset>
+     <div id="resultadoLey"></div>    
+  </fieldset>
+</div>
+
+
+<script>        
+$(function() {     
+ /// VENTANA LEY IBC PARAFISCALES////  
+   $( "#ventanaLeyPara" ).dialog({
+      autoOpen: false,
+      height: 500,
+      width: 1000,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function ventLeyPara(idEmp, tipo, id)
+{       
+    var parametros = {
+         "id": id,          
+         "idEmp": idEmp,    
+         "idPla": $("#id").val(),     
+    };  
+    $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>leypara',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoLeyPara").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoLeyPara").html(response); 
+        }
+    }); // Fin  agregar nuevo 
+
+    $( "#ventanaLeyPara" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaLeyPara" title="Detalle Parafiscales">
+  <fieldset>
+     <div id="resultadoLeyPara"></div>    
+  </fieldset>
+</div>
+
+
+<script>        
+$(function() {     
+ /// VENTANA LEY IBC RIESGOS////  
+   $( "#ventanaLeyRiesgos" ).dialog({
+      autoOpen: false,
+      height: 500,
+      width: 1000,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function ventLeyRiesgos(idEmp, tipo, id )
+{       
+    var parametros = {
+         "id": id,          
+         "idEmp": idEmp,    
+         "idPla": $("#id").val(),     
+    };  
+    $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>leyriesgos',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoLeyPara").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoLeyRiesgos").html(response); 
+        }
+    }); // Fin  agregar nuevo 
+
+    $( "#ventanaLeyRiesgos" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaLeyRiesgos" title="Detalle Riesgos profesionales">
+  <fieldset>
+     <div id="resultadoLeyRiesgos"></div>    
+  </fieldset>
+</div>
+<!-- FUNCIONES  -->
+<script>    
+// Marcar items revisado
+function matOk(id, valor)
+{          
+      var parametros = {
+         "id": id,         
+         "valor": valor,                  
+      };      
+      $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>ir',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoMa").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoMa").html(response); 
+           //alert('Marcado')
+        }
+       }); // Fin  agregar nuevo componente al sistema                               
+ 
+}  
+// Variacion por sueldo variable 
+</script>  
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        
+
+

@@ -1,0 +1,137 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php echo $this->render('layout/treview') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+?>
+
+<?php 
+/////// SEDES /////////
+$arbol   = '';
+$idSed   = 0;
+foreach ($this->datArb as $dato){ 
+    $id = $dato['idSed'];
+    if ($idSed!=$id)
+    {
+      $idSed = $id;  
+      if ($arbol=='')
+          $arbol = '{ id:'.$id.', pId:0, name:"'.$dato['nomSed'].'", icon:"'.$this->basePath().'/img/casa.png" }';    
+      else 
+          $arbol = $arbol.',{ id:'.$id.', pId:0, name:"'.$dato['nomSed'].'", icon:"'.$this->basePath().'/img/casa.png" }';                           
+    }
+    $idC = str_pad($dato['idCcos'], 4, "0", STR_PAD_LEFT); 
+    $arbol = $arbol.',{ id:'.$dato['idCcos'].', pId:'.$id.', name:"'.$idC.' - '.$dato['nomCcos'].'" , icon:"'.$this->basePath().'/img/depar.png"}';                           
+}
+?>
+
+<script type="text/javascript">
+var setting = {
+    data: {
+      simpleData: {
+      enable: true
+      }
+    },
+    callback: {
+	beforeClick: beforeClick,
+        }                        
+    };
+var zNodes =[
+   <?php echo $arbol ?>
+];
+
+
+	$(document).ready(function(){
+		var t = $("#treeDemo");
+		t = $.fn.zTree.init(t, setting, zNodes);
+		demoIframe = $("#testIframe");
+	
+	});
+
+	function loadReady() {
+		var bodyH = demoIframe.contents().find("body").get(0).scrollHeight,
+		htmlH = demoIframe.contents().find("html").get(0).scrollHeight,
+		maxH = Math.max(bodyH, htmlH), minH = Math.min(bodyH, htmlH),
+		h = demoIframe.height() >= maxH ? minH:maxH ;
+		if (h < 530) h = 530;
+		demoIframe.height(h);
+	}
+
+<?php 
+$this->idModal = "agregarCom";
+$this->botModal = "Administración de componentes"; ?>
+var log, className = "dark";
+function beforeClick(treeId, treeNode, clickFlag) {		
+    ///// Cargando componentes y elementos del sistema seleccionado ///////   
+    // Nodo hijo
+    var id = treeNode.id;
+
+    demoIframe.attr("src","<?php echo $this->basePath() ?><?php echo $this->lin?>e/"+id);
+    //return true;
+        
+    return (treeNode.click != false);
+}                
+</script>
+
+<?php
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'e',
+    'method' => 'post'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+
+<div class="row">
+  <div class="col-sm-2">Buscar por la cedula:<br />              
+   <?php
+    $name = $form->get('cedula');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+   ?>
+  </div>
+  <div class="col-sm-2"><br />              
+    <?php echo $this->formElement($form->get('buscar')) ?>
+  </div>
+</div> 
+
+  
+
+<?php echo $this->form()->closeTag() ?>    
+
+<!-- Inicio listado por centros de costos-->
+
+<div class="row">
+
+<TABLE border=0 height=600px align=left>
+ <TR>
+  <TD width=360px align=left valign=top style="BORDER-RIGHT: #999999 1px dashed">
+   <!-- Render lineas, grupos y sistemas -->
+   <div style="float:left;" class="zTreeDemoBackground left">
+     <ul id="treeDemo" class="ztree"></ul>
+   </div>                        
+   
+
+<?php
+// Variables para envio de datos excel maestro
+$this->spdf      = 1;// Activa la salida por PDf
+$this->modelo    = 'new \Principal\Model\AlbumTable($con)';// Modelo de consulta
+$this->funcion   = '$m->getEmpMG('."''".')';
+$this->columnas  = "FECHA DE INGRESO,CEDULA, NOMBRE, APELLIDO,TIPO DE EMPLEADO, 
+GRUPO DE NOMINA,CARGO, CENTRO DE COSTO,SUELDO,BANCO,N. CUENTA,SALUD,PENSION,CESANTIAS, ARL, RIESGO,NIVEL DE RIESGO,CAJA, TIPO DE CONTRATACION,EMAIL,ESTATURA,SANGRE,PARIENTE,DIRECCION,TELEFONO,CIUDAD";// Columnas
+$this->datos     = "fecIng,CedEmp,nombre,apellido,nomTemp,nomGrup,nomCar,nomCcos,sueldo,nomBanco,numCuenta,nomSal,nomPen,nomCes,nomArp,nomRiesgo,tipRiesgo,nomCaja,nomTcon,email,estatura,sangre,nomFami,
+DirEmp,TelEmp,nomCiu";// Datos de impresion
+$this->filtros   = 1;
+echo $this->render('layout/excel') ?>
+
+  </TD>
+  <TD width=770px align=left valign=top><IFRAME ID="testIframe" Name="testIframe" FRAMEBORDER=0 SCROLLING=AUTO width=100%  height=600px ></IFRAME></TD> 
+ </TR>
+</TABLE>
+</div>
+
+<?php 
+$this->ncol='null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        

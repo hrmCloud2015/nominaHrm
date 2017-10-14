@@ -1,0 +1,220 @@
+<?php 
+echo $this->render('layout/titulo') ?>
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+            <?php
+            // VALIDACION DE CENTROS DE COSTOS, EMPLEADOS Y CUENTAS
+                 foreach ($this->planSap as $datS)
+                 { ?>
+                  <li class="text-danger"><?php echo $datS["nombre"].' ( CUENTA SIN REGISTRAR EN ERP )' ?></li>
+                      <br />
+                    <?php  
+                 }// recorrer             
+            ?>
+
+            <?php
+            // VALIDACION DE CENTROS DE COSTOS, EMPLEADOS Y CUENTAS
+                 foreach ($this->costSap as $datS)
+                 { ?>
+                  <li class="text-danger"><?php echo $datS["nombre"].' ( CENTRO SIN REGISTRAR EN ERP )' ?></li>
+                      <br />
+                    <?php  
+                 }// recorrer             
+            ?>
+
+            <?php
+            // VALIDACION DE CENTROS DE COSTOS, EMPLEADOS Y CUENTAS
+                 foreach ($this->empSap as $datS)
+                 { ?>
+                  <li class="text-danger"><?php echo $datS["nombre"].' ( EMPLEADO SIN REGISTRAR EN ERP )' ?></li>
+                      <br />
+                    <?php  
+                 }// recorrer             
+            ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td class="col-sm-1"></td>     
+            <td class="col-sm-1"><?php echo $dato["id"] ?></td>            
+            <td class="col-sm-3"><?php 
+              echo $dato["nomTnom"];
+              echo '<br /><i class="ace-icon fa fa-cogs bigger-120 green"></i>';
+              echo '<strong> '.$dato["nomGrupo"].'</strong>'; 
+               ?>
+
+            <?php    
+             // PDF RETEFUENTE (NOMINA NORMAL) ------------------------ (1)
+             if ( ( $dato["idTnom"]==1 ) or ( $dato["idTnom"]==6 ) or ( $dato["idTnom"]==2 ) or ( $dato["idTnom"]==5 ) ) // Nomina quincenal     
+             {  
+             //echo 'Retefuente'; 
+                $this->idR = 3; // Id del reporte de retencion en la fuente
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros 
+                ?>            
+                <hr />Ingresos retefuente
+                <?php // // PDF DETALLADO RETENCION EN LA FUENTE 
+                  $this->idR = 18; // Id del reporte de retencion en la fuente
+                  $this->idP = $dato["id"];
+                  echo $this->render('layout/ipdfNom'); // Fin parametros 
+              }// FIN RETEFUENTE    
+            ?>
+                  
+              </td>
+            <td class="col-sm-3">
+            <i class="ace-icon fa fa-calendar bigger-120 pink"></i>                
+            <?php echo $dato["fechaI"].' - '.$dato["fechaF"]; ?></td>           
+            <td class="col-sm-1">
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>i/<?php echo $dato["id"]?>">
+             <?php echo $this->render('layout/irapido') ?> </a>
+                <?php if ($dato["integrada"]>0){ ?>
+                   <?php echo 'Ok'; ?>
+                <?php }else{ ?>
+                   <?php echo $this->render('layout/ipendiente') ?>                
+                <?php } ?>                    
+                <?php
+                 // recorrero y detectar errores en la integracion 
+                 foreach ($this->datErr as $datE)
+                 { 
+                    if ( $datE["idNom"] == $dato['id'] )
+                    {?>
+                      <i class="ace-icon fa fa-user bigger-120 red">
+                      <spam class="text-muted"><?php echo $datE["error"]; ?></spam>;
+                    <?php  
+                    }
+                 }// recorrer 
+                ?>
+            </td>   
+<?php if ( $dato["integrada"]==0 ) // Archivo integrado (1) 
+{ ?>            
+             <td></td>
+             <td></td>
+             <td></td>
+             <td></td>                          
+             <td></td>
+             <td></td>
+             <td></td>                                       
+<?php }else{ ?>            
+
+            <td class="col-sm-3">
+              <?php if ($dato["error"]==0) { ?>              
+
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>archivoc/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> Plano Nom Cab SAP</a>
+              <hr />
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>archivo/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> Plano Nom</a>
+                            <?php }else { 
+                     echo 'PRE INTEGRACION INCOSISTENTE';
+                            }?>
+              <hr />
+              <?php if ($dato["error"]==0) { ?>              
+              <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>planilla/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ifortaleza') ?> Plano Prov</a>
+                            <?php }else { 
+                     echo 'PRE INTEGRACION INCOSISTENTE';
+                            }?>              
+            </td>
+
+            <td class="col-sm-1">
+
+                <?php // Parametros para impresion de documento 
+                $this->idR = 23; // Id del reporte
+                $this->idP = $dato["id"];
+                echo $this->render('layout/ipdfNom'); // Fin parametros ?>                            
+            </td>
+            <td>
+               <?php // Integracion pro cuentas
+                 $this->idR = 24; // LISTADO SOLO NOVEDADES 
+                 $this->idP = $dato["id"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin
+               // Fin parametros ?>                            
+            </td>
+            <td>
+               <?php // Integracion por concepto
+                 $this->idR = 25; // LISTADO SOLO NOVEDADES 
+                 $this->idP = $dato["id"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin
+               ?>                           
+            </td>            
+            <td>
+              <?php // Integracion por concepto resumidos 
+                 $this->idR = 26; // LISTADO SOLO NOVEDADES 
+                 $this->idP = $dato["id"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin
+              ?>                           
+            </td>                        
+            <td>
+
+               <?php // Parametros para impresion de documento 
+                 $this->idR = 27; // LISTADO SOLO NOVEDADES 
+                 $this->idP = $dato["id"]; 
+                 echo $this->render('layout/ipdfNom'); // Fin
+ // Fin parametros ?>                
+                
+            </td> 
+            <td>
+            <!-- ENVIO A EXCEL 1 -->
+            <?php    
+            $form = $this->form;
+                $form->prepare();
+
+                $form->setAttributes(array(
+                    'action' => $this->url.$this->lin.'excel',
+                    'method' => 'post',
+                    'target' => '_blank',
+                    'id'     => 'excel',
+                    'name'   => 'excel',
+                ));
+                // Get the form label plugin
+                $formLabel = $this->plugin('formLabel');
+                // Abriendo etiqueta del formulario
+                echo $this->form()->openTag($form);
+                $name = $form->get('id')->setAttribute("value",$dato["id"]);
+                echo $this->formInput($name);    
+             ?>    
+             <div class="col-sm-2"><br />
+
+              <button class="btn btn-white btn-pink btn-sm">Excel</button>     
+             </div>
+            </div>    
+            <?php echo $this->form()->closeTag() ?>     
+             <hr />
+            <!-- ENVIO A EXCEL PROVISIONES  -->
+            <?php    
+            $form = $this->form;
+                $form->prepare();
+
+                $form->setAttributes(array(
+                    'action' => $this->url.$this->lin.'excelprov',
+                    'method' => 'post',
+                    'target' => '_blank',
+                    'id'     => 'excel',
+                    'name'   => 'excel',
+                ));
+                // Get the form label plugin
+                $formLabel = $this->plugin('formLabel');
+                // Abriendo etiqueta del formulario
+                echo $this->form()->openTag($form);
+                $name = $form->get('id')->setAttribute("value",$dato["id"]);
+                echo $this->formInput($name);    
+             ?>    
+             <div class="col-sm-2"><br />
+
+              <button class="btn btn-white btn-pink btn-sm">Excel provision</button>     
+             </div>
+            </div>    
+            <?php echo $this->form()->closeTag() ?>                 
+
+            </td>
+<?php } // Fin validacion archivo integrado  (1 ) ?>                        
+
+
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+   
+<?php 
+$this->ncol='null,null,null,null,null,null,null,null,null,null,';
+echo $this->render('layout/tabla_tb') ?>   
+        
+        
+        

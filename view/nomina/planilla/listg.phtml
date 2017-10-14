@@ -1,0 +1,81 @@
+<?php echo $this->render('layout/titulo'); ?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?> 
+<h3 class="header smaller lighter green"><i class="icon-bullhorn"></i> Importante</h3>
+
+<div class="alert alert-warning">
+  <button type="button" class="close" data-dismiss="alert"><i class="icon-remove"></i></button>
+ Antes de generar este proceso tenga en cuenta que debe tener generada la nomina de los periodos correspondientes, 
+ . Una vez generado este proceso podrá revisar el reporte de planilla.<br>
+</div>
+
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('GenerarP')) ?>
+</div>
+
+<?php
+$form = $this->form;
+$form->prepare();
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+?>
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+    $tipo = 'p'; // PLanilla general
+    
+?>  
+
+
+<?php 
+echo $this->render('layout/iregresar') ?> 
+<div id="resultado"></div> 
+
+<script>
+$(function () {
+  $("#generarnom").click(function () {  
+        var b = $("#id").val();
+        var parametros = {
+            "id"  : b,                
+        };            
+        // Validar que no genere 2 veces la misma planilla 
+        $.ajax({
+            data:  parametros,
+            url:   '<?php echo $this->basePath() ?><?php echo $this->lin ?>vp',
+            type:  'post',
+            beforeSend: function () {
+                $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Validando planilla, por favor espere...');
+            },
+            success:  function (response) {
+                $("#resultado").html(response);
+                var val = ($("#valido").val())                
+                if (val==1)
+                {
+                   alert("Esta planilla ya fue generada , no puede volver a generarla")                                                        
+                }else{ // Inicio generacion de nomina 
+                   $.ajax({
+                        data:  parametros,
+                        url:   '<?php echo $this->basePath() ?><?php echo $this->lin.$tipo ?>',
+                        type:  'post',
+                        beforeSend: function () {
+                            $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Generando planilla unica, por favor espere...');
+                        },
+                        success:  function (response) {                            
+                            $("#resultado").html(response);                    
+                            alert('Planilla generada de forma correcta');
+                            location.href='<?php echo $this->basePath() ?><?php echo $this->lin?>';                    
+                        }
+                    });                                                   
+                    
+                }// Fin generación de nomina
+            }
+        }); // Ajax envio de datos       
+
+      });// Generacion de nomina
+  })
+
+</script>
+
+

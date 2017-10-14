@@ -1,0 +1,22 @@
+<?php echo $this->render('layout/titulo') ?>
+
+
+<?php echo $this->render('layout/tabla_c') ?>
+
+    <?php foreach ($this->datos as $dato){ ?>
+        <tr>
+            <td><?php echo $dato["nomtnom"] ?></td>
+            <td><?php echo $dato["fechaI"].' - '.$dato["fechaF"]; ?></td>
+            <td><?php echo $dato["nomtcale"] ?></td>                        
+            <td><?php echo $dato["nomgrup"] ?></td>            
+            <td>
+                <a href="<?php echo $this->basePath() ?><?php echo $this->lin?>g/<?php echo $dato["id"]?>"> <?php echo $this->render('layout/ipersonal') ?> </a>
+            </td>
+        </tr>
+    <?php } ?>
+        
+<?php echo $this->render('layout/tabla_p') ?>
+    
+<?php 
+$this->ncol='null,null,null,';
+echo $this->render('layout/tabla_tb') ?>        

@@ -1,0 +1,166 @@
+<?php echo $this->render('layout/titulo') ?>
+
+<?php
+$form = $this->form;
+$form->prepare();
+
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a',
+    'method' => 'post',
+    'id'     => "formGuaradar"
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<table>
+<tr><td><?php
+    $select = $form->get('idEmp');
+    echo $formLabel->openTag().'Empleado';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+</td> 
+<td>
+<?php
+    $select = $form->get('idInc');
+    echo $formLabel->openTag().'Tipo de liquidación';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>
+<td>
+<?php
+       $select = $form->get('estado');
+       echo $formLabel->openTag().'Estado';
+       echo $formLabel->closeTag();
+       echo $this->formSelect($select);
+       echo $this->formElementErrors($select);
+?>        
+</td>
+</tr>
+</table>
+
+<table>
+<tr>    
+<td>
+<?php
+    $name = $form->get('fechaIni');
+    echo $formLabel->openTag().'Fecha fin de contrato: ';
+    echo $formLabel->closeTag();
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);?>
+</td>
+<td><?php
+    $select = $form->get('tipo');
+    echo $formLabel->openTag().'Motivo de retiro';
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?></td>
+</tr>
+<table>
+<div class="control-group">
+    <?php echo ($this->formRow($form->get('comen'))); ?>
+</div>  
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id');
+    echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+    
+<div id="resultado"></div>    
+<script>         
+//// Buscar fecha del periodo /////
+$( "#idEmp" ).change(function(){ 
+   var a = $("#idInc").val(); 
+   var b = $("#idEmp").val(); 
+   var c = $("#fechaIni").val(); 
+   
+   // Valdiar periodo
+   var parametros = {
+       "idInc" : a,                
+       "idEmp"   : b,                
+       "fechaIni": c,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });          
+});
+$( "#idInc" ).change(function(){ 
+   var a = $("#idInc").val(); 
+   var b = $("#idEmp").val(); 
+   var c = $("#fechaIni").val();    
+   
+   // Valdiar periodo
+   var parametros = {
+       "idInc" : a,                
+       "idEmp"   : b,                
+       "fechaIni": c,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });           
+});
+$( "#fechaIni" ).change(function(){ 
+   var a = $("#idInc").val(); 
+   var b = $("#idEmp").val(); 
+   var c = $("#fechaIni").val();    
+   
+   // Valdiar periodo
+   var parametros = {
+       "idInc" : a,                
+       "idEmp"   : b,                
+       "fechaIni": c,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });           
+});
+
+$( "#formGuaradar" ).submit(function( event ) {
+
+   var verPer = $("#verPer").val(); 
+
+   if ( verPer == 1  ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+      alert('No se puede guardar el documento, la fecha del sistema es menor a la del periodo activo');
+      return false;
+   }
+
+});
+</script>    

@@ -1,0 +1,11 @@
+<?php
+$form = $this->form;
+$form->prepare();
+$formLabel = $this->plugin('formLabel');
+
+ $select = $form->get('idEmpM');
+    echo $formLabel->openTag().$select->getLabel('Grupo de nómina');
+    echo $formLabel->closeTag();
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+?>

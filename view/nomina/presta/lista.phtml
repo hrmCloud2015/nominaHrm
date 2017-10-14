@@ -1,0 +1,684 @@
+<?php echo $this->render('layout/titulo') ?>
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'a/'.$this->id,
+    'method' => 'post',
+    'id'     => 'formGuaradar'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+?>
+<div class="row">    
+  <div class="col-sm-4">Empleado:<br />
+  <?php
+    $select = $form->get('idEmp');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);           
+  ?>
+ </div>
+ <div class="col-sm-4">Tipo de prestamo:<br />
+  <?php
+    $select = $form->get('idTpres')->setAttribute("id","idTpres");
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+ </div>
+ <div class="col-sm-2">Estado del documento:<br />
+  <?php
+    $select = $form->get('estado');
+    echo $this->formSelect($select);
+    echo $this->formElementErrors($select);
+  ?>    
+ </div>
+</div>
+<hr />
+<div class="row">    
+  <div class="col-sm-3">Fecha del documento:<br />
+   <?php
+     if ($this->estado==0)
+     { 
+        $name = $form->get('fecDoc')->setAttribute("required","required");
+     }else{
+        $name = $form->get('fecDoc')->setAttribute("required","required");       
+     }                               
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+   ?>    
+  </div>
+  <div class="col-sm-3">Documento de referencia:<br />
+   <?php
+     if ($this->estado==0)
+     {    
+        $name = $form->get('nombre')->setAttribute("type","number")
+                                    ->setAttribute("required","required")
+                                    ->setAttribute("min",0);
+     }else{
+        $name = $form->get('nombre')->setAttribute("type","number")
+                                    ->setAttribute("required","required")
+                                    ->setAttribute("min",0);      
+     }                                                                   
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+   ?>    
+  </div>  
+</div>
+
+<hr />
+<!-- Datos de un posible refinanciamiento -->
+
+<?php if ($this->idPresRef>0){ ?>
+<?php
+$this->rss = "REFINANCIAMIENTO DEL PRESTAMO No ".$this->idPresRef; 
+ echo $this->render('layout/rss'); ?><hr />
+<?php } ?>  
+<!-- DATOS DEL TIPO DE NOMINA ACEPTADA POR TIPO DE PRESTAMO-->
+<table  class="table table-striped table-bordered table-hover" >
+<tr> 
+  <th>Nomina</th>    
+  <th>Valor tope</th>
+  <th>Numero cuota</th>
+  <th>Valor cuota</th>
+</tr>
+<?php 
+$valorT = 0;$cuotaT = 0;$pagado=0;
+foreach ($this->datTnom as $dato){
+$tipo = $dato['prestamo']; // Marca 0: cuota fija 1: cuota programada
+ ?>
+<tr> 
+    <td><?php echo $dato['nomTnom']?></td>
+    <td>
+      <?php
+      if ( $tipo == 0 ) // CUOTA PROGRAMADA
+      {
+          if ( ( $estado == 0 ) or ( $estado == 1 )  )
+          {
+             $name = $form->get('numero')->setAttribute("id",'valor_'.$dato['idTnom'])
+                                    ->setAttribute("name",'valor'.$dato['idTnom'])
+                                    ->setAttribute("class",'valor')
+                                    ->setAttribute("value",$dato['valor']);
+              echo $this->formInput($name);
+              echo $this->formElementErrors($name);
+            }else{
+             $name = $form->get('numero')->setAttribute("id",'valor_'.$dato['idTnom'])
+                                    ->setAttribute("name",'valor'.$dato['idTnom'])
+                                    ->setAttribute("class",'valor')
+                                    ->setAttribute("type",'hidden')
+                                    ->setAttribute("value",$dato['valor']);
+              echo $this->formInput($name);
+              echo $this->formElementErrors($name);              
+              echo '<strong>'.number_format($dato['valor']).'</strong>';
+            }
+            $valorT = $valorT + $dato['valor'];            
+            $cuotaT = $cuotaT + $dato['cuotas'];
+            $pagado = $pagado + $dato['pagado'];
+      }else{
+        // PLANILLA DE DISTRUBUCION DE CUOTAS FIJAS
+        ?>
+      <?php if ( $this->id > 0 ) // Validar si el id 0 para un nuevo prestamo
+      { ?>  
+           <?php if ( $estado == 0 ) 
+           { ?>
+              <a href="javascript:programa(<?php echo $dato['idTnom']; ?>)" class="btn btn-link">
+              <?php echo $this->render('layout/iitems'); ?>
+           <?php } ?>    
+             <?php foreach ($datPro as $datPr) 
+             {
+                 if ( $dato['idTnom'] == $datPr['idTnom'] ) 
+                 {
+                      echo '$ '.number_format($datPr['valor']).'  en ('.$datPr['num'].') cuotas';
+                      $valorT = $valorT + $datPr['valor'];                
+                  }
+              } ?> 
+            <?php if ( $estado == 0 ) { ?>   
+               </a>         
+            <?php } ?>   
+        <?php } // Fin validar si el id 0 para un nuevo prestamo 
+        else{  echo '<span class="label label-danger arrowed">Debe guardar el préstamo en modo revisión para poder generar distribución de cuotas programadas</span>'; } ?>       
+     <?php 
+      }
+      ?>                
+    </td>
+    <td>
+      <?php
+      if ( $tipo == 0 )
+       {
+          //if ( $estado == 0 )
+          //{        
+              $name = $form->get('ncuotas')->setAttribute("id",'cuotas_'.$dato['idTnom'])
+                                    ->setAttribute("name",'cuotas'.$dato['idTnom'])
+                                    ->setAttribute("class",'valor')
+                                    ->setAttribute("value",$dato['cuotas']);
+              echo $this->formInput($name);
+              echo $this->formElementErrors($name);      
+          //}else{
+          //    $name = $form->get('ncuotas')->setAttribute("id",'cuotas_'.$dato['idTnom'])
+            //                        ->setAttribute("name",'cuotas'.$dato['idTnom'])
+              //                      ->setAttribute("class",'valor')
+            //                        ->setAttribute("type",'hidden')
+           //                         ->setAttribute("value",$dato['cuotas']);
+          //    echo $this->formInput($name);
+          //    echo $this->formElementErrors($name);      
+          //    echo '<strong>'.number_format($dato['cuotas']).'</strong>';
+         // }
+      }
+      ?>                                
+    </td>
+    <td>
+    <?php
+    if ( $tipo == 0 )
+    {
+              $name = $form->get('vcuotas')->setAttribute("id",'vcuotas_'.$dato['idTnom'])
+                                    ->setAttribute("value", $dato['valCuota'])
+                                    ->setAttribute("class",'valor2')
+                                    ->setAttribute("name",'vcuotas'.$dato['idTnom']);
+              echo $this->formInput($name);
+              echo $this->formElementErrors($name);
+
+    }
+    ?>                
+    </td>
+</tr>
+<?php
+}// Fin recorrido tipons de nomians con prestamos por tipo de nominas ?>
+<?php
+// Rrecorridos por abonos extraordinarios
+$numAboExtra = 0;
+foreach ($this->datAbo as $dato){
+  $pagado = $pagado + $dato['valor']; // Marca 0: cuota fija 1: cuota programada
+  $numAboExtra = $numAboExtra + 1;
+}?>
+
+<tr> 
+    <td><strong>TOTALES</strong></td>
+    <td><strong>
+      <?php echo number_format( $valorT ) ?>                
+        </strong>      
+    </td>
+    <td>
+       <strong>
+      <?php echo number_format( $cuotaT ) ?>                
+        </strong>      
+    </td>
+    <td>
+
+    </td>
+</tr>
+<tr> 
+    <td>
+    <a href="javascript:pagos(<?php echo $this->id; ?>)"><i class="fa fa-flag green bigger-130"></i></a>
+          <?php echo '<strong>VALOR ABONADO: $ '.number_format( $pagado )."</strong><br />";?>
+    </td>
+    <td>
+<i class="fa fa-flag red bigger-130"></i>
+<?php 
+       echo '<strong>SALDO PENDIENTE: $ '.number_format( $valorT - $pagado )."</strong><br />";
+   ?>
+    </td>
+    <td></td>    
+    <td>
+
+    </td>
+</tr>
+</table>
+
+<!-- FIN DOCUMENTO DE PRESTAMO -->
+<!-- INICIO ESPECIALES SOBRE PRESTAMOS -->
+
+<a href="javascript:pagosExtra(<?php echo $this->id; ?>)" class="btn btn-link">
+  <i class="ace-icon fa fa-plus-circle bigger-120 green"></i>
+    Abono extraordinario <?php if ( $numAboExtra > 0 ) echo '('.$numAboExtra.')'; ?>
+</a>
+
+<hr />
+
+<div class="row">    
+  <div class="col-sm-6">Comentarios<br/>
+    <?php echo ($this->formRow( $form->get('comenN')->setAttribute("id", "comen") )); ?>
+  </div>    
+</div>  
+<hr />
+
+<?php
+$this->rss='REGISTROS ANTERIORES A MODIFICACIONES DEL PRESTAMO';
+ echo $this->render('layout/rss'); ?><hr />
+
+<?php 
+   $this->ttablasRSS = 'FECHA DE MODIFICACION, TIPO DE PRESTAMO, EMPLEADO , USUARIO ';      
+   echo $this->render('layout/tabla_crss');  ?>
+
+   <?php  foreach ($this->datPresM as $dato){ ?>
+    <tr>
+      <td><i class="fa fa-flag red bigger-130"></i><?php echo $dato['fecha'] ?></td> 
+      <td><?php echo $dato['nomTpres'] ?></td> 
+      <td><?php echo $dato['CedEmp'].'-'.$dato['nombre'].' '.$dato['apellido'] ?></td>       
+      <td><?php echo $dato['usuario'] ?></td> 
+    </tr>
+   <?php } ?>
+<?php echo $this->render('layout/tabla_rss') ?>
+
+<div class="control-group">    
+<?php    
+    $name = $form->get('id'); // Id del prestamo
+    echo $this->formInput($name);    
+?>    
+<?php    
+  $name = $form->get('id'); // Id del grupo de empleado
+  echo $this->formInput($name);    
+?>    
+</div>
+<div class="form-actions">    
+  <?php echo $this->formElement($form->get('send')) ?>
+</div>    
+<?php echo $this->form()->closeTag() ?>
+
+<?php echo $this->render('layout/iregresar') ?>    
+
+<!-- VALIDACION PERIODO ABIERTO SEGUN GRUPO Y TIPO DE NOMINA -->
+<div id="resultado"></div>
+<script>         
+//// Buscar fecha del periodo /////
+$( "#idEmp" ).change(function(){ 
+   var a = $("#idTpres").val(); 
+   var b = $("#idEmp").val(); 
+   // Valdiar periodo
+   var parametros = {
+       "idTpres" : a,                
+       "idEmp"   : b,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });          
+});
+
+$( "#idTpres" ).change(function(){ 
+   var a = $("#idTpres").val(); 
+   var b = $("#idEmp").val(); 
+   // Valdiar periodo
+   var parametros = {
+       "idTpres" : a,                
+       "idEmp"   : b,                
+   }; 
+     $.ajax({
+        data:  parametros,
+        url:   '<?php echo $this->basePath() ?><?php echo $this->lin?>g',
+        type:  'post',
+        beforeSend: function () {
+           $("#resultado").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },                
+        success:  function (response) {
+           $("#resultado").html(response);  
+      }
+   });       
+    
+});
+// Validacion para guardar fechas anteriores
+$( "#formGuaradar" ).submit(function( event ) {
+   var id = $("#id").val(); 
+   var comen = $("#comen").val(); 
+   if ( comen == '')    
+   {
+//      alert("Por favor especifque una razon apra modificar el prestamo actual")
+ //     event.preventDefault();
+   }
+   var verPer = $("#verPer").val(); 
+   if ( verPer == 1  ) // Si la fecha del sistema es menor que la fecha de inicio del periodo activo
+   {
+     // alert('No se puede guardar el documento, la fecha del sistema es menor a la del periodo activo');
+      //return false;
+   }
+
+});
+var a = $("#fechaSis").val();    
+// CALCULO CUOTA FIJA 
+$('.valor').focusout(function(){  
+  var str   =  $(this).attr('id') ;
+  var n = str.indexOf("_");
+  var id =  str.substring( n+1,100) 
+  var valor = $("#valor_"+id).val();
+  var cuotas = $("#cuotas_"+id).val();
+  $("#vcuotas_"+id).val(valor/cuotas);
+});
+// RECALCULO DE NUMERO DE CUOTAS
+$('.valor2').focusout(function(){  
+  var str   =  $(this).attr('id') ;
+  var n = str.indexOf("_");
+  var id =  str.substring( n+1,100) 
+  var valor = $("#valor_"+id).val();
+  var vcuota = $("#vcuotas_"+id).val();
+  $("#cuotas_"+id).val(valor/vcuota);
+});
+</script> 
+
+<script>        
+$(function() {     
+ /// VENTANA PAGOS REALIZADOD BANDERITA VERDE////  
+   $( "#ventanaPagos" ).dialog({
+      autoOpen: false,
+      height: 500,
+      width: 700,
+      modal: true,
+      buttons: {
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }        
+      }
+    }); 
+});
+function pagos(id)
+{       
+    var parametros = {
+         "id": id,    
+    };  
+    $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>pg',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoPagos").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoPagos").html(response); 
+        }
+    }); // Fin  agregar nuevo 
+
+    $( "#ventanaPagos" ).dialog( "open" );     
+}  
+</script>
+
+<div id="ventanaPagos" title="Abonos a prestamo">
+  <fieldset>
+     <div id="resultadoPagos"></div>    
+  </fieldset>
+</div>
+
+<script>        
+$(function() {     
+ /// VENTANA CUOTAS PROGRAMADAS ////  
+   $( "#ventanaPrograma" ).dialog({
+      autoOpen: false,
+      height: 600,
+      width: 800,
+      modal: true,
+      buttons: {   
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function programa(id)
+{       
+    var parametros = {
+         "id": <?php echo $this->id ?>,    
+         "idTnom": id,    
+    };  
+
+    $.ajax({
+        data:  parametros, 
+        url:  '<?php echo $this->basePath() ?><?php echo $this->lin?>pro',
+        type: 'post',
+        beforeSend: function () {
+           $("#resultadoPrograma").html('<h3 class="header smaller lighter grey"><i class="icon-spinner icon-spin orange bigger-125"></i></h3>Por favor espere...');
+        },
+        success: function (response) {   
+           $("#resultadoPrograma").html(response); 
+        }
+    }); // Fin  agregar nuevo     
+    $( "#ventanaPrograma" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaPrograma" title="Cuotas programadas">
+  <fieldset>
+     <div id="resultadoPrograma"></div>    
+  </fieldset>
+</div>
+
+
+
+<script>        
+$(function() {     
+ /// VENTANA ABONOS EXTRAORDINARIOS ////  
+   $( "#ventanaPagosExtra" ).dialog({
+      autoOpen: false,
+      height: 600,
+      width: 800,
+      modal: true,
+      buttons: {
+        "Registrar abono": function() {
+           var id    = $("#id").val();
+           var fecha  = $("#fecDoc").val();
+           var nombre = $("#nombre").val();
+           var valor  = $("#valor").val();
+           if (fecha == '' )
+           {
+              alert('Debe digitar una fecha') 
+              return false;
+           }           
+           if (nombre == '' )
+           {
+              alert('Debe digitar el numero del documento de referencia') 
+              return false;
+           }                      
+           if (valor == 0 )
+           {
+              alert('Debe digitar el valor a abonar del documento de referencia') 
+              return false;
+           }               
+           if (valor < 0 )
+           {
+              alert('No estan permitido valores negativos') 
+              return false;
+           }                                            
+           $( "#formGuaradarAbono" ).submit();
+          
+         },        
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function pagosExtra(id)
+{       
+    var parametros = {
+         "id": id,    
+    };  
+
+    $( "#ventanaPagosExtra" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaPagosExtra" title="Abonos extraordinarios a  prestamos ">
+
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'pge/'.$this->id,
+    'method' => 'post',
+    'id'     => 'formGuaradarAbono'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+$name = $form->get('id');
+echo $this->formInput($name);    
+
+?>
+
+  <fieldset>
+  <div class="row">
+    <div class="col-sm-4">Documento de referencia:<br />  
+    <?php
+      $name = $form->get('nombre')->setAttribute("id","nombre");
+      echo $this->formInput($name);
+      echo $this->formElementErrors($name);
+    ?>
+    </div>
+    <div class="col-sm-4">Fecha de documento:<br />  
+    <?php
+       $name = $form->get('fecDoc')->setAttribute("id","fecDoc");
+       echo $this->formInput($name);
+       echo $this->formElementErrors($name);?>
+    </div>
+  </div>
+<hr />
+<!-- TOTAL PRESTAMO --> 
+<strong>TOTAL PRESTAMO :</strong>
+ </span><span class="label label-success arrowed-in arrowed-in-right">$ <?php echo number_format($valorT); ?></span>
+
+<!-- TOTALES ABONADOS --> 
+<strong>TOTAL ABONADO:</strong>
+  <span class="label label-warning arrowed arrowed-right">$ <?php echo number_format($pagado); ?></span>
+<!-- SALDO --> 
+<strong>SALDO :</strong>
+ <span class="label label-danger arrowed">$ <?php echo number_format($valorT-$pagado); ?></span> 
+  <hr />
+    <div class="row">    
+      <div class="col-sm-4">Valor a abonar:<br />
+      <?php
+        $name = $form->get('numero1')->setAttribute("id",'numero');
+        echo $this->formInput($name);
+        echo $this->formElementErrors($name);
+      ?>                
+      </div>
+    </div>  
+<hr />
+<div class="control-group">Comentarios:
+    <?php echo ($this->formRow($form->get('comenN'))); ?>
+</div>      
+<?php echo $this->form()->closeTag() ?>
+
+  </fieldset>
+</div>
+
+
+
+<script>        
+$(function() {     
+ /// VENTANA REFINANCIAMIENTO ////  
+   $( "#ventanaRefinanciar" ).dialog({
+      autoOpen: false,
+      height: 450,
+      width: 700,
+      modal: true,
+      buttons: {
+        "Refinanciar": function() {
+           var id    = $("#id").val();
+           var nombre = $("#comenR").val();
+
+           if (nombre == '' )
+           {
+              alert('Debe digitar un comentario del documento') 
+              return false;
+           }                      
+           $( "#formGuaradarRefinanciar" ).submit();
+          
+         },        
+        Salir: function() {
+          $( this ).dialog( "close" );
+          //location.reload();  
+        }
+      }
+    }); 
+});
+function refinanciar(id)
+{       
+    var parametros = {
+         "id": id,    
+    };  
+    $( "#ventanaRefinanciar" ).dialog( "open" );     
+}  
+</script>
+<div id="ventanaRefinanciar" title="Refinanciamiento de deuda ">
+<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttributes(array(
+    'action' => $this->url.$this->lin.'ref/'.$this->id,
+    'method' => 'post',
+    'id'     => 'formGuaradarRefinanciar'
+));
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+// Abriendo etiqueta del formulario
+echo $this->form()->openTag($form);
+
+$name = $form->get('id');
+echo $this->formInput($name);    
+?>
+<hr />
+<div class="profile-user-info profile-user-info-striped">
+  <div class="profile-info-row">
+    <div class="profile-info-name"><strong>CONCEPTO</strong></div>
+    <div class="profile-info-value">
+      <span class="editable" id="username"><strong>VALOR TOPE</strong></span>
+    </div>
+  </div>
+<?php 
+// TOTAL CUOTAS FIJAS 
+$valor=0; $pagado = 0;
+foreach ($this->datTnom as $dato){
+   if ( $dato['valor'] > 0  )
+   { ?>
+  <div class="profile-info-row">
+    <div class="profile-info-name"><?php echo $dato['nomTnom']; ?>  </div>
+    <div class="profile-info-value">
+      <span class="editable" id="username"><strong>$ <?php echo number_format($dato['valor']); ?> </strong></span>
+<li class="text-muted">( por <?php echo number_format($dato['cuotas']); ?> cuotas de <?php echo number_format($dato['valCuota']); ?>)</li>
+    </div>
+  </div>
+<?php 
+$valor  = $valor + $dato['valor']; 
+$pagado = $pagado + $dato['pagado'];
+   }
+} ?>    
+
+<?php
+// TOTAL CUOTAS PROGRAMADAS
+ foreach ($datPro as $dato) { ?>  
+  <div class="profile-info-row">
+    <div class="profile-info-name"><?php echo $dato['nomTnom']; ?>  </div>
+    <div class="profile-info-value">
+      <span class="editable" id="username"><strong>$ <?php echo number_format($dato['valor']); ?></strong></span>
+    </div>
+  </div>
+<?php
+$valor = $valor +  $dato['valor']; 
+ } ?>   
+<?php echo $this->form()->closeTag() ?>
+</div>
+<br />
+<!-- TOTAL PRESTAMO --> 
+<strong>TOTAL PRESTAMO :</strong>
+ </span><span class="label label-success arrowed-in arrowed-in-right">$ <?php echo number_format($valor); ?></span>
+
+<!-- TOTALES ABONADOS --> 
+<strong>TOTAL ABONADO:</strong>
+  <span class="label label-warning arrowed arrowed-right">$ <?php echo number_format($pagado); ?></span>
+<!-- SALDO --> 
+<strong>SALDO :</strong>
+ <span class="label label-danger arrowed">$ <?php echo number_format($valor-$pagado); ?></span> 
+  <hr />
+  Comentarios:
+  <?php echo ($this->formRow( $form->get('comenN2')->setAttribute("id", "comenR") )); ?>
+
+</div>
+
+
